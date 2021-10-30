@@ -52,7 +52,7 @@ public class GuiManager implements Listener {
           }
           for(Map.Entry<Player, Gui> entry : playerToGuiMap.entrySet()){
                if(entry.getValue().inventory.equals(event.getClickedInventory())){
-                    entry.getValue().handleClick(event, entry.getKey(), event.getCurrentItem(), event.getWhoClicked().getOpenInventory(), event.getClick());
+                    if(entry.getValue().handleClick(event, entry.getKey(), event.getCurrentItem(), event.getWhoClicked().getOpenInventory(), event.getClick()) == null) event.getWhoClicked().closeInventory();
                }
           }
      }
