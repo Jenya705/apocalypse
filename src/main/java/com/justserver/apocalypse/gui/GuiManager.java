@@ -1,0 +1,64 @@
+package com.justserver.apocalypse.gui;
+
+import org.bukkit.Material;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryAction;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.inventory.Inventory;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
+public class GuiManager implements Listener {
+     public HashMap<Player, Gui> playerToGuiMap = new HashMap<>();
+
+     public Gui getOpenGui(Player player){
+          return playerToGuiMap.get(player);
+     }
+
+     public void setGui(Player player, Gui gui){
+          clear(player);
+          playerToGuiMap.put(player, gui);
+          gui.init();
+          player.openInventory(gui.inventory);
+          if(gui == null || gui.inventory == null){
+               player.closeInventory();
+               return;
+          }
+     }
+
+     public void clear(Player player){
+          playerToGuiMap.remove(player);
+     }
+
+     @EventHandler
+     public void onClick(InventoryClickEvent event){
+          if(event.getWhoClicked().getOpenInventory().equals(event.getWhoClicked().getInventory())) {
+               if(event.getCurrentItem() != null){
+                    if(event.getCurrentItem().getType().equals(Material.BARRIER)) {event.setCancelled(true); return;}
+               }
+               return;
+          }
+          if(!Objects.equals(event.getClickedInventory(), event.getWhoClicked().getInventory())){
+               event.setCancelled(true);
+          }
+          if(playerToGuiMap.get((Player)event.getWhoClicked()) != null){
+               event.setCancelled(true);
+          }
+          for(Map.Entry<Player, Gui> entry : playerToGuiMap.entrySet()){
+               if(entry.getValue().inventory.equals(event.getClickedInventory())){
+                    entry.getValue().handleClick(event, entry.getKey(), event.getCurrentItem(), event.getWhoClicked().getOpenInventory(), event.getClick());
+               }
+          }
+     }
+
+     @EventHandler
+     public void onClose(InventoryCloseEvent event){
+          clear((Player) event.getPlayer());
+     }
+}

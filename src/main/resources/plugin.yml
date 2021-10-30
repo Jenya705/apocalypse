@@ -1,0 +1,9 @@
+name: Dungeons
+version: ${project.version}
+main: com.justserver.apocalypse.Apocalypse
+api-version: 1.16
+commands:
+  startdungeon:
+    usage: /<command>
+  base:
+    usage: /base <args>
