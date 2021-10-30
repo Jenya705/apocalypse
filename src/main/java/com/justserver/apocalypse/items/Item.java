@@ -7,6 +7,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
 public abstract class Item extends ItemLoader implements IItem {
+    protected final Apocalypse plugin;
+
+    public Item(Apocalypse plugin){
+        this.plugin = plugin;
+    }
     public String getId(){
         return this.getClass().getSimpleName().toUpperCase();
     }

@@ -49,7 +49,8 @@ public class BaseGui extends Gui {
     public ArmorStand getArmorStand(Player player, Location armorStandsLocation, Location addLocation){
         ArmorStand armorStand = (ArmorStand) player.getWorld().spawnEntity(armorStandsLocation.add(addLocation), EntityType.ARMOR_STAND);
         armorStand.setInvisible(true);
-        armorStand.setHelmet(new ItemStack(Material.BRICKS));
+        if(armorStand.getEquipment() == null) return null;
+        armorStand.getEquipment().setHelmet(new ItemStack(Material.BRICKS));
         return armorStand;
     }
 

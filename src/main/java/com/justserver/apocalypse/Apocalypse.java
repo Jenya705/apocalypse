@@ -27,6 +27,7 @@ public final class Apocalypse extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        Registry.init(this);
         getCommand("startdungeon").setExecutor(new DungeonCommand(this));
         getCommand("base").setExecutor(new BaseCommand(this));
         Bukkit.getPluginManager().registerEvents(new DungeonHandler(this), this);
