@@ -47,6 +47,15 @@ public class BaseGui extends Gui {
         this.inventory = inventory;
     }
 
+    public ArmorStand getArmorStand(Player player, Location armorStandsLocation, Location addLocation){
+        ArmorStand armorStand = (ArmorStand) player.getWorld().spawnEntity(armorStandsLocation.add(addLocation), EntityType.ARMOR_STAND);
+        armorStand.setInvisible(true);
+        if(armorStand.getEquipment() == null) return null;
+        armorStand.getEquipment().setHelmet(new ItemStack(Material.BRICKS));
+        return armorStand;
+    }
+
+
     @Override
     public Gui handleClick(InventoryClickEvent event, Player player, ItemStack itemStack, InventoryView view, ClickType clickType) {
         if(itemStack.getType().equals(Material.CAMPFIRE)){
