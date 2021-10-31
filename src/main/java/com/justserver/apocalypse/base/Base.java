@@ -1,7 +1,10 @@
 package com.justserver.apocalypse.base;
 
 import com.justserver.apocalypse.Apocalypse;
+import com.justserver.apocalypse.base.buildings.Building;
+import com.justserver.apocalypse.gui.BuildingGui;
 import com.justserver.apocalypse.utils.CustomConfiguration;
+import it.unimi.dsi.fastutil.Hash;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 
@@ -13,12 +16,14 @@ public class Base {
     public UUID owner;
     public String id;
     public Location location;
+    public ArrayList<Building> buildings = new ArrayList<>();
 
     public Base(Apocalypse plugin){
         this.plugin = plugin;
     }
 
-    public void saveBase(CustomConfiguration config){
+    public void saveBase(){
+        CustomConfiguration config = plugin.bases;
         config.config.set("bases." + this.id + ".id", this.id);
         config.config.set("bases." + this.id + ".owner", this.owner.toString());
         ArrayList<String> stringUUIDS = new ArrayList<>();
@@ -27,6 +32,16 @@ public class Base {
         }
         config.config.set("bases." + this.id + ".players", stringUUIDS);
         config.config.set("bases." + this.id + ".location", location);
+        ArrayList<HashMap<String, Object>> inYmlBuildings = new ArrayList<>();
+        for(Building building : buildings){
+            HashMap<String, Object> params = new HashMap<>();
+            params.put("name", building.getClass().getName());
+            params.put("location", building.center);
+            params.put("isFinished", building.isFinished);
+            params.put("fulled", building.nowResources);
+            inYmlBuildings.add(params);
+        }
+        config.config.set("bases." + this.id + ".buildings", inYmlBuildings);
         config.save();
         plugin.loadedBases.remove(this);
         plugin.loadedBases.add(this);
@@ -34,17 +49,17 @@ public class Base {
 
     public void addPlayer(UUID uuid){
         this.players.add(uuid);
-        saveBase(plugin.bases);
+        saveBase();
     }
 
     public void removePlayer(UUID uuid){
         this.players.remove(uuid);
-        saveBase(plugin.bases);
+        saveBase();
     }
 
     public void setOwner(UUID uuid){
         this.owner = uuid;
-        saveBase(plugin.bases);
+        saveBase();
     }
 
     @SuppressWarnings("unchecked")
@@ -64,7 +79,7 @@ public class Base {
         base.players.add(owner.getUniqueId());
         base.location = owner.getLocation();
         owner.getWorld().getBlockAt(owner.getLocation()).setType(Material.SMITHING_TABLE);
-        base.saveBase(plugin.bases);
+        base.saveBase();
         plugin.loadedBases.add(base);
         plugin.bases.reload();
         return base;

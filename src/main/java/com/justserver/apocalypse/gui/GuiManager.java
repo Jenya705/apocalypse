@@ -24,7 +24,6 @@ public class GuiManager implements Listener {
      public void setGui(Player player, Gui gui){
           clear(player);
           playerToGuiMap.put(player, gui);
-          gui.init();
           player.openInventory(gui.inventory);
           if(gui == null || gui.inventory == null){
                player.closeInventory();

@@ -20,10 +20,9 @@ public class Registry {
     }
     
     public static Item getItemByItemstack(ItemStack itemStack){
-        NamespacedKey key = new NamespacedKey(plugin, "APO_ID");
-        if(itemStack.getItemMeta().getPersistentDataContainer().has(key, PersistentDataType.STRING)) return null;
+        if(!itemStack.getItemMeta().getPersistentDataContainer().has(new NamespacedKey(plugin, "APO_ID"), PersistentDataType.STRING)) return null;
         ItemMeta meta = itemStack.getItemMeta();
-        String id = meta.getPersistentDataContainer().get(key, PersistentDataType.STRING);
+        String id = meta.getPersistentDataContainer().get(new NamespacedKey(plugin, "APO_ID"), PersistentDataType.STRING);
         for(Field field : Registry.class.getFields()){
             try {
                 Item item = (Item) field.get(Registry.class);

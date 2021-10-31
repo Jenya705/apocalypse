@@ -3,6 +3,7 @@ package com.justserver.apocalypse;
 import com.justserver.apocalypse.base.Base;
 import com.justserver.apocalypse.base.BaseCommand;
 import com.justserver.apocalypse.base.BaseHandler;
+import com.justserver.apocalypse.base.buildings.Building;
 import com.justserver.apocalypse.commands.DungeonCommand;
 import com.justserver.apocalypse.commands.DungeonCommand;
 import com.justserver.apocalypse.dungeons.DungeonHandler;
@@ -12,9 +13,12 @@ import com.justserver.apocalypse.gui.GuiManager;
 import com.justserver.apocalypse.overworld.OverworldHandler;
 import com.justserver.apocalypse.utils.CustomConfiguration;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 public final class Apocalypse extends JavaPlugin {
@@ -27,6 +31,7 @@ public final class Apocalypse extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        System.out.println("I CAN BUILD123123");
         Registry.init(this);
         getCommand("startdungeon").setExecutor(new DungeonCommand(this));
         getCommand("base").setExecutor(new BaseCommand(this));
@@ -43,12 +48,36 @@ public final class Apocalypse extends JavaPlugin {
                 base.players.add(UUID.fromString(stringUUID));
             }
             base.location = bases.config.getLocation("bases." + key + ".location");
+            for(Object object : bases.config.getList("bases." + base.id + ".buildings")){
+                Class<?> aClass = null;
+                HashMap hashMap = (HashMap) object;
+                try {
+                    System.out.println(object);
+                    aClass = Class.forName((String) hashMap.get("name"));
+                    Building building = ((Building) aClass.getDeclaredConstructor(Location.class, boolean.class).newInstance(hashMap.get("location"), true));
+                    building.getSize((Location) hashMap.get("location"));
+                    building.nowResources = (ArrayList<ItemStack>) hashMap.get("fulled");
+                    base.buildings.add(building);
+                } catch (ClassNotFoundException | NoSuchMethodException e) {
+                    e.printStackTrace();
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                } catch (InstantiationException e) {
+                    e.printStackTrace();
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
             loadedBases.add(base);
         }
     }
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
+        for(Map.Entry<UUID, ItemStack> entry : Registry.FLYING_AXE.getThrownAxes().entrySet()){
+            if(Bukkit.getPlayer(entry.getKey()) != null){
+                Bukkit.getPlayer(entry.getKey()).getInventory().addItem(entry.getValue());
+            }
+        }
     }
 }

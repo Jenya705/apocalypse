@@ -34,9 +34,9 @@ public class BaseGui extends Gui {
         inventory.setItem(45, new ItemStack(Material.CRAFTING_TABLE));
         return inventory;
     }
+    public Base base;
 
-    @Override
-    public void init(){
+    public BaseGui(Base base){
         Inventory inventory = Bukkit.createInventory(null, 54, getName());
         for(int slot = 0; slot < inventory.getSize();slot++){
             inventory.setItem(slot, new ItemStack(Material.GRAY_STAINED_GLASS_PANE));
@@ -45,6 +45,7 @@ public class BaseGui extends Gui {
         inventory.setItem(10, new ItemStack(Material.CAMPFIRE));
         inventory.setItem(45, new ItemStack(Material.CRAFTING_TABLE));
         this.inventory = inventory;
+        this.base = base;
     }
 
     public ArmorStand getArmorStand(Player player, Location armorStandsLocation, Location addLocation){
@@ -60,8 +61,9 @@ public class BaseGui extends Gui {
     public Gui handleClick(InventoryClickEvent event, Player player, ItemStack itemStack, InventoryView view, ClickType clickType) {
         if(itemStack.getType().equals(Material.CAMPFIRE)){
             Location armorStandsLocation = player.getTargetBlockExact(5).getLocation();
-
-            Campfire campfire = new Campfire(armorStandsLocation, player);
+            Campfire campfire = new Campfire(armorStandsLocation, false);
+            BaseHandler.placementBuilding.put(player, campfire);
+            BaseHandler.placementBuildingBases.put(player, this.base);
 
             return null;
         }
