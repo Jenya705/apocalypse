@@ -5,7 +5,9 @@ import com.justserver.apocalypse.Registry;
 import com.justserver.apocalypse.items.Gun;
 import com.justserver.apocalypse.items.Item;
 import com.justserver.apocalypse.items.normal.Medkit;
+import com.justserver.apocalypse.overworld.chests.Chest;
 import io.papermc.paper.event.entity.EntityLoadCrossbowEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
@@ -25,14 +27,16 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class OverworldHandler implements Listener {
     private final Apocalypse plugin;
-
+    private final ArrayList<Chest> lootedChests = new ArrayList<>();
 
     public OverworldHandler(Apocalypse apocalypse) {
         this.plugin = apocalypse;
+        Bukkit.getScheduler().runTaskTimer(apocalypse, lootedChests::clear, 0, 20 * 60 * 5);
     }
 
 //    @EventHandler

@@ -1,4 +1,4 @@
-package com.justserver.apocalypse.overworld;
+package com.justserver.apocalypse.overworld.chests;
 
 import com.justserver.apocalypse.Apocalypse;
 import com.justserver.apocalypse.items.Item;

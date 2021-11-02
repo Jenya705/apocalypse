@@ -1,4 +1,4 @@
-package com.justserver.apocalypse.overworld;
+package com.justserver.apocalypse.overworld.chests;
 
 import com.justserver.apocalypse.Apocalypse;
 import com.justserver.apocalypse.Registry;
@@ -15,6 +15,8 @@ public class PoliceChest extends Chest{
                 Registry.GRIP,
                 Registry.SCOPE,
                 Registry.SILENCER,
+                Registry.FLYING_AXE,
+                Registry.MEDKIT, Registry.MEDKIT, Registry.MEDKIT, Registry.MEDKIT,
                 new BukkitItem(plugin, Material.BRICKS, -5, ItemRarity.RARE),
                 new BukkitItem(plugin, Material.BRICK, -2, ItemRarity.RARE),
                 new BukkitItem(plugin, Material.OAK_PLANKS, -5, ItemRarity.COMMON)
