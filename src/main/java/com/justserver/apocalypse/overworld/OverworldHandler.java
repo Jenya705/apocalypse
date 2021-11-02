@@ -54,6 +54,15 @@ public class OverworldHandler implements Listener {
 
     @EventHandler
     public void onInteract(PlayerInteractEvent event){
+        if(event.getClickedBlock() != null){
+            if(event.getClickedBlock().getType().equals(Material.CHEST)){
+                org.bukkit.block.Chest chest = (org.bukkit.block.Chest) event.getClickedBlock().getState();
+                if(chest.getPersistentDataContainer().has(new NamespacedKey(plugin, "chest_type"), PersistentDataType.STRING)){
+                    //lootedChests.add()
+                }
+                return;
+            }
+        }
         if(event.getItem() == null) return;
         if(event.getItem().getItemMeta() == null) return;
         if(!Objects.equals(event.getHand(), EquipmentSlot.HAND)) return;
@@ -115,4 +124,7 @@ public class OverworldHandler implements Listener {
             }
         }
     }
+
+    @EventHandler
+    public void onChestOpen()
 }

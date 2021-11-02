@@ -1,13 +1,18 @@
 package com.justserver.apocalypse.setup;
 
+import com.justserver.apocalypse.Apocalypse;
 import com.justserver.apocalypse.utils.ItemBuilder;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.block.Block;
+import org.bukkit.block.Chest;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -47,6 +52,27 @@ public class SetupManager implements Listener {
 
     @EventHandler
     public void onInteract(PlayerInteractEvent event){
+        if(event.getItem() != null && event.getClickedBlock() != null){
+            String name = event.getItem().getItemMeta().getDisplayName().toLowerCase();
+            Block block = event.getClickedBlock();
+            if(block.getState() instanceof Chest){
+                Chest chest = (Chest) block.getState();
+                String chestType;
 
+                if(name.contains("полицейский")){
+                    chestType = "police";
+                } else if(name.contains("военный")){
+                    chestType = "military";
+                } else if(name.contains("фабрики")){
+                    chestType = "factory";
+                } else if(name.contains("медицинский")){
+                    chestType = "hospital";
+                }
+                else {chestType = "default";}
+                chest.getPersistentDataContainer().set(new NamespacedKey(Apocalypse.getInstance(), "chest_type"), PersistentDataType.STRING, chestType);
+                event.getPlayer().sendMessage("Установлен тип: " + chestType);
+            }
+
+        }
     }
 }
