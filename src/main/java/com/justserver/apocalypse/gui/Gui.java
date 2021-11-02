@@ -10,10 +10,10 @@ import org.bukkit.entity.Player;
 import java.util.Objects;
 
 public abstract class Gui {
-    abstract public String getName();
+    public abstract String getName();
     public Inventory inventory;
-    abstract public Gui handleClick(InventoryClickEvent event, Player player, ItemStack itemStack, InventoryView view, ClickType clickType);
-    abstract void init();
+    public abstract Gui handleClick(InventoryClickEvent event, Player player, ItemStack itemStack, InventoryView view, ClickType clickType);
+    public abstract Gui handleInventoryClick(InventoryClickEvent event, Player player, ItemStack itemStack, ClickType clickType);
     public boolean isInventory(InventoryView view){
         return Objects.equals(getName(), view.getTitle());
     }

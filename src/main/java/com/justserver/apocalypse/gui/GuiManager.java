@@ -37,23 +37,25 @@ public class GuiManager implements Listener {
 
      @EventHandler
      public void onClick(InventoryClickEvent event){
-          if(event.getWhoClicked().getOpenInventory().equals(event.getWhoClicked().getInventory())) {
-               if(event.getCurrentItem() != null){
-                    if(event.getCurrentItem().getType().equals(Material.BARRIER)) {event.setCancelled(true); return;}
-               }
-               return;
-          }
-          if(!Objects.equals(event.getClickedInventory(), event.getWhoClicked().getInventory())){
-               event.setCancelled(true);
-          }
+
           if(playerToGuiMap.get((Player)event.getWhoClicked()) != null){
                event.setCancelled(true);
-          }
-          for(Map.Entry<Player, Gui> entry : playerToGuiMap.entrySet()){
-               if(entry.getValue().inventory.equals(event.getClickedInventory())){
-                    if(entry.getValue().handleClick(event, entry.getKey(), event.getCurrentItem(), event.getWhoClicked().getOpenInventory(), event.getClick()) == null) event.getWhoClicked().closeInventory();
+          } else return;
+          //System.out.println(Objects.equals(event.getClickedInventory(),
+          if(!Objects.equals(event.getClickedInventory(), event.getWhoClicked().getInventory())){
+               for(Map.Entry<Player, Gui> entry : playerToGuiMap.entrySet()){
+                    if(entry.getValue().inventory.equals(event.getClickedInventory())){
+                         if(entry.getValue().handleClick(event, entry.getKey(), event.getCurrentItem(), event.getWhoClicked().getOpenInventory(), event.getClick()) == null) event.getWhoClicked().closeInventory();
+                    }
+               }
+          } else {
+               for(Map.Entry<Player, Gui> entry : playerToGuiMap.entrySet()){
+                    if(entry.getKey().getInventory().equals(event.getClickedInventory())){
+                         entry.getValue().handleInventoryClick(event, entry.getKey(), event.getCurrentItem(), event.getClick());
+                    }
                }
           }
+
      }
 
      @EventHandler

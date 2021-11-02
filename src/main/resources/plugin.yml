@@ -7,3 +7,4 @@ commands:
     usage: /<command>
   base:
     usage: /base <args>
+  additem:

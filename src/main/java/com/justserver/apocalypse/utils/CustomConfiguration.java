@@ -1,6 +1,7 @@
 package com.justserver.apocalypse.utils;
 
 import com.justserver.apocalypse.Apocalypse;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.*;
@@ -18,11 +19,30 @@ public class CustomConfiguration {
             try {
                 config.getParentFile().mkdir();
                 config.createNewFile();
+                InputStream inputStream = plugin.getResource(name);
+                String data = readFromInputStream(inputStream);
+                PrintWriter writer = new PrintWriter(config, "UTF-8");
+                writer.print(data);
+                writer.close();
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
         this.config = YamlConfiguration.loadConfiguration(config);
+    }
+
+    private String readFromInputStream(InputStream inputStream)
+            throws IOException {
+        StringBuilder resultStringBuilder = new StringBuilder();
+        try (BufferedReader br
+                     = new BufferedReader(new InputStreamReader(inputStream))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                resultStringBuilder.append(line).append("\n");
+            }
+        }
+        return resultStringBuilder.toString();
     }
 
     public void save() {

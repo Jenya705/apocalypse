@@ -1,14 +1,21 @@
 package com.justserver.apocalypse.base;
 
 import com.justserver.apocalypse.Apocalypse;
-import com.justserver.apocalypse.base.buildings.Building;
-import com.justserver.apocalypse.gui.BuildingGui;
 import com.justserver.apocalypse.utils.CustomConfiguration;
 import it.unimi.dsi.fastutil.Hash;
+import net.kyori.adventure.text.TranslatableComponent;
 import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
+import java.lang.reflect.Field;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class Base {
     private final Apocalypse plugin;
@@ -16,32 +23,87 @@ public class Base {
     public UUID owner;
     public String id;
     public Location location;
-    public ArrayList<Building> buildings = new ArrayList<>();
+    public ArrayList<HashMap<String, Object>> blocks = new ArrayList<>();
+    public Instant duration = Instant.now().plus(30, ChronoUnit.MINUTES);
 
     public Base(Apocalypse plugin){
         this.plugin = plugin;
     }
 
+    public HashMap<String, Object> getBlockByLocation(Location location){
+        for(HashMap<String, Object> hashMap : this.blocks){
+            if(location.equals(hashMap.get("location"))){
+                return hashMap;
+            }
+        }
+        return null;
+    }
+
+    public HashMap<Material, Integer> getPriceForDuration(){
+        HashMap<Material, Integer> price = new HashMap<>();
+        price.put(Material.OAK_PLANKS, 10);
+        for(HashMap<String, Object> hashMap : this.blocks){
+            Location location = (Location) hashMap.get("location");
+            if(location.getBlock().getType().equals(Material.BRICKS)){
+                if(price.containsKey(Material.BRICK)){
+                    price.put(Material.BRICK, price.get(Material.BRICK) + 1);
+                }else {
+                    price.put(Material.BRICK, 1);
+                }
+            }else if(location.getBlock().getType().equals(Material.OAK_PLANKS)){
+                if(price.containsKey(Material.OAK_PLANKS)){
+                    price.put(Material.OAK_PLANKS, price.get(Material.OAK_PLANKS) + 1);
+                }else {
+                    price.put(Material.OAK_PLANKS, 1);
+                }
+            }
+        }
+        for(Map.Entry<Material, Integer> entry : price.entrySet()){
+            price.put(entry.getKey(), (int) Math.ceil(entry.getValue() / 2));
+            if(price.get(entry.getKey()) == 0){
+                price.remove(entry.getKey());
+            }
+        }
+        return price;
+    }
+
+    public void remove(){
+        for(HashMap<String, Object> hashMap : this.blocks){
+            ((Location) hashMap.get("location")).getBlock().setType(Material.AIR);
+        }
+        this.location.getBlock().setType(Material.AIR);
+        plugin.bases.config.set("bases." + this.id, null);
+        plugin.loadedBases.remove(this);
+        plugin.bases.save();
+    }
+
     public void saveBase(){
         CustomConfiguration config = plugin.bases;
-        config.config.set("bases." + this.id + ".id", this.id);
-        config.config.set("bases." + this.id + ".owner", this.owner.toString());
-        ArrayList<String> stringUUIDS = new ArrayList<>();
-        for(UUID uuid : players){
-            stringUUIDS.add(uuid.toString());
+        for(Field field : this.getClass().getFields()){
+            try {
+                Object value = field.get(this);
+                if(field.getName().equals("blocks")){
+
+                }else if(value instanceof ArrayList) {
+                    ArrayList<String> stringValue = new ArrayList<>();
+                    for (Object object : (ArrayList) value) {
+                        stringValue.add(object.toString());
+                    }
+                    value = stringValue;
+                }else if(value instanceof Location){
+
+                }else if(field.getType().equals(Instant.class)) {
+                    value = ((Instant) value).getEpochSecond();
+                }else if(!value.getClass().isPrimitive()){
+                    value = value.toString();
+                }
+
+
+                config.config.set("bases." + this.id + "." + field.getName(), value);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
         }
-        config.config.set("bases." + this.id + ".players", stringUUIDS);
-        config.config.set("bases." + this.id + ".location", location);
-        ArrayList<HashMap<String, Object>> inYmlBuildings = new ArrayList<>();
-        for(Building building : buildings){
-            HashMap<String, Object> params = new HashMap<>();
-            params.put("name", building.getClass().getName());
-            params.put("location", building.center);
-            params.put("isFinished", building.isFinished);
-            params.put("fulled", building.nowResources);
-            inYmlBuildings.add(params);
-        }
-        config.config.set("bases." + this.id + ".buildings", inYmlBuildings);
         config.save();
         plugin.loadedBases.remove(this);
         plugin.loadedBases.add(this);
@@ -62,11 +124,40 @@ public class Base {
         saveBase();
     }
 
-    @SuppressWarnings("unchecked")
-    public static Base getBase(Apocalypse plugin, UUID id){
+    public static Base getBaseById(Apocalypse plugin, String id){
         for(Base base : plugin.loadedBases){
-            if(base.id.equals(id.toString())){
+            if(base.id.equals(id)){
                 return base;
+            }
+        }
+        return null;
+    }
+
+    public static Base getBaseByLocation(Apocalypse plugin, Location location){
+        for(Base base : plugin.loadedBases){
+            if(base.location.equals(location)){
+                return base;
+            }
+        }
+        return null;
+    }
+
+    public static Base getBaseByBlock(Apocalypse plugin, Block block){
+        for(Base base : plugin.loadedBases){
+            int minX = base.location.getBlockX() - 25;
+            int minY = base.location.getBlockY() - 25;
+            int minZ = base.location.getBlockZ() - 25;
+            int maxX = base.location.getBlockX() + 25;
+            int maxY = base.location.getBlockY() + 25;
+            int maxZ = base.location.getBlockZ() + 25;
+            for(int x = minX; x <= maxX; x++){
+                for(int y = minY; y <= maxY; y++){
+                    for(int z = minZ; z <= maxZ; z++){
+                        if(block.getLocation().equals(new Location(block.getWorld(), x, y, z))){
+                            return base;
+                        }
+                    }
+                }
             }
         }
         return null;
@@ -77,22 +168,11 @@ public class Base {
         base.id = UUID.randomUUID().toString();
         base.owner = owner.getUniqueId();
         base.players.add(owner.getUniqueId());
-        base.location = owner.getLocation();
-        owner.getWorld().getBlockAt(owner.getLocation()).setType(Material.SMITHING_TABLE);
+        base.location = owner.getLocation().getBlock().getLocation();
+        base.location.getBlock().setType(Material.SMITHING_TABLE);
         base.saveBase();
         plugin.loadedBases.add(base);
         plugin.bases.reload();
         return base;
-    }
-
-    public static ArrayList<Base> getPlayerBases(Apocalypse plugin, Player player){
-        ArrayList<Base> bases = new ArrayList<>();
-        for(String baseKey : plugin.bases.config.getConfigurationSection("bases").getKeys(false)){
-            String owner = plugin.bases.config.getString("bases." + baseKey + ".owner");
-            if(owner.equals(player.getUniqueId().toString())){
-                bases.add(getBase(plugin, UUID.fromString(plugin.bases.config.getString("bases." + baseKey + ".id"))));
-            }
-        }
-        return bases;
     }
 }

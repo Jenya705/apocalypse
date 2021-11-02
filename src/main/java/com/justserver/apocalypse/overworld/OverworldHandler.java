@@ -2,10 +2,13 @@ package com.justserver.apocalypse.overworld;
 
 import com.justserver.apocalypse.Apocalypse;
 import com.justserver.apocalypse.Registry;
+import com.justserver.apocalypse.items.Gun;
 import com.justserver.apocalypse.items.Item;
 import com.justserver.apocalypse.items.normal.Medkit;
+import io.papermc.paper.event.entity.EntityLoadCrossbowEvent;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -16,7 +19,9 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.lang.reflect.Field;
@@ -30,13 +35,17 @@ public class OverworldHandler implements Listener {
         this.plugin = apocalypse;
     }
 
-    @EventHandler
-    public void onJoin(PlayerJoinEvent event){
-        event.getPlayer().getInventory().addItem(Registry.FLYING_AXE.createItemStack(plugin));
-    }
+//    @EventHandler
+//    public void onJoin(PlayerJoinEvent event){
+//        event.getPlayer().getInventory().addItem(Registry.FLYING_AXE.createItemStack(plugin));
+//    }
     @EventHandler
     public void onQuit(PlayerQuitEvent event){
         plugin.guiManager.clear(event.getPlayer());
+        if(Registry.FLYING_AXE.getThrownAxes().containsKey(event.getPlayer().getUniqueId())){
+            event.getPlayer().getInventory().addItem(Registry.FLYING_AXE.getThrownAxes().get(event.getPlayer().getUniqueId()));
+            Registry.FLYING_AXE.removePlayer(event.getPlayer().getUniqueId());
+        }
     }
 
     @EventHandler
@@ -57,13 +66,49 @@ public class OverworldHandler implements Listener {
             if(itemStack == null) return;
             Item possibleItem = Registry.getItemByItemstack(itemStack);
             if(possibleItem == null) return;
-            event.setDamage(possibleItem.getLeftDamage());
+            if(possibleItem.getLeftDamage() != 0){
+                event.setDamage(possibleItem.getLeftDamage() / ((Player) event.getDamager()).getAttackCooldown());
+            }
         }
     }
 
-//    @EventHandler
-//    public void onChangeEquipment(PlayerItemHeldEvent event){
-//        ItemStack possibleItem = event.getPlayer().getInventory().getItem(event.getNewSlot());
-//        if(possibleItem == null || possibleItem.getType().equals(Material.AIR)) return;
-//    }
+    @EventHandler
+    public void onChangeEquipment(PlayerItemHeldEvent event){
+        Player player = event.getPlayer();
+        ItemStack itemStack = player.getInventory().getItem(event.getNewSlot());
+        if(itemStack == null){
+            player.setWalkSpeed(0.2f);
+            return;
+        }
+        itemStack = (itemStack.getType().equals(Material.AIR) ? null : itemStack);
+        if(itemStack == null) {
+            player.setWalkSpeed(0.2f);
+            return;
+        }
+        Item possibleItem = Registry.getItemByItemstack(itemStack);
+        if(possibleItem == null) {
+            player.setWalkSpeed(0.2f);
+            return;
+        }
+        player.setWalkSpeed(0.2f - (0.2f * (possibleItem.getSlowdown() / 100f)));
+    }
+
+    @EventHandler
+    public void onCrossbowRecharge(EntityLoadCrossbowEvent event){
+        if(event.getEntity() instanceof Player){
+            ItemStack itemStack = ((Player) event.getEntity()).getInventory().getItemInMainHand();
+            itemStack = (itemStack.getType().equals(Material.AIR) ? null : itemStack);
+            if(itemStack == null) return;
+            Item possibleItem = Registry.getItemByItemstack(itemStack);
+            if(possibleItem == null) return;
+            if(possibleItem instanceof Gun){
+                ItemMeta meta = itemStack.getItemMeta();
+                PersistentDataContainer data = meta.getPersistentDataContainer();
+                int currentAmmo = data.get(new NamespacedKey(plugin, "ammo_count"), PersistentDataType.INTEGER);
+                if(currentAmmo != 0) {event.setCancelled(true); return;}
+                data.set(new NamespacedKey(plugin, "ammo_count"), PersistentDataType.INTEGER, ((Gun) possibleItem).getInitialAmmoCount());
+                itemStack.setItemMeta(meta);
+            }
+        }
+    }
 }
