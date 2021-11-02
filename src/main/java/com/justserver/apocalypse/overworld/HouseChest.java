@@ -9,7 +9,7 @@ public class HouseChest extends Chest{
         super(plugin,
                 Registry.PISTOL,
                 Registry.GRIP,
-                Registry.FLYING_AXE,
+                Registry.FLYING_AXE
                 
         );
     }
