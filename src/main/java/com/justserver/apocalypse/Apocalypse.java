@@ -6,12 +6,14 @@ import com.justserver.apocalypse.base.BaseHandler;
 import com.justserver.apocalypse.commands.AddItemCommand;
 import com.justserver.apocalypse.commands.DungeonCommand;
 import com.justserver.apocalypse.commands.DungeonCommand;
+import com.justserver.apocalypse.commands.SetupCommand;
 import com.justserver.apocalypse.dungeons.DungeonHandler;
 import com.justserver.apocalypse.dungeons.dungs.GeneratedDungeon;
 import com.justserver.apocalypse.dungeons.dungs.SuperDungeon;
 import com.justserver.apocalypse.gui.GuiManager;
 import com.justserver.apocalypse.items.GunHandler;
 import com.justserver.apocalypse.overworld.OverworldHandler;
+import com.justserver.apocalypse.setup.SetupManager;
 import com.justserver.apocalypse.utils.CustomConfiguration;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -19,6 +21,7 @@ import org.bukkit.World;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -35,18 +38,18 @@ public final class Apocalypse extends JavaPlugin {
     public CustomConfiguration lockers = new CustomConfiguration(this, "lockers.yml");
     public GuiManager guiManager = new GuiManager();
     public ArrayList<Base> loadedBases = new ArrayList<>();
+    private static Apocalypse instance;
+    private static SetupManager setup = new SetupManager();
 
     @Override
     public void onEnable() {
+        instance = this;
         Registry.init(this);
         getCommand("startdungeon").setExecutor(new DungeonCommand(this));
         getCommand("base").setExecutor(new BaseCommand(this));
         getCommand("additem").setExecutor(new AddItemCommand());
-        Bukkit.getPluginManager().registerEvents(new DungeonHandler(this), this);
-        Bukkit.getPluginManager().registerEvents(new GunHandler(this), this);
-        Bukkit.getPluginManager().registerEvents(new BaseHandler(this), this);
-        Bukkit.getPluginManager().registerEvents(guiManager, this);
-        Bukkit.getPluginManager().registerEvents(new OverworldHandler(this), this);
+        getCommand("setup").setExecutor(new SetupCommand());
+        initEvents();
         for(String key : bases.config.getConfigurationSection("bases").getKeys(false)){
             Base base = new Base(this);
             base.id = bases.config.getString("bases." + key + ".id");
@@ -91,5 +94,33 @@ public final class Apocalypse extends JavaPlugin {
                 entity.remove();
             }
         }
+    }
+    public void initEvents(){
+        for(Player player : Bukkit.getOnlinePlayers()){
+            setup.exitSetup(player);
+        }
+        uninit();
+        Bukkit.getPluginManager().registerEvents(new DungeonHandler(this), this);
+        Bukkit.getPluginManager().registerEvents(new GunHandler(this), this);
+        Bukkit.getPluginManager().registerEvents(new BaseHandler(this), this);
+        Bukkit.getPluginManager().registerEvents(guiManager, this);
+        Bukkit.getPluginManager().registerEvents(new OverworldHandler(this), this);
+    }
+
+    public void uninit(){
+        HandlerList.unregisterAll(this);
+    }
+
+    public static void initSetup(){
+        instance.uninit();
+        Bukkit.getPluginManager().registerEvents(setup, instance);
+    }
+
+    public static Apocalypse getInstance() {
+        return instance;
+    }
+
+    public static SetupManager getSetup() {
+        return setup;
     }
 }

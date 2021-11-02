@@ -59,7 +59,7 @@ public class Base {
             }
         }
         for(Map.Entry<Material, Integer> entry : price.entrySet()){
-            price.put(entry.getKey(), (int) Math.ceil(entry.getValue() / 2));
+            price.put(entry.getKey(), (int) Math.ceil(entry.getValue() / 2f));
             if(price.get(entry.getKey()) == 0){
                 price.remove(entry.getKey());
             }
@@ -69,6 +69,7 @@ public class Base {
 
     public void remove(){
         for(HashMap<String, Object> hashMap : this.blocks){
+            if(hashMap.containsKey("location")) continue;
             ((Location) hashMap.get("location")).getBlock().setType(Material.AIR);
         }
         this.location.getBlock().setType(Material.AIR);
@@ -77,21 +78,23 @@ public class Base {
         plugin.bases.save();
     }
 
+
+    @SuppressWarnings("unchecked")
     public void saveBase(){
         CustomConfiguration config = plugin.bases;
         for(Field field : this.getClass().getFields()){
             try {
                 Object value = field.get(this);
                 if(field.getName().equals("blocks")){
-
+                    System.out.println("Колен пытался что-то сделать но не получилось");
                 }else if(value instanceof ArrayList) {
                     ArrayList<String> stringValue = new ArrayList<>();
-                    for (Object object : (ArrayList) value) {
+                    for (Object object : (ArrayList<Object>) value) {
                         stringValue.add(object.toString());
                     }
                     value = stringValue;
                 }else if(value instanceof Location){
-
+                    System.out.println("Просто локация");
                 }else if(field.getType().equals(Instant.class)) {
                     value = ((Instant) value).getEpochSecond();
                 }else if(!value.getClass().isPrimitive()){
