@@ -30,7 +30,7 @@ public class BaseCommand implements CommandExecutor, TabCompleter {
             Player player = (Player) sender;
             if(label.equals("base") && args.length > 0){
                 if(args.length == 1 && args[0].equals("create")) {
-                    double lowestDistance = 31;
+                    double lowestDistance = 31; // ты кодишь?
                     for(Base base : plugin.loadedBases){
                         if(base.location.distance(player.getLocation()) < lowestDistance){
                             player.sendMessage(ChatColor.DARK_RED + "Вы не можете поставить тут базу!");

@@ -7,6 +7,8 @@ import com.justserver.apocalypse.items.Item;
 import com.justserver.apocalypse.items.ItemRarity;
 import com.justserver.apocalypse.items.guns.FlyingAxe;
 import com.justserver.apocalypse.items.guns.modifications.Modify;
+import com.justserver.apocalypse.tasks.ChestLootTask;
+import com.justserver.apocalypse.utils.ItemBuilder;
 import io.papermc.paper.event.entity.EntityLoadCrossbowEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -20,6 +22,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
@@ -40,7 +43,7 @@ public class OverworldHandler implements Listener {
     private final Apocalypse plugin;
     private final ArrayList<Location> lootedChests = new ArrayList<>();
     private final ArrayList<ItemRarity> randomTable = new ArrayList<>();
-
+    private final HashMap<UUID, ChestLootTask> chestLootTasks = new HashMap<>();
     public OverworldHandler(Apocalypse apocalypse) {
         this.plugin = apocalypse;
         Bukkit.getScheduler().runTaskTimer(apocalypse, () -> {
@@ -80,12 +83,14 @@ public class OverworldHandler implements Listener {
         if(Registry.FLYING_AXE.getThrownAxes().containsKey(event.getPlayer().getUniqueId())){
             event.getPlayer().getInventory().addItem(Registry.FLYING_AXE.getThrownAxes().get(event.getPlayer().getUniqueId()));
             Registry.FLYING_AXE.removePlayer(event.getPlayer().getUniqueId());
+            chestLootTasks.remove(event.getPlayer().getUniqueId());
         }
     }
     private final SecureRandom random = new SecureRandom();
     @EventHandler
     public void onInteract(PlayerInteractEvent event){
         if(event.getClickedBlock() != null){
+
             if(event.getClickedBlock().getType().equals(Material.CHEST)){
                 //System.out.println("Pepega");
                 org.bukkit.block.Chest chest = (org.bukkit.block.Chest) event.getClickedBlock().getState();
@@ -93,23 +98,26 @@ public class OverworldHandler implements Listener {
                     //System.out.println("NOOOOOOO");
                     ChestType chestType = ChestType.valueOf(chest.getPersistentDataContainer().get(new NamespacedKey(plugin, "chest_type"), PersistentDataType.STRING));
                     if(lootedChests.contains(event.getClickedBlock().getLocation())) return;
+                    for(int i = 0; i < 27; i++){
+                        chest.getBlockInventory().setItem(i, new ItemBuilder(Material.RED_STAINED_GLASS_PANE).setName("&cОжидайте").toItemStack());
+                    }
                     lootedChests.add(event.getClickedBlock().getLocation());
                     int lootCount = random.nextInt(5) + 1;
                     Item[] whatSpawnsPre = chestType.getWhatSpawns();
                     List<Item> whatSpawns = Arrays.asList(whatSpawnsPre);
                     Collections.shuffle(whatSpawns);
-                    //ArrayList<Item> alreadyHas = new ArrayList<>();
+                    ArrayList<Item> alreadyHas = new ArrayList<>();
                     boolean gunSpawned = false;
                     for(int i = 0; i < lootCount; i++){
                         ItemRarity selectedRarity = randomTable.get(random.nextInt(100));
                         Item spawned = null;
                         for(Item spawn : whatSpawns){
-                            if(spawn.getRarity().equals(selectedRarity)){
+                            if(spawn.getRarity().equals(selectedRarity) && !alreadyHas.contains(spawn)){
                                 spawned = spawn;
                                 break;
                             }
                         }
-
+                        alreadyHas.add(spawned);
                         if(spawned == null){
                             spawned = whatSpawns.get(random.nextInt(whatSpawns.size()));
                         }
@@ -123,6 +131,9 @@ public class OverworldHandler implements Listener {
                         chest.getBlockInventory().setItem(random.nextInt(chest.getBlockInventory().getSize()), spawned.createItemStack(plugin));
                     }
                 }
+                return;
+            } else if(event.getClickedBlock().getType().equals(Material.ANVIL)){
+                event.setCancelled(true);
                 return;
             }
         }
@@ -144,6 +155,15 @@ public class OverworldHandler implements Listener {
             if(possibleItem == null) return;
             if(possibleItem.getLeftDamage() != 0){
                 event.setDamage(possibleItem.getLeftDamage() / ((Player) event.getDamager()).getAttackCooldown());
+            }
+        }
+    }
+
+    @EventHandler
+    public void onGuiClose(InventoryCloseEvent event){
+        if(event.getInventory().getHolder() != null){
+            if(event.getInventory().getHolder() instanceof Chest){
+
             }
         }
     }

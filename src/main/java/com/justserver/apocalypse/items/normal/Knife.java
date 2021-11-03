@@ -18,7 +18,7 @@ public class Knife extends Item {
 
     @Override
     public ItemRarity getRarity() {
-        return ItemRarity.COMMON;
+        return ItemRarity.UNCOMMON;
     }
 
     @Override

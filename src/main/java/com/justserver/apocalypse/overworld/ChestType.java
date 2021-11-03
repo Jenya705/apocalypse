@@ -60,9 +60,7 @@ public enum ChestType {
             new BukkitItem(Apocalypse.getInstance(), Material.COOKED_BEEF, -2, ItemRarity.RARE),
             new BukkitItem(Apocalypse.getInstance(), Material.COOKED_MUTTON, -2, ItemRarity.RARE),
             new BukkitItem(Apocalypse.getInstance(), Material.CAMPFIRE, -2, ItemRarity.RARE),
-            new BukkitItem(Apocalypse.getInstance(), Material.FLINT_AND_STEEL, 1, ItemRarity.UNCOMMON),
-            Registry.MEDKIT,
-            Registry.KNIFE
+            new BukkitItem(Apocalypse.getInstance(), Material.FLINT_AND_STEEL, 1, ItemRarity.UNCOMMON)
     );
 
     private final Item[] whatSpawns;
