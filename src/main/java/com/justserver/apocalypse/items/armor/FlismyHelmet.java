@@ -1,4 +1,4 @@
-package com.justserver.apocalypse.items.guns;
+package com.justserver.apocalypse.items.armor;
 
 import com.justserver.apocalypse.Apocalypse;
 import com.justserver.apocalypse.items.Item;
@@ -6,29 +6,29 @@ import com.justserver.apocalypse.items.ItemRarity;
 import org.bukkit.Material;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-public class Bullets extends Item {
-    public Bullets(Apocalypse plugin){
+public class FlismyHelmet extends Item {
+    public FlismyHelmet(Apocalypse plugin) {
         super(plugin);
-        count = 8;
     }
+
     @Override
-    public String getId() {
-        return "BULLETS";
+    public String customName() {
+        return "Хлипкая Каска";
     }
 
     @Override
     public ItemRarity getRarity() {
-        return ItemRarity.UNCOMMON;
+        return ItemRarity.RARE;
+    }
+
+    @Override
+    public void onInteract(PlayerInteractEvent event) {
+
     }
 
     @Override
     public Material getMaterial() {
-        return Material.ARROW;
-    }
-
-    @Override
-    public int getSlowdown() {
-        return 0;
+        return Material.IRON_HELMET;
     }
 
     @Override
@@ -37,17 +37,12 @@ public class Bullets extends Item {
     }
 
     @Override
-    public String customName() {
-        return "Боеприпасы";
+    public int getSlowdown() {
+        return 2;
     }
 
     @Override
     protected void init() {
-
-    }
-
-    @Override
-    public void onInteract(PlayerInteractEvent event) {
 
     }
 }

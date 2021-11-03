@@ -4,17 +4,23 @@ import com.justserver.apocalypse.Apocalypse;
 import com.justserver.apocalypse.Registry;
 import com.justserver.apocalypse.items.Gun;
 import com.justserver.apocalypse.items.Item;
-import com.justserver.apocalypse.items.normal.Medkit;
-import com.justserver.apocalypse.overworld.chests.Chest;
+import com.justserver.apocalypse.items.ItemRarity;
+import com.justserver.apocalypse.items.guns.FlyingAxe;
+import com.justserver.apocalypse.items.guns.modifications.Modify;
 import io.papermc.paper.event.entity.EntityLoadCrossbowEvent;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.block.Block;
+import org.bukkit.block.Chest;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.inventory.CraftItemEvent;
+import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -27,16 +33,41 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Objects;
+import java.security.SecureRandom;
+import java.util.*;
 
 public class OverworldHandler implements Listener {
     private final Apocalypse plugin;
-    private final ArrayList<Chest> lootedChests = new ArrayList<>();
+    private final ArrayList<Location> lootedChests = new ArrayList<>();
+    private final ArrayList<ItemRarity> randomTable = new ArrayList<>();
 
     public OverworldHandler(Apocalypse apocalypse) {
         this.plugin = apocalypse;
-        Bukkit.getScheduler().runTaskTimer(apocalypse, lootedChests::clear, 0, 20 * 60 * 5);
+        Bukkit.getScheduler().runTaskTimer(apocalypse, () -> {
+            for(Location chestLocation : lootedChests){
+                Block chestBlock = chestLocation.getBlock();
+                Chest chest = (Chest) chestBlock.getState();
+                chest.getBlockInventory().clear();
+                chest.update();
+            }
+            lootedChests.clear();
+        }, 0, 20 * 60 * 5);
+        for(int i = 0; i < 5; i++){
+            randomTable.add(ItemRarity.LEGENDARY);
+        }
+        for(int i = 0; i < 40; i++){
+            randomTable.add(ItemRarity.COMMON);
+        }
+        for(int i = 0; i < 30; i++){
+            randomTable.add(ItemRarity.UNCOMMON);
+        }
+        for(int i = 0; i < 15; i++){
+            randomTable.add(ItemRarity.RARE);
+        }
+        for(int i = 0; i < 10; i++){
+            randomTable.add(ItemRarity.EPIC);
+        }
+        System.out.println(randomTable.size());
     }
 
 //    @EventHandler
@@ -51,14 +82,46 @@ public class OverworldHandler implements Listener {
             Registry.FLYING_AXE.removePlayer(event.getPlayer().getUniqueId());
         }
     }
-
+    private final SecureRandom random = new SecureRandom();
     @EventHandler
     public void onInteract(PlayerInteractEvent event){
         if(event.getClickedBlock() != null){
             if(event.getClickedBlock().getType().equals(Material.CHEST)){
+                //System.out.println("Pepega");
                 org.bukkit.block.Chest chest = (org.bukkit.block.Chest) event.getClickedBlock().getState();
-                if(chest.getPersistentDataContainer().has(new NamespacedKey(plugin, "chest_type"), PersistentDataType.STRING)){
-                    //lootedChests.add()
+                if(chest.getPersistentDataContainer().has(new NamespacedKey(Apocalypse.getInstance(), "chest_type"), PersistentDataType.STRING)){
+                    //System.out.println("NOOOOOOO");
+                    ChestType chestType = ChestType.valueOf(chest.getPersistentDataContainer().get(new NamespacedKey(plugin, "chest_type"), PersistentDataType.STRING));
+                    if(lootedChests.contains(event.getClickedBlock().getLocation())) return;
+                    lootedChests.add(event.getClickedBlock().getLocation());
+                    int lootCount = random.nextInt(5) + 1;
+                    Item[] whatSpawnsPre = chestType.getWhatSpawns();
+                    List<Item> whatSpawns = Arrays.asList(whatSpawnsPre);
+                    Collections.shuffle(whatSpawns);
+                    //ArrayList<Item> alreadyHas = new ArrayList<>();
+                    boolean gunSpawned = false;
+                    for(int i = 0; i < lootCount; i++){
+                        ItemRarity selectedRarity = randomTable.get(random.nextInt(100));
+                        Item spawned = null;
+                        for(Item spawn : whatSpawns){
+                            if(spawn.getRarity().equals(selectedRarity)){
+                                spawned = spawn;
+                                break;
+                            }
+                        }
+
+                        if(spawned == null){
+                            spawned = whatSpawns.get(random.nextInt(whatSpawns.size()));
+                        }
+                        //ItemStack spawnedItem = spawned.createItemStack(plugin);
+                        //spawnedItem.setAmount(sp);
+
+                        if(spawned instanceof Gun || spawned instanceof Modify || spawned instanceof FlyingAxe){
+                            if(gunSpawned) continue;
+                            gunSpawned = true;
+                        }
+                        chest.getBlockInventory().setItem(random.nextInt(chest.getBlockInventory().getSize()), spawned.createItemStack(plugin));
+                    }
                 }
                 return;
             }
@@ -126,5 +189,9 @@ public class OverworldHandler implements Listener {
     }
 
     @EventHandler
-    public void onChestOpen()
+    public void onCraft(CraftItemEvent event){
+        if(event.getRecipe().getResult().getType().equals(Material.CRAFTING_TABLE)){
+            event.setCancelled(true);
+        }
+    }
 }

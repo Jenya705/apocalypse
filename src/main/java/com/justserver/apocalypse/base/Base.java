@@ -147,12 +147,12 @@ public class Base {
 
     public static Base getBaseByBlock(Apocalypse plugin, Block block){
         for(Base base : plugin.loadedBases){
-            int minX = base.location.getBlockX() - 25;
-            int minY = base.location.getBlockY() - 25;
-            int minZ = base.location.getBlockZ() - 25;
-            int maxX = base.location.getBlockX() + 25;
-            int maxY = base.location.getBlockY() + 25;
-            int maxZ = base.location.getBlockZ() + 25;
+            int minX = base.location.getBlockX() - 15;
+            int minY = base.location.getBlockY() - 15;
+            int minZ = base.location.getBlockZ() - 15;
+            int maxX = base.location.getBlockX() + 15;
+            int maxY = base.location.getBlockY() + 15;
+            int maxZ = base.location.getBlockZ() + 15;
             for(int x = minX; x <= maxX; x++){
                 for(int y = minY; y <= maxY; y++){
                     for(int z = minZ; z <= maxZ; z++){

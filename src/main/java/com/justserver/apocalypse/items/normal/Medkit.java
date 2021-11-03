@@ -3,7 +3,6 @@ package com.justserver.apocalypse.items.normal;
 import com.justserver.apocalypse.Apocalypse;
 import com.justserver.apocalypse.items.Item;
 import com.justserver.apocalypse.items.ItemRarity;
-import com.justserver.apocalypse.tasks.MedkitUseTask;
 import org.bukkit.*;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
@@ -64,7 +63,7 @@ public class Medkit extends Item {
     public ItemStack createItemStack(Apocalypse plugin) {
         ItemStack itemStack = super.createItemStack(plugin);
         PotionMeta meta = (PotionMeta) itemStack.getItemMeta();
-        meta.addCustomEffect(new PotionEffect(PotionEffectType.HEAL, 1, 5), true);
+        meta.addCustomEffect(new PotionEffect(PotionEffectType.HEAL, 1, 2), true);
         itemStack.setItemMeta(meta);
         return itemStack;
     }

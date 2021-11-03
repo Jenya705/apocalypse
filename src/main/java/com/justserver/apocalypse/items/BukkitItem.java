@@ -6,6 +6,8 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.security.SecureRandom;
+
 public class BukkitItem extends Item{
     private final int count;
     private final Material material;
@@ -57,10 +59,10 @@ public class BukkitItem extends Item{
     protected void init() {
 
     }
-
+    private final SecureRandom random = new SecureRandom();
     @Override
     public ItemStack createItemStack(Apocalypse plugin) {
-        return new ItemStack(material, count);
+        return new ItemStack(material, count > 0 ? count : random.nextInt(-count) + 1);
     }
 
     @Override

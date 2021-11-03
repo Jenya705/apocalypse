@@ -148,7 +148,7 @@ public abstract class Gun extends Item {
 
                 if(shot instanceof Player){
                     if(shot.getUniqueId().equals(player.getUniqueId())) continue;
-                    shot.damage(isHeadShot((Player)shot, location) ? getDamage() * 3 : getDamage(), player); // TODO если у игрока каска отменить хедшот
+                    shot.damage(isHeadShot((Player)shot, location) ? getDamage() * 2 : getDamage(), player); // TODO если у игрока каска отменить хедшот
                 } else {
                     shot.damage(getDamage(), player);
                 }

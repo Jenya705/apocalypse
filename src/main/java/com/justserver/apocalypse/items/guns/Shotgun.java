@@ -21,7 +21,7 @@ public class Shotgun extends Gun{
 
     @Override
     public ItemRarity getRarity() {
-        return ItemRarity.RARE;
+        return ItemRarity.EPIC;
     }
 
     @Override

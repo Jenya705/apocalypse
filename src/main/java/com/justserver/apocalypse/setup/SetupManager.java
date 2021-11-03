@@ -1,8 +1,10 @@
 package com.justserver.apocalypse.setup;
 
 import com.justserver.apocalypse.Apocalypse;
+import com.justserver.apocalypse.overworld.ChestType;
 import com.justserver.apocalypse.utils.ItemBuilder;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
@@ -30,11 +32,13 @@ public class SetupManager implements Listener {
         savedContents.put(uuid, player.getInventory().getContents());
         savedArmor.put(uuid, player.getInventory().getArmorContents());
         player.getInventory().clear();
+        player.setGameMode(GameMode.CREATIVE);
         player.getInventory().addItem(new ItemBuilder(Material.LIGHT_BLUE_DYE).setName("&bПометить полицейский сундук").toItemStack());
         player.getInventory().addItem(new ItemBuilder(Material.WHITE_DYE).setName("Пометить медицинский сундук").toItemStack());
         player.getInventory().addItem(new ItemBuilder(Material.BROWN_DYE).setName("&6Пометить обычный сундук").toItemStack());
         player.getInventory().addItem(new ItemBuilder(Material.GREEN_DYE).setName("&2Пометить военный сундук").toItemStack());
         player.getInventory().addItem(new ItemBuilder(Material.GRAY_DYE).setName("&8Пометить сундук фабрики").toItemStack());
+        player.getInventory().addItem(new ItemBuilder(Material.RED_DYE).setName("&cПометить магазинный сундук").toItemStack());
     }
 
     public void exitSetup(Player player){
@@ -43,6 +47,7 @@ public class SetupManager implements Listener {
             player.sendMessage(ChatColor.RED + "Вы не в режиме настройки");
             return;
         }
+        player.setGameMode(GameMode.SURVIVAL);
         player.getInventory().clear();
         player.getInventory().setArmorContents(savedArmor.get(uuid));
         player.getInventory().setContents(savedContents.get(uuid));
@@ -56,21 +61,28 @@ public class SetupManager implements Listener {
             String name = event.getItem().getItemMeta().getDisplayName().toLowerCase();
             Block block = event.getClickedBlock();
             if(block.getState() instanceof Chest){
+                event.setCancelled(true);
                 Chest chest = (Chest) block.getState();
-                String chestType;
+                ChestType chestType;
 
                 if(name.contains("полицейский")){
-                    chestType = "police";
+                    chestType = ChestType.POLICE;
                 } else if(name.contains("военный")){
-                    chestType = "military";
+                    chestType = ChestType.MILITARY;
                 } else if(name.contains("фабрики")){
-                    chestType = "factory";
+                    chestType = ChestType.FACTORY;
                 } else if(name.contains("медицинский")){
-                    chestType = "hospital";
+                    chestType = ChestType.HOSPITAL;
+                } else if(name.contains("магазинный")){
+                    chestType = ChestType.SHOP;
                 }
-                else {chestType = "default";}
-                chest.getPersistentDataContainer().set(new NamespacedKey(Apocalypse.getInstance(), "chest_type"), PersistentDataType.STRING, chestType);
+                else {chestType = ChestType.HOUSE;}
+
+                chest.getPersistentDataContainer().set(new NamespacedKey(Apocalypse.getInstance(), "chest_type"), PersistentDataType.STRING, chestType.name());
+                event.getPlayer().sendMessage("Set: " + chest.getPersistentDataContainer().has(new NamespacedKey(Apocalypse.getInstance(), "chest_type"), PersistentDataType.STRING));
+                chest.update();
                 event.getPlayer().sendMessage("Установлен тип: " + chestType);
+
             }
 
         }

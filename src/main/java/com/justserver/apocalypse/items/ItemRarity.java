@@ -8,9 +8,6 @@ public enum ItemRarity {
 
     ChatColor getColor(){
         switch (this){
-
-            case COMMON:
-                return WHITE;
             case UNCOMMON:
                 return GREEN;
             case RARE:
@@ -19,7 +16,7 @@ public enum ItemRarity {
                 return DARK_PURPLE;
             case LEGENDARY:
                 return GOLD;
+            default: return WHITE;
         }
-        return WHITE;
     }
 }

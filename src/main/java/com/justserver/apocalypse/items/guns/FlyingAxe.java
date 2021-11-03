@@ -149,7 +149,7 @@ public class FlyingAxe extends Item {
 
     @Override
     public double getLeftDamage() {
-        return 16;
+        return 6;
     }
 
     @Override

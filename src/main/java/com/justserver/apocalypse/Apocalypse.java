@@ -17,12 +17,14 @@ import com.justserver.apocalypse.setup.SetupManager;
 import com.justserver.apocalypse.utils.CustomConfiguration;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Recipe;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.Field;
@@ -41,9 +43,19 @@ public final class Apocalypse extends JavaPlugin {
     private static Apocalypse instance;
     private static SetupManager setup = new SetupManager();
 
+    public List<Location> fires = new ArrayList<>();
+
     @Override
     public void onEnable() {
         instance = this;
+        Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
+            @Override
+            public void run() {
+                for(Location location : fires){
+                    location.getBlock().setType(Material.AIR);
+                }
+            }
+        }, 0, 300L);
         Registry.init(this);
         getCommand("startdungeon").setExecutor(new DungeonCommand(this));
         getCommand("base").setExecutor(new BaseCommand(this));
@@ -64,18 +76,15 @@ public final class Apocalypse extends JavaPlugin {
             System.out.println(base.duration);
             loadedBases.add(base);
         }
-        Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
-            @Override
-            public void run() {
-                for (int i = 0; i < loadedBases.size(); i++) {
-                    Base loadedBase = loadedBases.get(i);
-                    if(loadedBase.duration.isBefore(Instant.now())){
-                        loadedBase.remove();
-                        i--;
-                    }
+        Bukkit.getScheduler().runTaskTimer(this, () -> {
+            for (int i = 0; i < loadedBases.size(); i++) {
+                Base loadedBase = loadedBases.get(i);
+                if(loadedBase.duration.isBefore(Instant.now())){
+                    loadedBase.remove();
+                    i--;
                 }
-
             }
+
         }, 0, 20);
     }
 

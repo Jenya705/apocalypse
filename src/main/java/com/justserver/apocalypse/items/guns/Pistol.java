@@ -17,7 +17,7 @@ public class Pistol extends Gun {
 
     @Override
     public ItemRarity getRarity() {
-        return ItemRarity.RARE;
+        return ItemRarity.EPIC;
     }
 
     @Override

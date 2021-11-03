@@ -14,16 +14,20 @@ import java.util.List;
 
 public abstract class Item extends ItemLoader implements IItem {
     protected Apocalypse plugin;
+    protected int count = 1;
 
     public Item(Apocalypse plugin){
         this.plugin = plugin;
+        if(plugin == null){
+            plugin = Apocalypse.getInstance();
+        }
     }
     public String getId(){
         return this.getClass().getSimpleName().toUpperCase();
     }
 
     public ItemStack createItemStack(Apocalypse plugin){
-        ItemStack is = new ItemStack(getMaterial());
+        ItemStack is = new ItemStack(getMaterial(), count);
         ItemMeta meta = is.getItemMeta();
         meta.setDisplayName(getRarity().getColor() + customName());
         meta.setCustomModelData(getId().hashCode());
@@ -44,7 +48,7 @@ public abstract class Item extends ItemLoader implements IItem {
     }
 
     public ItemStack createItemStack(Apocalypse plugin, int damage){
-        ItemStack is = new ItemStack(getMaterial());
+        ItemStack is = new ItemStack(getMaterial(), count);
         ItemMeta meta = is.getItemMeta();
         meta.setDisplayName(getRarity().getColor() + customName());
         meta.setCustomModelData(getId().hashCode());

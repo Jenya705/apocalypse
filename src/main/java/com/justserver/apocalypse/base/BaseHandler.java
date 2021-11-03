@@ -67,6 +67,10 @@ public class BaseHandler implements Listener {
         if(Base.getBaseByBlock(plugin, block) != null){
             Base base = Base.getBaseByBlock(plugin, block);
             if(base.players.contains(event.getPlayer().getUniqueId())) {
+                if(event.getBlock().getType().equals(Material.FIRE)){
+                    plugin.fires.add(event.getBlock().getLocation());
+                    return;
+                }
                 HashMap<String, Object> blockInBase = new HashMap<>();
                 blockInBase.put("location", block.getLocation());
                 blockInBase.put("health", BlockTypes.blocks.getOrDefault(event.getBlock().getType(), 1.0));
@@ -159,7 +163,7 @@ public class BaseHandler implements Listener {
         int maxX = (int) (location.getBlockX() + event.getRadius());
         int maxY = (int) (location.getBlockY() + event.getRadius());
         int maxZ = (int) (location.getBlockZ() + event.getRadius());
-        float damage = 10f;
+        float damage = 15f;
         for(int x = minX; x <= maxX; x++){
             for(int y = minY; y <= maxY; y++){
                 for(int z = minZ; z <= maxZ; z++){
