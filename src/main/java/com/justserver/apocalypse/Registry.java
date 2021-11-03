@@ -1,7 +1,7 @@
 package com.justserver.apocalypse;
 
 import com.justserver.apocalypse.items.Item;
-import com.justserver.apocalypse.items.armor.FlismyHelmet;
+import com.justserver.apocalypse.items.armor.*;
 import com.justserver.apocalypse.items.guns.*;
 import com.justserver.apocalypse.items.guns.modifications.Grip;
 import com.justserver.apocalypse.items.guns.modifications.Scope;
@@ -29,8 +29,12 @@ public class Registry {
     public final static SVD SVD = new SVD(plugin);
     public final static M4A4 M4A4 = new M4A4(plugin);
     public final static Knife KNIFE = new Knife(plugin);
-    public static final FlismyHelmet FLISMY_HELMET = new FlismyHelmet(plugin);
-
+    public final static FlismyHelmet FLISMY_HELMET = new FlismyHelmet(plugin);
+    public final static FlismyChestplate FLISMY_CHESTPLATE = new FlismyChestplate(plugin);
+    public final static ThockHelmet THOCK_HELMET = new ThockHelmet(plugin);
+    public final static ThockChestplate THOCK_CHESTPLATE = new ThockChestplate(plugin);
+    public final static StrongHelmet STRONG_HELMET = new StrongHelmet(plugin);
+    public final static StrongChestplate STRONG_CHESTPLATE = new StrongChestplate(plugin);
 
     public static void init(Apocalypse _plugin){
         plugin = _plugin;

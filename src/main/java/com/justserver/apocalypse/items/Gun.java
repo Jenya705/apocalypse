@@ -1,7 +1,10 @@
 package com.justserver.apocalypse.items;
 
 import com.justserver.apocalypse.Apocalypse;
+import com.justserver.apocalypse.Registry;
 import com.justserver.apocalypse.items.Item;
+import com.justserver.apocalypse.items.armor.Helmet;
+import com.justserver.apocalypse.items.armor.StrongHelmet;
 import com.justserver.apocalypse.items.guns.modifications.Modify;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
@@ -148,8 +151,16 @@ public abstract class Gun extends Item {
 
                 if(shot instanceof Player){
                     if(shot.getUniqueId().equals(player.getUniqueId())) continue;
-                    shot.damage(isHeadShot((Player)shot, location) ? getDamage() * 2 : getDamage(), player); // TODO если у игрока каска отменить хедшот
+                    double headshotModifier = 3.0;
+                    if(shot.getEquipment() != null && shot.getEquipment().getHelmet() != null && Registry.getItemByItemstack(shot.getEquipment().getHelmet()) != null){
+                        Item possibleHelmet = Registry.getItemByItemstack(shot.getEquipment().getHelmet());
+                        if(possibleHelmet instanceof Helmet){
+                            headshotModifier = ((Helmet) possibleHelmet).getHeadshotModifier();
+                        }
+                    }
+                    shot.damage(isHeadShot((Player)shot, location) ? getDamage() * headshotModifier : getDamage(), player); // TODO если у игрока каска отменить хедшот
                 } else {
+
                     shot.damage(getDamage(), player);
                 }
                 spawnParticles(location);

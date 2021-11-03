@@ -6,9 +6,9 @@ import com.justserver.apocalypse.items.ItemRarity;
 import org.bukkit.Material;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-public class FlismyHelmet extends Item {
+public class FlismyHelmet extends Armor implements Helmet {
     public FlismyHelmet(Apocalypse plugin) {
-        super(plugin);
+        super(plugin, 0, 0);
     }
 
     @Override
@@ -44,5 +44,10 @@ public class FlismyHelmet extends Item {
     @Override
     protected void init() {
 
+    }
+
+    @Override
+    public double getHeadshotModifier() {
+        return 2.5;
     }
 }
