@@ -169,7 +169,7 @@ public class OverworldHandler implements Listener {
             if(itemStack == null) return;
             Item possibleItem = Registry.getItemByItemstack(itemStack);
             if(possibleItem == null) return;
-            if(possibleItem.getLeftDamage() != 0){
+            if(possibleItem.getLeftDamage() != 0 && !((Player) event.getEntity()).isBlocking()){
                 event.setDamage(possibleItem.getLeftDamage() / ((Player) event.getDamager()).getAttackCooldown());
             }
         }
