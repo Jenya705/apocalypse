@@ -93,7 +93,7 @@ public class OverworldHandler implements Listener {
 
             if(event.getClickedBlock().getType().equals(Material.CHEST)){
                 //System.out.println("Pepega");
-                org.bukkit.block.Chest chest = (org.bukkit.block.Chest) event.getClickedBlock().getState();
+                Chest chest = (Chest) event.getClickedBlock().getState();
                 if(chest.getPersistentDataContainer().has(new NamespacedKey(Apocalypse.getInstance(), "chest_type"), PersistentDataType.STRING)){
                     //System.out.println("NOOOOOOO");
                     ChestType chestType = ChestType.valueOf(chest.getPersistentDataContainer().get(new NamespacedKey(plugin, "chest_type"), PersistentDataType.STRING));
@@ -162,8 +162,8 @@ public class OverworldHandler implements Listener {
     @EventHandler
     public void onGuiClose(InventoryCloseEvent event){
         if(event.getInventory().getHolder() != null){
-            if(event.getInventory().getHolder() instanceof Chest){
-
+            if(event.getInventory().getHolder() instanceof org.bukkit.block.Chest){
+                org.bukkit.block.Chest chest = (Chest) event.getInventory().getHolder();
             }
         }
     }
