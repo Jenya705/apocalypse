@@ -27,6 +27,7 @@ public class ChestLootTask extends BukkitRunnable {
             for(Map.Entry<UUID, ChestLootTask> entry : handler.chestLootTasks.entrySet()){
                 if(entry.getValue().equals(this)){
                     handler.chestLootTasks.remove(entry.getKey());
+                    break;
                 }
             }
             whatAfter.run();
