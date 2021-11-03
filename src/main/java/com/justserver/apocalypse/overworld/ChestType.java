@@ -11,7 +11,7 @@ public enum ChestType {
     HOUSE(Registry.FLYING_AXE, Registry.PISTOL, Registry.MEDKIT, Registry.GRIP, Registry.MEDKIT, Registry.MEDKIT, Registry.KNIFE,
             new BukkitItem(Apocalypse.getInstance(), Material.BRICK, -6, ItemRarity.RARE),
             new BukkitItem(Apocalypse.getInstance(), Material.OAK_PLANKS, -4, ItemRarity.COMMON),
-            new BukkitItem(Apocalypse.getInstance(), Material.FLINT_AND_STEEL, 1, ItemRarity.COMMON)
+            new BukkitItem(Apocalypse.getInstance(), Material.FLINT_AND_STEEL, 1, ItemRarity.UNCOMMON)
     ),
     FACTORY(Registry.MEDKIT,Registry.MEDKIT,
             Registry.BULLETS,
@@ -23,6 +23,8 @@ public enum ChestType {
             Registry.FLYING_AXE,
             Registry.FLISMY_HELMET,
             Registry.KNIFE,
+            new BukkitItem(Apocalypse.getInstance(), Material.CHEST, 1, ItemRarity.EPIC),
+            new BukkitItem(Apocalypse.getInstance(), Material.OAK_DOOR, 1, ItemRarity.RARE),
             new BukkitItem(Apocalypse.getInstance(), Material.BRICK, -12, ItemRarity.RARE),
             new BukkitItem(Apocalypse.getInstance(), Material.OAK_PLANKS, -7, ItemRarity.UNCOMMON)
     ),

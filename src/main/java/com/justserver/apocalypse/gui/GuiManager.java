@@ -1,5 +1,6 @@
 package com.justserver.apocalypse.gui;
 
+import com.justserver.apocalypse.overworld.OverworldHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
@@ -39,7 +40,7 @@ public class GuiManager implements Listener {
      @EventHandler
      public void onClick(InventoryClickEvent event){
           if(event.getCurrentItem() != null){
-               if(ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()).equals("&cОжидайте")){
+               if(OverworldHandler.chestLootTasks.containsKey(event.getWhoClicked().getUniqueId())){
                     event.setCancelled(true);
                     return;
                }

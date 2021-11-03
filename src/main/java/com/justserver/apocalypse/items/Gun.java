@@ -158,9 +158,8 @@ public abstract class Gun extends Item {
                             headshotModifier = ((Helmet) possibleHelmet).getHeadshotModifier();
                         }
                     }
-                    shot.damage(isHeadShot((Player)shot, location) ? getDamage() * headshotModifier : getDamage(), player); // TODO если у игрока каска отменить хедшот
+                    shot.damage(isHeadShot((Player)shot, location) ? getDamage() * headshotModifier : getDamage(), player);
                 } else {
-
                     shot.damage(getDamage(), player);
                 }
                 spawnParticles(location);

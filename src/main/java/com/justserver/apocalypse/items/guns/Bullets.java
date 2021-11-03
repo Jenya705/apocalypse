@@ -9,7 +9,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 public class Bullets extends Item {
     public Bullets(Apocalypse plugin){
         super(plugin);
-        count = 8;
+        count = 4;
     }
     @Override
     public String getId() {

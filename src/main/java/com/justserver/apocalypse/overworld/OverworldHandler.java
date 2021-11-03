@@ -10,10 +10,7 @@ import com.justserver.apocalypse.items.guns.modifications.Modify;
 import com.justserver.apocalypse.tasks.ChestLootTask;
 import com.justserver.apocalypse.utils.ItemBuilder;
 import io.papermc.paper.event.entity.EntityLoadCrossbowEvent;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
+import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
@@ -41,9 +38,9 @@ import java.util.*;
 
 public class OverworldHandler implements Listener {
     private final Apocalypse plugin;
-    private final ArrayList<Location> lootedChests = new ArrayList<>();
+    public final ArrayList<Location> lootedChests = new ArrayList<>();
     private final ArrayList<ItemRarity> randomTable = new ArrayList<>();
-    private final HashMap<UUID, ChestLootTask> chestLootTasks = new HashMap<>();
+    public static final HashMap<UUID, ChestLootTask> chestLootTasks = new HashMap<>();
     public OverworldHandler(Apocalypse apocalypse) {
         this.plugin = apocalypse;
         Bukkit.getScheduler().runTaskTimer(apocalypse, () -> {
@@ -98,38 +95,47 @@ public class OverworldHandler implements Listener {
                     //System.out.println("NOOOOOOO");
                     ChestType chestType = ChestType.valueOf(chest.getPersistentDataContainer().get(new NamespacedKey(plugin, "chest_type"), PersistentDataType.STRING));
                     if(lootedChests.contains(event.getClickedBlock().getLocation())) return;
+                    if(chestLootTasks.containsKey(event.getPlayer().getUniqueId())){
+                        event.getPlayer().sendMessage(ChatColor.RED + "Этот сундук уже лутают");
+                        return;
+                    }
                     for(int i = 0; i < 27; i++){
                         chest.getBlockInventory().setItem(i, new ItemBuilder(Material.RED_STAINED_GLASS_PANE).setName("&cОжидайте").toItemStack());
                     }
-                    lootedChests.add(event.getClickedBlock().getLocation());
-                    int lootCount = random.nextInt(5) + 1;
-                    Item[] whatSpawnsPre = chestType.getWhatSpawns();
-                    List<Item> whatSpawns = Arrays.asList(whatSpawnsPre);
-                    Collections.shuffle(whatSpawns);
-                    ArrayList<Item> alreadyHas = new ArrayList<>();
-                    boolean gunSpawned = false;
-                    for(int i = 0; i < lootCount; i++){
-                        ItemRarity selectedRarity = randomTable.get(random.nextInt(100));
-                        Item spawned = null;
-                        for(Item spawn : whatSpawns){
-                            if(spawn.getRarity().equals(selectedRarity) && !alreadyHas.contains(spawn)){
-                                spawned = spawn;
-                                break;
+                    ChestLootTask lootTask = new ChestLootTask(chest, this, () -> {
+                        lootedChests.add(event.getClickedBlock().getLocation());
+                        int lootCount = random.nextInt(10) + 1;
+                        Item[] whatSpawnsPre = chestType.getWhatSpawns();
+                        List<Item> whatSpawns = Arrays.asList(whatSpawnsPre);
+                        Collections.shuffle(whatSpawns);
+                        ArrayList<Item> alreadyHas = new ArrayList<>();
+                        boolean gunSpawned = false;
+                        for(int i = 0; i < lootCount; i++){
+                            ItemRarity selectedRarity = randomTable.get(random.nextInt(100));
+                            Item spawned = null;
+                            for(Item spawn : whatSpawns){
+                                if(spawn.getRarity().equals(selectedRarity) && !alreadyHas.contains(spawn)){
+                                    spawned = spawn;
+                                    break;
+                                }
                             }
-                        }
-                        alreadyHas.add(spawned);
-                        if(spawned == null){
-                            spawned = whatSpawns.get(random.nextInt(whatSpawns.size()));
-                        }
-                        //ItemStack spawnedItem = spawned.createItemStack(plugin);
-                        //spawnedItem.setAmount(sp);
+                            alreadyHas.add(spawned);
+                            if(spawned == null){
+                                spawned = whatSpawns.get(random.nextInt(whatSpawns.size()));
+                            }
+                            //ItemStack spawnedItem = spawned.createItemStack(plugin);
+                            //spawnedItem.setAmount(sp);
 
-                        if(spawned instanceof Gun || spawned instanceof Modify || spawned instanceof FlyingAxe){
-                            if(gunSpawned) continue;
-                            gunSpawned = true;
+                            if(spawned instanceof Gun || spawned instanceof Modify || spawned instanceof FlyingAxe){
+                                if(gunSpawned) continue;
+                                gunSpawned = true;
+                            }
+                            chest.getBlockInventory().setItem(random.nextInt(chest.getBlockInventory().getSize()), spawned.createItemStack(plugin));
                         }
-                        chest.getBlockInventory().setItem(random.nextInt(chest.getBlockInventory().getSize()), spawned.createItemStack(plugin));
-                    }
+                    });
+                    lootTask.runTaskTimer(plugin, 7, 7);
+                    chestLootTasks.put(event.getPlayer().getUniqueId(), lootTask);
+
                 }
                 return;
             } else if(event.getClickedBlock().getType().equals(Material.ANVIL)){
@@ -162,8 +168,15 @@ public class OverworldHandler implements Listener {
     @EventHandler
     public void onGuiClose(InventoryCloseEvent event){
         if(event.getInventory().getHolder() != null){
-            if(event.getInventory().getHolder() instanceof org.bukkit.block.Chest){
-                org.bukkit.block.Chest chest = (Chest) event.getInventory().getHolder();
+            if(event.getInventory().getHolder() instanceof Chest){
+                Chest chest = (Chest) event.getInventory().getHolder();
+
+                if(chestLootTasks.containsKey(event.getPlayer().getUniqueId())){
+                    chestLootTasks.get(event.getPlayer().getUniqueId()).cancel();
+                    chestLootTasks.remove(event.getPlayer().getUniqueId());
+                    chest.getBlockInventory().clear();
+                    chest.update();
+                }
             }
         }
     }

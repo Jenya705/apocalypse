@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-abstract public class Modify extends Item {
+public abstract class Modify extends Item {
     public Modify(Apocalypse plugin) {
         super(plugin);
     }
