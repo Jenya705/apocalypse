@@ -86,6 +86,7 @@ public class OverworldHandler implements Listener {
     private final SecureRandom random = new SecureRandom();
     @EventHandler
     public void onInteract(PlayerInteractEvent event){
+        System.out.println("PEPEGA PEPGPEPGPEpgSPDGPSPDG");
         if(event.getClickedBlock() != null){
 
             if(event.getClickedBlock().getType().equals(Material.CHEST)){
@@ -113,8 +114,13 @@ public class OverworldHandler implements Listener {
                         for(int i = 0; i < lootCount; i++){
                             ItemRarity selectedRarity = randomTable.get(random.nextInt(100));
                             Item spawned = null;
-                            for(Item spawn : whatSpawns){
+                            spawner: for(Item spawn : whatSpawns){
                                 if(spawn.getRarity().equals(selectedRarity) && !alreadyHas.contains(spawn)){
+                                    for(ItemStack hasItem : event.getPlayer().getInventory()){
+                                        if(Registry.getItemByItemstack(hasItem) != null && random.nextInt(20) > 17){
+                                            continue spawner;
+                                        }
+                                    }
                                     spawned = spawn;
                                     break;
                                 }
@@ -143,11 +149,15 @@ public class OverworldHandler implements Listener {
                 return;
             }
         }
+        //System.out.println("Intraction start");
         if(event.getItem() == null) return;
         if(event.getItem().getItemMeta() == null) return;
         if(!Objects.equals(event.getHand(), EquipmentSlot.HAND)) return;
+        //System.out.println("Before registry");
         Item possibleItem = Registry.getItemByItemstack(event.getItem());
+        //System.out.println("Got item :" + possibleItem);
         if(possibleItem == null) return;
+        //System.out.println("Interaction end");
         possibleItem.onInteract(event);
     }
 

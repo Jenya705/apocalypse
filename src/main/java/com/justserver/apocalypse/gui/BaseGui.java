@@ -84,7 +84,7 @@ public class BaseGui extends Gui {
                 }
             }
         }
-        this.base.duration = this.base.duration.plus(1, ChronoUnit.HOURS);
+        this.base.duration = this.base.duration.plus(3, ChronoUnit.HOURS);
         this.base.saveBase();
         Apocalypse.getPlugin(Apocalypse.class).loadedBases.remove(this.base);
         Apocalypse.getPlugin(Apocalypse.class).loadedBases.add(this.base);

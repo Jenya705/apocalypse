@@ -30,6 +30,10 @@ public class BaseCommand implements CommandExecutor, TabCompleter {
             Player player = (Player) sender;
             if(label.equals("base") && args.length > 0){
                 if(args.length == 1 && args[0].equals("create")) {
+                    if(Base.getBasesByPlayer(plugin, player).size() + 1 > 1){
+                        player.sendMessage(ChatColor.DARK_RED + "У вас уже есть база");
+                        return true;
+                    }
                     double lowestDistance = 31; // ты кодишь?
                     for(Base base : plugin.loadedBases){
                         if(base.location.distance(player.getLocation()) < lowestDistance){
@@ -54,6 +58,10 @@ public class BaseCommand implements CommandExecutor, TabCompleter {
                         return true;
                     }
                     Player playerToAdd = plugin.getServer().getPlayer(args[1]);
+                    if(Base.getBasesByPlayer(plugin, playerToAdd).size() + 1 > 1){
+                        player.sendMessage(ChatColor.DARK_RED + "У игрока уже есть база");
+                        return true;
+                    }
                     if(base.players.contains(playerToAdd.getUniqueId())){
                         player.sendMessage(ChatColor.DARK_RED + "Игрок уже находится на вашей базе!");
                         return true;
@@ -64,7 +72,7 @@ public class BaseCommand implements CommandExecutor, TabCompleter {
                 }else if(args.length == 2 && args[0].equals("remove")){
                     Base base = Base.getBaseByBlock(plugin, player.getLocation().getBlock());
                     if(base == null){
-                        player.sendMessage(ChatColor.DARK_RED + "Вы не находитесь на теретории базы!");
+                        player.sendMessage(ChatColor.DARK_RED + "Вы не находитесь на територии базы!"); // токого нет
                         return true;
                     }
                     if(!base.owner.equals(player.getUniqueId())){

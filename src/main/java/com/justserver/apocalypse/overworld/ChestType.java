@@ -8,13 +8,12 @@ import com.justserver.apocalypse.items.ItemRarity;
 import org.bukkit.Material;
 
 public enum ChestType {
-    HOUSE(Registry.FLYING_AXE, Registry.PISTOL, Registry.MEDKIT, Registry.GRIP, Registry.MEDKIT, Registry.MEDKIT, Registry.KNIFE,
+    HOUSE(Registry.FLYING_AXE, Registry.PISTOL, Registry.GRIP, Registry.KNIFE,
             new BukkitItem(Apocalypse.getInstance(), Material.BRICK, -6, ItemRarity.RARE),
             new BukkitItem(Apocalypse.getInstance(), Material.OAK_PLANKS, -4, ItemRarity.COMMON),
             new BukkitItem(Apocalypse.getInstance(), Material.FLINT_AND_STEEL, 1, ItemRarity.UNCOMMON)
     ),
-    FACTORY(Registry.MEDKIT,Registry.MEDKIT,
-            Registry.BULLETS,
+    FACTORY(Registry.BULLETS,
             Registry.SCOPE,
             Registry.FLISMY_HELMET,
             Registry.FLISMY_CHESTPLATE,
@@ -39,7 +38,6 @@ public enum ChestType {
             Registry.GRIP,
             Registry.SILENCER,
             Registry.MEDKIT,
-            Registry.MEDKIT,
             Registry.STRONG_HELMET,
             Registry.STRONG_CHESTPLATE
     ),
@@ -49,7 +47,6 @@ public enum ChestType {
             Registry.SHOTGUN,
             Registry.SILENCER,
             Registry.FLYING_AXE,
-            Registry.MEDKIT, Registry.MEDKIT,
             Registry.THOCK_HELMET,
             Registry.THOCK_CHESTPLATE,
             new BukkitItem(Apocalypse.getInstance(), Material.BRICK, -4, ItemRarity.RARE),

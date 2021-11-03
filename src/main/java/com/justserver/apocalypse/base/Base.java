@@ -16,6 +16,7 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public class Base {
     private final Apocalypse plugin;
@@ -177,5 +178,9 @@ public class Base {
         plugin.loadedBases.add(base);
         plugin.bases.reload();
         return base;
+    }
+
+    public static List<Base> getBasesByPlayer(Apocalypse plugin, Player player){
+        return plugin.loadedBases.stream().filter(base -> base.owner.equals(player.getUniqueId())).collect(Collectors.toList());
     }
 }
