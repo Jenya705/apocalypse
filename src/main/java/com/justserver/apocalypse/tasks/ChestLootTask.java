@@ -37,4 +37,8 @@ public class ChestLootTask extends BukkitRunnable {
         chest.getBlockInventory().setItem(counter, null);
         counter++;
     }
+
+    public Chest getChest() {
+        return chest;
+    }
 }

@@ -86,7 +86,6 @@ public class OverworldHandler implements Listener {
     private final SecureRandom random = new SecureRandom();
     @EventHandler
     public void onInteract(PlayerInteractEvent event){
-        System.out.println("PEPEGA PEPGPEPGPEpgSPDGPSPDG");
         if(event.getClickedBlock() != null){
 
             if(event.getClickedBlock().getType().equals(Material.CHEST)){
@@ -96,7 +95,7 @@ public class OverworldHandler implements Listener {
                     //System.out.println("NOOOOOOO");
                     ChestType chestType = ChestType.valueOf(chest.getPersistentDataContainer().get(new NamespacedKey(plugin, "chest_type"), PersistentDataType.STRING));
                     if(lootedChests.contains(event.getClickedBlock().getLocation())) return;
-                    if(chestLootTasks.containsKey(event.getPlayer().getUniqueId())){
+                    if(chestLootTasks.values().parallelStream().anyMatch(task -> task.getChest().equals(chest))){
                         event.getPlayer().sendMessage(ChatColor.RED + "Этот сундук уже лутают");
                         return;
                     }
@@ -105,7 +104,7 @@ public class OverworldHandler implements Listener {
                     }
                     ChestLootTask lootTask = new ChestLootTask(chest, this, () -> {
                         lootedChests.add(event.getClickedBlock().getLocation());
-                        int lootCount = random.nextInt(10) + 1;
+                        int lootCount = random.nextInt(4) + 1;
                         Item[] whatSpawnsPre = chestType.getWhatSpawns();
                         List<Item> whatSpawns = Arrays.asList(whatSpawnsPre);
                         Collections.shuffle(whatSpawns);
@@ -116,11 +115,11 @@ public class OverworldHandler implements Listener {
                             Item spawned = null;
                             spawner: for(Item spawn : whatSpawns){
                                 if(spawn.getRarity().equals(selectedRarity) && !alreadyHas.contains(spawn)){
-                                    for(ItemStack hasItem : event.getPlayer().getInventory()){
-                                        if(Registry.getItemByItemstack(hasItem) != null && random.nextInt(20) > 17){
-                                            continue spawner;
-                                        }
-                                    }
+//                                    for(ItemStack hasItem : event.getPlayer().getInventory()){
+//                                        if(Registry.getItemByItemstack(hasItem) != null && random.nextInt(20) > 17){
+//                                            continue spawner;
+//                                        }
+//                                    }
                                     spawned = spawn;
                                     break;
                                 }

@@ -158,6 +158,11 @@ public abstract class Gun extends Item {
                             headshotModifier = ((Helmet) possibleHelmet).getHeadshotModifier();
                         }
                     }
+                    if(player.isBlocking()){
+                        player.clearActiveItem();
+                        player.setCooldown(Material.SHIELD, 70);
+                        return;
+                    }
                     shot.damage(isHeadShot((Player)shot, location) ? getDamage() * headshotModifier : getDamage(), player);
                 } else {
                     shot.damage(getDamage(), player);
