@@ -169,7 +169,7 @@ public class OverworldHandler implements Listener {
             Item possibleItem = Registry.getItemByItemstack(itemStack);
             if(possibleItem == null) return;
             if(possibleItem.getLeftDamage() != 0){
-                event.setDamage(possibleItem.getLeftDamage() / ((Player) event.getDamager()).getAttackCooldown());
+                event.setDamage(possibleItem.getLeftDamage() * ((Player) event.getDamager()).getAttackCooldown());
             }
         }
     }
@@ -229,10 +229,11 @@ public class OverworldHandler implements Listener {
             }
         }
     }
-
+    //private final ArrayList<Material> bannedResults = new ArrayList<>()
     @EventHandler
     public void onCraft(CraftItemEvent event){
-        if(event.getRecipe().getResult().getType().equals(Material.CRAFTING_TABLE)){
+        Material type = event.getRecipe().getResult().getType();
+        if(type.equals(Material.CRAFTING_TABLE) || type.name().contains("LEGGINGS") || type.name().contains("BOOTS")){
             event.setCancelled(true);
         }
     }

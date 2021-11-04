@@ -5,11 +5,8 @@ import com.justserver.apocalypse.base.BaseCommand;
 import com.justserver.apocalypse.base.BaseHandler;
 import com.justserver.apocalypse.commands.AddItemCommand;
 import com.justserver.apocalypse.commands.DungeonCommand;
-import com.justserver.apocalypse.commands.DungeonCommand;
 import com.justserver.apocalypse.commands.SetupCommand;
 import com.justserver.apocalypse.dungeons.DungeonHandler;
-import com.justserver.apocalypse.dungeons.dungs.GeneratedDungeon;
-import com.justserver.apocalypse.dungeons.dungs.SuperDungeon;
 import com.justserver.apocalypse.gui.GuiManager;
 import com.justserver.apocalypse.items.GunHandler;
 import com.justserver.apocalypse.overworld.OverworldHandler;
@@ -24,20 +21,15 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.Recipe;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.time.Instant;
 import java.util.*;
 
 public final class Apocalypse extends JavaPlugin {
 
-    public SuperDungeon superDungeon = new SuperDungeon(this);
-    public HashMap<Player, GeneratedDungeon> inDungeon = new HashMap<>();
     public CustomConfiguration bases = new CustomConfiguration(this, "bases.yml");
-    public CustomConfiguration lockers = new CustomConfiguration(this, "lockers.yml");
+    //  CustomConfiguration lockers = new CustomConfiguration(this, "lockers.yml"); DISABLED FOR RENOVATIONS
     public GuiManager guiManager = new GuiManager();
     public ArrayList<Base> loadedBases = new ArrayList<>();
     private static Apocalypse instance;

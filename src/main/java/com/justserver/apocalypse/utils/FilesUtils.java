@@ -1,4 +1,4 @@
-package com.justserver.apocalypse.dungeons;
+package com.justserver.apocalypse.utils;
 
 import org.bukkit.Bukkit;
 
