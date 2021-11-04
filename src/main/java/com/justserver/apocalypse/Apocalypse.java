@@ -79,6 +79,7 @@ public final class Apocalypse extends JavaPlugin {
         Bukkit.getScheduler().runTaskTimer(this, () -> {
             for (int i = 0; i < loadedBases.size(); i++) {
                 Base loadedBase = loadedBases.get(i);
+                if(loadedBase == null) continue;
                 if(loadedBase.duration.isBefore(Instant.now())){
                     loadedBase.remove();
                     i--;

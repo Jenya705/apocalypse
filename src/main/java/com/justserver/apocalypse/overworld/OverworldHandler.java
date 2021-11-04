@@ -86,6 +86,7 @@ public class OverworldHandler implements Listener {
     private final SecureRandom random = new SecureRandom();
     @EventHandler
     public void onInteract(PlayerInteractEvent event){
+        //System.out.println("PEPEGA PEPGPEPGPEpgSPDGPSPDG");
         if(event.getClickedBlock() != null){
 
             if(event.getClickedBlock().getType().equals(Material.CHEST)){
@@ -95,7 +96,7 @@ public class OverworldHandler implements Listener {
                     //System.out.println("NOOOOOOO");
                     ChestType chestType = ChestType.valueOf(chest.getPersistentDataContainer().get(new NamespacedKey(plugin, "chest_type"), PersistentDataType.STRING));
                     if(lootedChests.contains(event.getClickedBlock().getLocation())) return;
-                    if(chestLootTasks.values().parallelStream().anyMatch(task -> task.getChest().equals(chest))){
+                    if(chestLootTasks.containsValue(chest)){
                         event.getPlayer().sendMessage(ChatColor.RED + "Этот сундук уже лутают");
                         return;
                     }
@@ -104,7 +105,7 @@ public class OverworldHandler implements Listener {
                     }
                     ChestLootTask lootTask = new ChestLootTask(chest, this, () -> {
                         lootedChests.add(event.getClickedBlock().getLocation());
-                        int lootCount = random.nextInt(4) + 1;
+                        int lootCount = random.nextInt(10) + 1;
                         Item[] whatSpawnsPre = chestType.getWhatSpawns();
                         List<Item> whatSpawns = Arrays.asList(whatSpawnsPre);
                         Collections.shuffle(whatSpawns);
@@ -113,7 +114,7 @@ public class OverworldHandler implements Listener {
                         for(int i = 0; i < lootCount; i++){
                             ItemRarity selectedRarity = randomTable.get(random.nextInt(100));
                             Item spawned = null;
-                            spawner: for(Item spawn : whatSpawns){
+                            for(Item spawn : whatSpawns){
                                 if(spawn.getRarity().equals(selectedRarity) && !alreadyHas.contains(spawn)){
 //                                    for(ItemStack hasItem : event.getPlayer().getInventory()){
 //                                        if(Registry.getItemByItemstack(hasItem) != null && random.nextInt(20) > 17){
@@ -128,8 +129,6 @@ public class OverworldHandler implements Listener {
                             if(spawned == null){
                                 spawned = whatSpawns.get(random.nextInt(whatSpawns.size()));
                             }
-                            //ItemStack spawnedItem = spawned.createItemStack(plugin);
-                            //spawnedItem.setAmount(sp);
 
                             if(spawned instanceof Gun || spawned instanceof Modify || spawned instanceof FlyingAxe){
                                 if(gunSpawned) continue;
@@ -162,6 +161,8 @@ public class OverworldHandler implements Listener {
 
     @EventHandler
     public void onDamage(EntityDamageByEntityEvent event){
+        //double cooldown = ((Player)event.getDamager()).getAttackCooldown();
+        //System.out.println(cooldown);
         if(event.getEntity() instanceof Player && event.getDamager() instanceof Player){
             ItemStack itemStack = ((Player) event.getDamager()).getInventory().getItemInMainHand();
             itemStack = (itemStack.getType().equals(Material.AIR) ? null : itemStack);
@@ -169,7 +170,9 @@ public class OverworldHandler implements Listener {
             Item possibleItem = Registry.getItemByItemstack(itemStack);
             if(possibleItem == null) return;
             if(possibleItem.getLeftDamage() != 0 && !((Player) event.getEntity()).isBlocking()){
-                event.setDamage(possibleItem.getLeftDamage() / ((Player) event.getDamager()).getAttackCooldown());
+               // double cooldown = ((Player) event.getDamager()).getAttackCooldown();
+                //System.out.println(cooldown);
+                event.setDamage(possibleItem.getLeftDamage() * ((Player) event.getDamager()).getAttackCooldown());
             }
         }
     }
