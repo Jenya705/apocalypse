@@ -116,7 +116,7 @@ public class ModifiactionsGui extends Gui{
                 player.sendMessage(ChatColor.DARK_RED + "Обвес уже установлен!");
                 return null;
             }
-            InventoryUtils.removeItemStatic(player.getInventory(), itemStack, 1);
+            InventoryUtils.removeItem(player.getInventory(), itemStack, 1);
             Modify.setModifications(plugin, gun, modifications, dataContainer);
             gun.setItemMeta(itemMeta);
             player.closeInventory();

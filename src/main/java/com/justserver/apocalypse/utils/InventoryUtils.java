@@ -5,7 +5,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 public class InventoryUtils {
-    public static Inventory removeItemStatic(Inventory inventory, ItemStack item, int i){
+    public static Inventory removeItem(Inventory inventory, ItemStack item, int i){
         for(ItemStack itemInInventory : inventory){
             if(itemInInventory == null) continue;
             if(item == null) continue;
@@ -15,5 +15,20 @@ public class InventoryUtils {
             }
         }
         return inventory;
+    }
+
+    public static boolean hasItem(Inventory inventory, ItemStack item, int i){
+        int count = 0;
+        for(ItemStack itemInInventory : inventory){
+            if(itemInInventory == null) continue;
+            if(item == null) continue;
+            if(itemInInventory.equals(item)){
+                count += itemInInventory.getAmount();
+            }
+            if(count >= i){
+                return true;
+            }
+        }
+        return false;
     }
 }

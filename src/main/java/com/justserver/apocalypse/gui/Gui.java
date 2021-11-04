@@ -12,7 +12,7 @@ import java.util.Objects;
 public abstract class Gui {
     public abstract String getName();
     public Inventory inventory;
-    public abstract Gui handleClick(InventoryClickEvent event, Player player, ItemStack itemStack, InventoryView view, ClickType clickType);
+    public abstract Gui handleClick(InventoryClickEvent event, Player player, ItemStack itemStack, InventoryView view, ClickType clickType) throws NoSuchFieldException, IllegalAccessException;
     public abstract Gui handleInventoryClick(InventoryClickEvent event, Player player, ItemStack itemStack, ClickType clickType);
     public boolean isInventory(InventoryView view){
         return Objects.equals(getName(), view.getTitle());

@@ -1,5 +1,6 @@
 package com.justserver.apocalypse;
 
+import com.justserver.apocalypse.base.workbenches.Workbench1;
 import com.justserver.apocalypse.items.Item;
 import com.justserver.apocalypse.items.armor.*;
 import com.justserver.apocalypse.items.guns.*;
@@ -35,6 +36,7 @@ public class Registry {
     public final static ThockChestplate THOCK_CHESTPLATE = new ThockChestplate(plugin);
     public final static StrongHelmet STRONG_HELMET = new StrongHelmet(plugin);
     public final static StrongChestplate STRONG_CHESTPLATE = new StrongChestplate(plugin);
+    public final static Workbench1 WORKBENCH_1 = new Workbench1(plugin);
 
     public static void init(Apocalypse _plugin){
         plugin = _plugin;
