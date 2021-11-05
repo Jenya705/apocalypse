@@ -1,6 +1,7 @@
 package com.justserver.apocalypse.items;
 
 import com.justserver.apocalypse.Apocalypse;
+import com.justserver.apocalypse.Registry;
 import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemFlag;
@@ -9,18 +10,29 @@ import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Item extends ItemLoader implements IItem {
     protected Apocalypse plugin;
     protected int count = 1;
+    protected final String id;
 
     public Item(Apocalypse plugin){
         this.plugin = plugin;
         if(plugin == null){
             plugin = Apocalypse.getInstance();
         }
+        String preId = getClass().getSimpleName().toUpperCase();
+        for(Field field : Registry.class.getFields()){
+            field.setAccessible(true);
+            if(field.getType().equals(getClass())){
+                preId = field.getName();
+                break;
+            }
+        }
+        this.id = preId;
     }
     public String getId(){
         return this.getClass().getSimpleName().toUpperCase();
