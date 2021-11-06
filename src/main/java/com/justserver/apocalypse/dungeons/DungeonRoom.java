@@ -11,12 +11,26 @@ public class DungeonRoom {
     private final RoomType roomType;
     private final int minX;
     private final int minY;
+    private final Dungeon dungeon;
 
     public DungeonRoom(Dungeon dungeon, RoomType roomType, int minX, int minY, int minZ) throws IOException, WorldEditException {
         this.roomType = roomType;
         this.minX = minX;
         this.minY = minY;
+<<<<<<< HEAD
         roomType.paste(new Location(dungeon.getWorld(), minX, minY, minZ), BlockFace.EAST);
+=======
+        this.dungeon = dungeon;
+        roomType.paste(new Location(dungeon.getWorld(), minX, minY, minZ), BlockFace.NORTH);
+    }
+
+    public DungeonRoom(DungeonRoom parent, RoomType roomType, int minX, int minY, int minZ) throws IOException, WorldEditException {
+        this.roomType = roomType;
+        this.dungeon = parent.getDungeon();
+        this.minX = minX;
+        this.minY = minY;
+        roomType.paste(new Location(dungeon.getWorld(), minX, minY, minZ), parent.randomDoorwayBlockface());
+>>>>>>> 41c117812613da8abfa821c68519c9fe7a6824ba
     }
 
     public RoomType getRoomType() {
@@ -29,5 +43,12 @@ public class DungeonRoom {
 
     public int getMinY() {
         return minY;
+    }
+
+    public Dungeon getDungeon() {
+        return dungeon;
+    }
+    public BlockFace randomDoorwayBlockface(){
+        return BlockFace.NORTH;
     }
 }

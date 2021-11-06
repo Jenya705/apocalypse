@@ -17,6 +17,7 @@ import java.util.List;
 public abstract class Item extends ItemLoader implements IItem {
     protected Apocalypse plugin;
     protected int count = 1;
+    protected final String id;
 
     public final String id;
 

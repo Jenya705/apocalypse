@@ -24,7 +24,11 @@ public class Dungeon {
         }
 
         try {
+<<<<<<< HEAD
             RoomType.FIRST.paste(new Location(world, 0.0, 10.0, 0.0), BlockFace.EAST);
+=======
+            RoomType.FIRST.paste(new Location(world, 0.0, 10.0, 0.0), BlockFace.NORTH);
+>>>>>>> 41c117812613da8abfa821c68519c9fe7a6824ba
         } catch (IOException | WorldEditException e) {
             e.printStackTrace();
         }
