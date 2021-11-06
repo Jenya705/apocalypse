@@ -1,10 +1,7 @@
 package com.justserver.apocalypse.base.workbenches;
 
 import com.justserver.apocalypse.Apocalypse;
-import com.justserver.apocalypse.base.workbenches.crafts.BulletCraft;
-import com.justserver.apocalypse.base.workbenches.crafts.KnifeCraft;
-import com.justserver.apocalypse.base.workbenches.crafts.PistolCraft;
-import com.justserver.apocalypse.base.workbenches.crafts.SilencerCraft;
+import com.justserver.apocalypse.base.workbenches.crafts.*;
 import com.justserver.apocalypse.items.ItemRarity;
 import org.bukkit.Material;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -13,14 +10,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Workbench1 extends Workbench{
-    public Workbench1(Apocalypse plugin) {
+public class Workbench2 extends Workbench{
+    public Workbench2(Apocalypse plugin) {
         super(plugin);
     }
 
     @Override
     public String customName() {
-        return "Верстак 1 лвл";
+        return "Верстак 2 лвл";
     }
 
     @Override
@@ -35,7 +32,7 @@ public class Workbench1 extends Workbench{
 
     @Override
     public Material getMaterial() {
-        return Material.FURNACE;
+        return Material.SMOKER;
     }
 
     @Override
@@ -50,16 +47,13 @@ public class Workbench1 extends Workbench{
 
     @Override
     public Integer getLevel() {
-        return 1;
+        return 2;
     }
 
     public List<Craft> crafts = new ArrayList<>(Arrays.asList(
-            new PistolCraft(plugin),
-            new BulletCraft(plugin),
-            new SilencerCraft(plugin),
-            new KnifeCraft(plugin)
+            new ShotgunCraft(plugin),
+            new FlyingAxeCraft(plugin)
     ));
-
 
     @Override
     public List<Craft> getCrafts() {

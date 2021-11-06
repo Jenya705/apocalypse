@@ -2,6 +2,7 @@ package com.justserver.apocalypse.dungeons;
 
 import com.sk89q.worldedit.WorldEditException;
 import org.bukkit.*;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 
 import java.io.IOException;
@@ -23,7 +24,7 @@ public class Dungeon {
         }
 
         try {
-            RoomType.FIRST.paste(new Location(world, 0.0, 10.0, 0.0));
+            RoomType.FIRST.paste(new Location(world, 0.0, 10.0, 0.0), BlockFace.EAST);
         } catch (IOException | WorldEditException e) {
             e.printStackTrace();
         }

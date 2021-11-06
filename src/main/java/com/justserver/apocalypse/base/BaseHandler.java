@@ -82,9 +82,10 @@ public class BaseHandler implements Listener {
     public void placeWorkbench(BlockPlaceEvent event){
         if(Registry.getItemByItemstack(event.getItemInHand()) instanceof Workbench){
             TileState state = (TileState) event.getBlock().getState();
+            ItemStack item = event.getItemInHand();
             PersistentDataContainer dataContainer = state.getPersistentDataContainer();
             dataContainer.set(new NamespacedKey(plugin, "workbench"), PersistentDataType.INTEGER, 1);
-            dataContainer.set(new NamespacedKey(plugin, "id"), PersistentDataType.STRING, "WORKBENCH_1");
+            dataContainer.set(new NamespacedKey(plugin, "id"), PersistentDataType.STRING, Registry.getItemByItemstack(item).id);
             state.update(true);
         }
     }
@@ -149,6 +150,7 @@ public class BaseHandler implements Listener {
     @EventHandler
     public void openBaseGui(PlayerInteractEvent event){
         if(event.getHand() != null && event.getHand().equals(EquipmentSlot.HAND) && event.getAction().equals(Action.RIGHT_CLICK_BLOCK)){
+            if(event.getClickedBlock() == null) return;
             Base base = Base.getBaseByLocation(plugin, event.getClickedBlock().getLocation());
             if(base == null) return;
             event.setCancelled(true);

@@ -22,9 +22,12 @@ public class InventoryUtils {
         for(ItemStack itemInInventory : inventory){
             if(itemInInventory == null) continue;
             if(item == null) continue;
+            int amount = itemInInventory.getAmount();
+            itemInInventory.setAmount(item.getAmount());
             if(itemInInventory.equals(item)){
-                count += itemInInventory.getAmount();
+                count += amount;
             }
+            itemInInventory.setAmount(amount);
             if(count >= i){
                 return true;
             }

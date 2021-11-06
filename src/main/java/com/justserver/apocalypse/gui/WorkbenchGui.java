@@ -4,7 +4,7 @@ import com.justserver.apocalypse.Apocalypse;
 import com.justserver.apocalypse.base.workbenches.Craft;
 import com.justserver.apocalypse.base.workbenches.CraftItem;
 import com.justserver.apocalypse.base.workbenches.Workbench;
-import com.justserver.apocalypse.utils.InventoryUtils;
+import com.justserver.apocalypse.items.BukkitItem;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -28,6 +28,7 @@ public class WorkbenchGui extends Gui{
     public WorkbenchGui(Apocalypse plugin, Workbench workbench) throws NoSuchFieldException, IllegalAccessException {
         this.level = workbench.getLevel();
         this.plugin = plugin;
+        System.out.println(workbench);
         Inventory inventory = Bukkit.createInventory(null, 9, getName());
         for(int slot = 0; slot < inventory.getSize();slot++){
             inventory.setItem(slot, new ItemStack(Material.GRAY_STAINED_GLASS_PANE));
@@ -36,9 +37,12 @@ public class WorkbenchGui extends Gui{
             ItemStack item = workbench.getCrafts().get(slot).getCraftResult().createItemStack(plugin);
             ItemMeta meta = item.getItemMeta();
             ArrayList<Component> lore = new ArrayList<>();
-            for(CraftItem itemInCraft : workbench.getCrafts().get(slot).needItems()){
-                int count = itemInCraft.count;
-                lore.add(Component.text(ChatColor.GRAY + String.valueOf(count) + " ").append(Component.translatable(itemInCraft.item.getMaterial().getTranslationKey()).color(NamedTextColor.GRAY)));
+            for(CraftItem craftItem : workbench.getCrafts().get(slot).getNeedItems()){
+                String name = craftItem.item.getMaterial().getTranslationKey();
+                if(!(craftItem.item instanceof BukkitItem)){
+                    name = craftItem.item.customName();
+                }
+                lore.add(Component.text(ChatColor.GRAY + String.valueOf(craftItem.count) + " ").append(Component.translatable(name).color(NamedTextColor.GRAY)));
             }
             meta.lore(lore);
             item.setItemMeta(meta);
@@ -50,26 +54,46 @@ public class WorkbenchGui extends Gui{
 
     @Override
     public String getName() {
-        return "Верстак " + level + " лвл";
+        String name = "Верстак " + level + " лвл";
+        if(level == 0){
+            name = "Крафты";
+        }
+        return name;
     }
 
     @Override
     public Gui handleClick(InventoryClickEvent event, Player player, ItemStack itemStack, InventoryView view, ClickType clickType) {
         Craft craft = workbench.getCrafts().get(event.getSlot());
-        for(CraftItem item : craft.needItems()){
-            if(!InventoryUtils.hasItem(player.getInventory(), item.item.createItemStack(plugin), item.count)){
-                player.sendMessage(ChatColor.DARK_RED + "У вас недостаточно ресурсов");
-                return null;
+        boolean canRemove = true;
+        for(CraftItem itemInCraft : craft.getNeedItems()){
+            if(!player.getInventory().contains(itemInCraft.item.getMaterial(), itemInCraft.count)){
+                canRemove = false;
             }
         }
-        for(CraftItem item : craft.needItems()){
-            InventoryUtils.removeItem(player.getInventory(), item.item.createItemStack(plugin), item.count);
+        if(!canRemove) {
+            player.sendMessage(ChatColor.DARK_RED + "У вас недостаточно ресурсов!");
+            return null;
         }
-        try {
-            player.getInventory().addItem(craft.getCraftResult().createItemStack(plugin));
-        } catch (NoSuchFieldException | IllegalAccessException ignored) {
+        for(CraftItem itemInCraft : craft.getNeedItems()){
+            int nowI = itemInCraft.count;
+            for(ItemStack item : player.getInventory()){
+                if(item == null) continue;
+                if(item.getType().equals(itemInCraft.item.getMaterial())){
+                    if(item.getAmount() < itemInCraft.count){
+                        nowI -= item.getAmount();
+                        item.setAmount(0);
+                    }else{
+                        nowI = 0;
+                        item.setAmount(item.getAmount() - itemInCraft.count);
 
+                    }
+                }
+                if(nowI <= 0){
+                    break;
+                }
+            }
         }
+        player.getInventory().addItem(craft.getCraftResult().createItemStack(plugin));
         player.sendMessage(ChatColor.GREEN + "Вы успешно создали предмет");
         return this;
     }

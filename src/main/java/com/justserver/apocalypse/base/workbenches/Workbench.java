@@ -9,7 +9,7 @@ import java.util.List;
 public abstract class Workbench extends Item {
     public final Apocalypse plugin;
 
-    protected Workbench(Apocalypse plugin) {
+    public Workbench(Apocalypse plugin) {
         super(plugin);
         this.plugin = plugin;
     }

@@ -2,6 +2,8 @@ package com.justserver.apocalypse.overworld;
 
 import com.justserver.apocalypse.Apocalypse;
 import com.justserver.apocalypse.Registry;
+import com.justserver.apocalypse.base.workbenches.PlayerCrafts;
+import com.justserver.apocalypse.gui.WorkbenchGui;
 import com.justserver.apocalypse.items.Gun;
 import com.justserver.apocalypse.items.Item;
 import com.justserver.apocalypse.items.ItemRarity;
@@ -17,6 +19,7 @@ import org.bukkit.block.Chest;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -98,6 +101,8 @@ public class OverworldHandler implements Listener {
                 if (chest.getPersistentDataContainer().has(new NamespacedKey(Apocalypse.getInstance(), "chest_type"), PersistentDataType.STRING)) {
                     //System.out.println("NOOOOOOO");
                     ChestType chestType = ChestType.valueOf(chest.getPersistentDataContainer().get(new NamespacedKey(plugin, "chest_type"), PersistentDataType.STRING));
+                    chest.setCustomName(chest.getPersistentDataContainer().get(new NamespacedKey(plugin, "chest_type"), PersistentDataType.STRING));
+                    chest.update();
                     if (lootedChests.contains(event.getClickedBlock().getLocation())) return;
                     if (chestLootTasks.containsValue(chest)) {
                         event.getPlayer().sendMessage(ChatColor.RED + "Этот сундук уже лутают");
@@ -108,7 +113,7 @@ public class OverworldHandler implements Listener {
                     }
                     ChestLootTask lootTask = new ChestLootTask(chest, this, () -> {
                         lootedChests.add(event.getClickedBlock().getLocation());
-                        int lootCount = random.nextInt(10) + 1;
+                        int lootCount = random.nextInt(5) + 1;
                         Item[] whatSpawnsPre = chestType.getWhatSpawns();
                         List<Item> whatSpawns = Arrays.asList(whatSpawnsPre);
                         Collections.shuffle(whatSpawns);
@@ -194,6 +199,19 @@ public class OverworldHandler implements Listener {
                         chest.getBlockInventory().clear();
                         chest.update();
                     }
+                }
+            }
+        }
+
+        @EventHandler
+        public void openCraftGui(PlayerInteractEvent event){
+            if(event.getAction().equals(Action.RIGHT_CLICK_AIR) && event.getPlayer().isSneaking()){
+                try {
+                    plugin.guiManager.setGui(event.getPlayer(), new WorkbenchGui(plugin, new PlayerCrafts(plugin)));
+                } catch (NoSuchFieldException e) {
+                    e.printStackTrace();
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
                 }
             }
         }

@@ -3,6 +3,7 @@ package com.justserver.apocalypse.dungeons;
 
 import com.sk89q.worldedit.WorldEditException;
 import org.bukkit.Location;
+import org.bukkit.block.BlockFace;
 
 import java.io.IOException;
 
@@ -15,7 +16,7 @@ public class DungeonRoom {
         this.roomType = roomType;
         this.minX = minX;
         this.minY = minY;
-        roomType.paste(new Location(dungeon.getWorld(), minX, minY, minZ));
+        roomType.paste(new Location(dungeon.getWorld(), minX, minY, minZ), BlockFace.EAST);
     }
 
     public RoomType getRoomType() {
