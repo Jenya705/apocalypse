@@ -1,8 +1,11 @@
 package com.justserver.apocalypse;
 
+import com.justserver.apocalypse.base.workbenches.Workbench1;
+import com.justserver.apocalypse.base.workbenches.Workbench2;
 import com.justserver.apocalypse.items.Item;
 import com.justserver.apocalypse.items.armor.*;
 import com.justserver.apocalypse.items.guns.*;
+import com.justserver.apocalypse.items.guns.components.*;
 import com.justserver.apocalypse.items.guns.modifications.Grip;
 import com.justserver.apocalypse.items.guns.modifications.Scope;
 import com.justserver.apocalypse.items.guns.modifications.Silencer;
@@ -35,6 +38,13 @@ public class Registry {
     public final static ThockChestplate THOCK_CHESTPLATE = new ThockChestplate(plugin);
     public final static StrongHelmet STRONG_HELMET = new StrongHelmet(plugin);
     public final static StrongChestplate STRONG_CHESTPLATE = new StrongChestplate(plugin);
+    public final static Workbench1 WORKBENCH_1 = new Workbench1(plugin);
+    public final static Workbench2 WORKBENCH_2 = new Workbench2(plugin);
+    public final static Butt BUTT = new Butt(plugin);
+    public final static GunBody GUN_BODY = new GunBody(plugin);
+    public final static MediumGunBody MEDIUM_GUN_BODY = new MediumGunBody(plugin);
+    public final static SmallGunBody SMALL_GUN_BODY = new SmallGunBody(plugin);
+    public final static Muzzle MUZZLE = new Muzzle(plugin);
 
     public static void init(Apocalypse _plugin){
         plugin = _plugin;

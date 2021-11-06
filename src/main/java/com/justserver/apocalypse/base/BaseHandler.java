@@ -1,17 +1,15 @@
 package com.justserver.apocalypse.base;
 
-import com.destroystokyo.paper.event.block.TNTPrimeEvent;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.justserver.apocalypse.Apocalypse;
+import com.justserver.apocalypse.Registry;
+import com.justserver.apocalypse.base.workbenches.Workbench;
 import com.justserver.apocalypse.gui.BaseGui;
-import it.unimi.dsi.fastutil.Hash;
-import net.kyori.adventure.identity.Identity;
+import com.justserver.apocalypse.gui.WorkbenchGui;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.block.data.type.TNT;
+import org.bukkit.block.TileState;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -25,8 +23,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
-import org.w3c.dom.Text;
 
 import java.util.*;
 
@@ -84,6 +82,34 @@ public class BaseHandler implements Listener {
     }
 
     @EventHandler
+    public void placeWorkbench(BlockPlaceEvent event){
+        if(Registry.getItemByItemstack(event.getItemInHand()) instanceof Workbench){
+            TileState state = (TileState) event.getBlock().getState();
+            ItemStack item = event.getItemInHand();
+            PersistentDataContainer dataContainer = state.getPersistentDataContainer();
+            dataContainer.set(new NamespacedKey(plugin, "workbench"), PersistentDataType.INTEGER, 1);
+            dataContainer.set(new NamespacedKey(plugin, "id"), PersistentDataType.STRING, Registry.getItemByItemstack(item).getId());
+            state.update(true);
+        }
+    }
+
+    @EventHandler
+    public void openWorkbench(PlayerInteractEvent event) throws NoSuchFieldException, IllegalAccessException {
+        if(event.getHand() != null && event.getHand().equals(EquipmentSlot.HAND) && event.getAction().equals(Action.RIGHT_CLICK_BLOCK)){
+            if(event.getClickedBlock().getState() instanceof TileState){
+                TileState state = (TileState) event.getClickedBlock().getState();
+                PersistentDataContainer dataContainer = state.getPersistentDataContainer();
+                if(dataContainer.has(new NamespacedKey(plugin, "workbench"), PersistentDataType.INTEGER)){
+                    String id = dataContainer.get(new NamespacedKey(plugin, "id"), PersistentDataType.STRING);
+                    Workbench workbench = (Workbench) Registry.class.getDeclaredField(id).get(Registry.class);
+                    plugin.guiManager.setGui(event.getPlayer(), new WorkbenchGui(plugin, workbench));
+                    event.setCancelled(true);
+                }
+            }
+        }
+    }
+
+    @EventHandler
     public void onBreakBlock(BlockBreakEvent event){
         if(event.getPlayer().getWorld().getName().contains("dungeon")) return;
         Block block = event.getBlock();
@@ -110,7 +136,7 @@ public class BaseHandler implements Listener {
     @EventHandler
     public void checkBlockHealth(PlayerInteractEvent event){
         if(event.getPlayer().getWorld().getName().contains("dungeon")) return;
-        if(event.getHand().equals(EquipmentSlot.HAND) && event.getAction().equals(Action.RIGHT_CLICK_BLOCK)){
+        if(event.getHand() != null && event.getHand().equals(EquipmentSlot.HAND) && event.getAction().equals(Action.RIGHT_CLICK_BLOCK)){
             Base base = Base.getBaseByBlock(plugin, event.getClickedBlock());
             if(base == null) return;
             Block block = event.getClickedBlock();
@@ -129,7 +155,8 @@ public class BaseHandler implements Listener {
     @EventHandler
     public void openBaseGui(PlayerInteractEvent event){
         if(event.getPlayer().getWorld().getName().contains("dungeon")) return;
-        if(event.getHand().equals(EquipmentSlot.HAND) && event.getAction().equals(Action.RIGHT_CLICK_BLOCK)){
+        if(event.getHand() != null && event.getHand().equals(EquipmentSlot.HAND) && event.getAction().equals(Action.RIGHT_CLICK_BLOCK)){
+            if(event.getClickedBlock() == null) return;
             Base base = Base.getBaseByLocation(plugin, event.getClickedBlock().getLocation());
             if(base == null) return;
             event.setCancelled(true);
@@ -143,7 +170,7 @@ public class BaseHandler implements Listener {
     public void baseInteract(PlayerInteractEvent event){
         if(event.getPlayer().getWorld().getName().contains("dungeon")) return;
         if(event.getPlayer().isSneaking()) return;
-        if(event.getHand().equals(EquipmentSlot.HAND) && event.getAction().equals(Action.RIGHT_CLICK_BLOCK)){
+        if(event.getHand() != null && event.getHand().equals(EquipmentSlot.HAND) && event.getAction().equals(Action.RIGHT_CLICK_BLOCK)){
             Base base = Base.getBaseByBlock(plugin, event.getClickedBlock());
             if(base == null) return;
             if(event.getClickedBlock() == null) return;

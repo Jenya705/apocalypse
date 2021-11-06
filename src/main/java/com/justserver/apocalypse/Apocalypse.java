@@ -73,6 +73,7 @@ public final class Apocalypse extends JavaPlugin {
                 Base loadedBase = loadedBases.get(i);
                 if(loadedBase == null) continue;
                 if(loadedBase.duration.isBefore(Instant.now())){
+                    loadedBases.remove(loadedBase);
                     loadedBase.remove();
                     i--;
                 }
