@@ -10,14 +10,27 @@ import com.justserver.apocalypse.dungeons.DungeonHandler;
 import com.justserver.apocalypse.gui.GuiManager;
 import com.justserver.apocalypse.gui.sign.SignMenuFactory;
 import com.justserver.apocalypse.items.GunHandler;
+<<<<<<< HEAD
 import com.justserver.apocalypse.items.normal.Radio;
+=======
+import com.justserver.apocalypse.message.CubicMessageBuilder;
+import com.justserver.apocalypse.message.DefaultMessageHandler;
+>>>>>>> add CubicMessageBuilder
 import com.justserver.apocalypse.overworld.OverworldHandler;
 import com.justserver.apocalypse.protection.BlacklistedItemsHandler;
 import com.justserver.apocalypse.setup.SetupManager;
 import com.justserver.apocalypse.tasks.ChestLootTask;
 import com.justserver.apocalypse.utils.CustomConfiguration;
+<<<<<<< HEAD
 import org.bukkit.*;
 import org.bukkit.block.Chest;
+=======
+import io.papermc.paper.event.player.AsyncChatEvent;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
+>>>>>>> add CubicMessageBuilder
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -155,6 +168,8 @@ public final class Apocalypse extends JavaPlugin implements Listener {
             setup.exitSetup(player, startup);
         }
         uninit();
+        getServer().getPluginManager().registerEvents(
+                new DefaultMessageHandler(new CubicMessageBuilder(this)), this);
         Bukkit.getPluginManager().registerEvents(new DungeonHandler(this), this);
         Bukkit.getPluginManager().registerEvents(new GunHandler(this), this);
         Bukkit.getPluginManager().registerEvents(new BaseHandler(this), this);
