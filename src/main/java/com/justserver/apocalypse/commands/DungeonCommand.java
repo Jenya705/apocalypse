@@ -1,16 +1,23 @@
 package com.justserver.apocalypse.commands;
 
 import com.justserver.apocalypse.Apocalypse;
-import com.justserver.apocalypse.dungeons.dungs.GeneratedDungeon;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+import com.justserver.apocalypse.dungeons.Dungeon;
+import com.justserver.apocalypse.dungeons.DungeonGenerator;
+import com.justserver.apocalypse.dungeons.RoomType;
+import com.justserver.apocalypse.utils.LocationUtil;
+import com.sk89q.worldedit.WorldEditException;
+import org.bukkit.Location;
+import org.bukkit.block.BlockFace;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.UUID;
+import java.io.IOException;
+import java.security.SecureRandom;
+
 
 public class DungeonCommand implements CommandExecutor {
 
@@ -24,19 +31,9 @@ public class DungeonCommand implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if(sender instanceof Player){
-            Player player = (Player) sender;
-            if(plugin.inDungeon.containsKey(player)) {
-                player.sendMessage(ChatColor.RED + "Вы уже на миссии!");
-            }else{
-                GeneratedDungeon generatedDungeon = plugin.superDungeon.generateDungeon(UUID.randomUUID().toString());
-                System.out.println(generatedDungeon);
-                generatedDungeon.players.addAll(Bukkit.getOnlinePlayers());
-                generatedDungeon.teleportPlayers();
-                for(Player playerInTeam : Bukkit.getServer().getOnlinePlayers()){
-                    plugin.inDungeon.put(playerInTeam, generatedDungeon);
-                }
-            }
+            new Dungeon((Player) sender);
         }
+
         return true;
     }
 }

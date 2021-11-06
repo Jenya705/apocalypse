@@ -40,6 +40,7 @@ public class BaseHandler implements Listener {
 
     @EventHandler
     public void baseRegionBreak(BlockBreakEvent event){
+        if(event.getPlayer().getWorld().getName().contains("dungeon")) return;
         if(BlockTypes.canPlaceBlock.contains(event.getBlock().getType())) return;
         if(Base.getBaseByBlock(plugin, event.getBlock()) == null || !Base.getBaseByBlock(plugin, event.getBlock()).players.contains(event.getPlayer().getUniqueId())){
             event.setCancelled(true);
@@ -49,6 +50,7 @@ public class BaseHandler implements Listener {
 
     @EventHandler
     public void baseRegionPlace(BlockPlaceEvent event){
+        if(event.getPlayer().getWorld().getName().contains("dungeon")) return;
         if(BlockTypes.canPlaceBlock.contains(event.getBlock().getType())) return;
         if(Base.getBaseByBlock(plugin, event.getBlock()) == null || !Base.getBaseByBlock(plugin, event.getBlock()).players.contains(event.getPlayer().getUniqueId())) {
             event.setCancelled(true);
@@ -62,6 +64,7 @@ public class BaseHandler implements Listener {
 
     @EventHandler
     public void onPlaceBlock(BlockPlaceEvent event){
+        if(event.getPlayer().getWorld().getName().contains("dungeon")) return;
         Block block = event.getBlock();
         Player player = event.getPlayer();
         if(Base.getBaseByBlock(plugin, block) != null){
@@ -82,6 +85,7 @@ public class BaseHandler implements Listener {
 
     @EventHandler
     public void onBreakBlock(BlockBreakEvent event){
+        if(event.getPlayer().getWorld().getName().contains("dungeon")) return;
         Block block = event.getBlock();
         Player player = event.getPlayer();
         if(Base.getBaseByBlock(plugin, block) != null){
@@ -105,6 +109,7 @@ public class BaseHandler implements Listener {
 
     @EventHandler
     public void checkBlockHealth(PlayerInteractEvent event){
+        if(event.getPlayer().getWorld().getName().contains("dungeon")) return;
         if(event.getHand().equals(EquipmentSlot.HAND) && event.getAction().equals(Action.RIGHT_CLICK_BLOCK)){
             Base base = Base.getBaseByBlock(plugin, event.getClickedBlock());
             if(base == null) return;
@@ -123,6 +128,7 @@ public class BaseHandler implements Listener {
 
     @EventHandler
     public void openBaseGui(PlayerInteractEvent event){
+        if(event.getPlayer().getWorld().getName().contains("dungeon")) return;
         if(event.getHand().equals(EquipmentSlot.HAND) && event.getAction().equals(Action.RIGHT_CLICK_BLOCK)){
             Base base = Base.getBaseByLocation(plugin, event.getClickedBlock().getLocation());
             if(base == null) return;
@@ -135,6 +141,7 @@ public class BaseHandler implements Listener {
 
     @EventHandler
     public void baseInteract(PlayerInteractEvent event){
+        if(event.getPlayer().getWorld().getName().contains("dungeon")) return;
         if(event.getPlayer().isSneaking()) return;
         if(event.getHand().equals(EquipmentSlot.HAND) && event.getAction().equals(Action.RIGHT_CLICK_BLOCK)){
             Base base = Base.getBaseByBlock(plugin, event.getClickedBlock());
@@ -155,7 +162,7 @@ public class BaseHandler implements Listener {
         event.setCancelled(true);
         if(base == null) return;
         Location location = event.getEntity().getLocation();
-        location.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, location, 0, 0, 0, 0);
+        location.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, location, 5, 0, 0, 0);
         location.getWorld().playSound(location, Sound.ENTITY_GENERIC_EXPLODE, 1f, 0.1f);
         int minX = (int) (location.getBlockX() - event.getRadius());
         int minY = (int) (location.getBlockY() - event.getRadius());

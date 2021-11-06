@@ -1,9 +1,12 @@
 package com.justserver.apocalypse.dungeons;
 
 import com.justserver.apocalypse.Apocalypse;
+import com.justserver.apocalypse.dungeons.rooms.StartRoom;
+import com.justserver.apocalypse.utils.RelativeDirection;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.bukkit.BukkitWorld;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
@@ -17,45 +20,67 @@ import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
+import org.bukkit.util.Vector;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 
 public enum RoomType {
-    FIRST();
-
+    FIRST(StartRoom.class,null, new Doorway(2, 2, 4, RelativeDirection.FORWARD)),
+    L(DungeonRoom.class, new Vector(4,3, 0), new Doorway(0, 3, 4, RelativeDirection.LEFT)),
+    ZIGZAG(DungeonRoom.class, new Vector(5, 3, 0), new Doorway(2, 3, 7, RelativeDirection.FORWARD)),
+    //DOORWAY3X2(new Vector(2, 2, 0), new Doorway(7, 2, 8, RelativeDirection.FORWARD), new Doorway(11, 2, 4, RelativeDirection.RIGHT)),
+    ;
     private final File roomFile;
-    RoomType(){
+    private final Schematic schematic;
+    private final Doorway[] outDoorways;
+    private final Vector inDoorway;
+    private final Class<? extends DungeonRoom> roomClass;
+
+    RoomType(Class<? extends DungeonRoom> roomClass, Vector inDoorway, Doorway... outDoorways){
+        Schematic schematic1;
         this.roomFile = new File(Apocalypse.getInstance().getDataFolder().getAbsolutePath() + File.separator + "maps" + File.separator + this.name().toLowerCase() + ".room");
+        try {
+            schematic1 = Schematic.loadSchematic(roomFile);
+        } catch (IOException e) {
+            schematic1 = null;
+        }
+        this.schematic = schematic1;
+        this.inDoorway = inDoorway;
+        this.outDoorways = outDoorways;
+        this.roomClass = roomClass;
     }
 
     public File getRoomFile() {
         return roomFile;
     }
 
-    public void paste(Location location, BlockFace rotation) throws IOException, WorldEditException {
+    public DungeonRoom paste(Location location, BlockFace rotation) throws IOException, WorldEditException {
         ClipboardFormat clipboardFormat = ClipboardFormats.findByFile(roomFile);
         if(clipboardFormat == null) {
-            Bukkit.getLogger().severe("Cannot paste room: " + name());
-            return;
+            Bukkit.getLogger().severe("Cannot paste room: " + name() + "! Room file exists?:" + roomFile.exists() + ". Path: " + roomFile.getCanonicalPath());
+            return null;
         }
         FileInputStream schematicInput = new FileInputStream(roomFile);
         ClipboardReader clipboardReader = clipboardFormat.getReader(schematicInput);
+
         Clipboard clipboard = clipboardReader.read();
         EditSession session = WorldEdit.getInstance().newEditSession(new BukkitWorld(location.getWorld()));
 
         double rotationValue;
         switch (rotation){
             case EAST:
-                rotationValue = 90.0;
+                rotationValue = 270;
                 break;
             case SOUTH:
-                rotationValue = -180;
+                rotationValue = 180;
                 break;
             case WEST:
-                rotationValue = -90.0;
+                rotationValue = 90.0;
                 break;
             default:
                 rotationValue = 0.0;
@@ -65,8 +90,29 @@ public enum RoomType {
         holder.setTransform(new AffineTransform().rotateY(rotationValue));
         Operation pasteOperation = holder.createPaste(session).to(BlockVector3.at(location.getBlockX(), location.getBlockY(), location.getBlockZ())).ignoreAirBlocks(false).build();
         Operations.complete(pasteOperation);
+        BlockVector3 min = holder.getClipboard().getRegion().getMinimumPoint();
+        BlockVector3 max = holder.getClipboard().getRegion().getMaximumPoint();
+        //System.out.println(new Location(location.getWorld(), min.getBlockX(), min.getBlockY(), min.getBlockZ()).getBlock().getType() + " " + new Location(location.getWorld(), max.getBlockX(), max.getBlockY(), max.getBlockZ()).getBlock().getType());
         schematicInput.close();
         clipboardReader.close();
         session.close();
+        try {
+            return roomClass.getDeclaredConstructor(RoomType.class, Location.class).newInstance(this, location);
+        } catch (InstantiationException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public Schematic getSchematic() {
+        return schematic;
+    }
+
+    public Vector getInDoorway() {
+        return inDoorway;
+    }
+
+    public Doorway[] getOutDoorways() {
+        return outDoorways;
     }
 }

@@ -6,20 +6,20 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class FilesUtils {
+public class FileUtils {
     public static boolean deleteWorld(File path) {
-        Bukkit.getServer().unloadWorld(path.getName(), false);
+
         if(path.exists()) {
-            File files[] = path.listFiles();
-            for(int i=0; i<files.length; i++) {
-                if(files[i].isDirectory()) {
-                    deleteWorld(files[i]);
+            File[] files = path.listFiles();
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    deleteWorld(file);
                 } else {
-                    files[i].delete();
+                    file.delete();
                 }
             }
         }
-        return(path.delete());
+        return path.delete();
     }
 
     public static void copyDirectory(File source, File target){

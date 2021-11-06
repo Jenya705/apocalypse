@@ -72,12 +72,12 @@ public class FlyingAxe extends Item {
             int returnSlot = player.getInventory().getHeldItemSlot();
             final int damage = ((Damageable) player.getInventory().getItemInMainHand().getItemMeta()).getDamage() + 1;
             thrownAxes.put(player.getUniqueId(), player.getInventory().getItemInMainHand());
-            player.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
+            
 
             Location destination = player.getEyeLocation().clone().add(player.getEyeLocation().getDirection().multiply(20));
             Vector vector = destination.subtract(player.getEyeLocation()).toVector();
             new BukkitRunnable() {
-                int distance = 20;
+                int distance = 40;
                 int counter = 0;
                 @Override
                 public void run() {
@@ -90,11 +90,6 @@ public class FlyingAxe extends Item {
                     if(armorStand.getTargetBlockExact(1) != null && !armorStand.getTargetBlockExact(1).isPassable()){
                         if(!armorStand.isDead()){
                             armorStand.remove();
-                            if(player.getInventory().firstEmpty() != -1){
-                                player.getInventory().setItem(returnSlot, Registry.FLYING_AXE.createItemStack(plugin, damage - 1));
-                            } else {
-                                player.getWorld().dropItemNaturally(player.getLocation(), Registry.FLYING_AXE.createItemStack(plugin, damage - 1));
-                            }
                             thrownAxes.remove(player.getUniqueId());
                             cancel();
                         }
@@ -113,11 +108,6 @@ public class FlyingAxe extends Item {
                                             entity.getWorld().playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 1f, 0.9f);
                                             return;
                                         }
-                                        if(player.getInventory().firstEmpty() != -1){
-                                            player.getInventory().setItem(returnSlot, Registry.FLYING_AXE.createItemStack(plugin, damage));
-                                        } else {
-                                            player.getWorld().dropItemNaturally(player.getLocation(), Registry.FLYING_AXE.createItemStack(plugin, damage));
-                                        }
                                         thrownAxes.remove(player.getUniqueId());
                                         cancel();
                                     }
@@ -127,11 +117,6 @@ public class FlyingAxe extends Item {
                     }
                     if(counter > distance){
                         armorStand.remove();
-                        if(player.getInventory().firstEmpty() != -1){
-                            player.getInventory().addItem(Registry.FLYING_AXE.createItemStack(plugin));
-                        } else {
-                            player.getWorld().dropItemNaturally(player.getLocation(), Registry.FLYING_AXE.createItemStack(plugin));
-                        }
                         thrownAxes.remove(player.getUniqueId());
                         cancel();
                         return;
