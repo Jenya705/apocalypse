@@ -41,8 +41,5 @@ public class Knife extends Item {
         return 0;
     }
 
-    @Override
-    protected void init() {
-
-    }
+    
 }

@@ -26,6 +26,8 @@ public class Base {
     public Location location;
     public ArrayList<HashMap<String, Object>> blocks = new ArrayList<>();
     public Instant duration = Instant.now().plus(30, ChronoUnit.MINUTES);
+    public String frequency = "0000";
+    public ArrayList<Player> connectedPlayers = new ArrayList<>();
 
     public Base(Apocalypse plugin){
         this.plugin = plugin;
@@ -79,6 +81,9 @@ public class Base {
         plugin.bases.save();
     }
 
+    public Apocalypse getPlugin() {
+        return plugin;
+    }
 
     @SuppressWarnings("unchecked")
     public void saveBase(){
@@ -87,7 +92,7 @@ public class Base {
             try {
                 Object value = field.get(this);
                 if(field.getName().equals("blocks")){
-                    System.out.println("Колен пытался что-то сделать но не получилось");
+
                 }else if(value instanceof ArrayList) {
                     ArrayList<String> stringValue = new ArrayList<>();
                     for (Object object : (ArrayList<Object>) value) {
@@ -95,13 +100,11 @@ public class Base {
                     }
                     value = stringValue;
                 }else if(value instanceof Location){
-                    System.out.println("Просто локация");
                 }else if(field.getType().equals(Instant.class)) {
                     value = ((Instant) value).getEpochSecond();
                 }else if(!value.getClass().isPrimitive()){
                     value = value.toString();
                 }
-
 
                 config.config.set("bases." + this.id + "." + field.getName(), value);
             } catch (IllegalAccessException e) {

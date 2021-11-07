@@ -44,10 +44,7 @@ public class Silencer extends Modify{
         return 0;
     }
 
-    @Override
-    protected void init() {
-
-    }
+    
 
     private final ArrayList<String> guns = new ArrayList<>(Arrays.asList("PISTOL", "SVD", "AK_47", "M4A4"));
 

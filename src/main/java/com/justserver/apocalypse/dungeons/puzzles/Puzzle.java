@@ -1,4 +1,6 @@
 package com.justserver.apocalypse.dungeons.puzzles;
 
-public class Puzzle {
+public interface Puzzle {
+    String getPuzzleName();
+    String[] getLoreDescription();
 }

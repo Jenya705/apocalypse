@@ -34,10 +34,7 @@ public class Shotgun extends Gun{
         return 20;
     }
 
-    @Override
-    protected void init() {
-
-    }
+    
 
     @Override
     public boolean isTriple() {

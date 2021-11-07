@@ -66,8 +66,5 @@ public class Workbench1 extends Workbench{
         return crafts;
     }
 
-    @Override
-    protected void init() {
-
-    }
+    
 }

@@ -28,13 +28,13 @@ import org.bukkit.persistence.PersistentDataType;
 
 import java.util.*;
 
-public class BaseHandler implements Listener {
+public record BaseHandler(Apocalypse plugin) implements Listener {
 
-    public final Apocalypse plugin;
-
-    public BaseHandler(Apocalypse plugin){
-        this.plugin = plugin;
-    }
+//    public final Apocalypse plugin;
+//
+//    //public BaseHandler(Apocalypse plugin){
+//        this.plugin = plugin;
+//    }
 
     @EventHandler
     public void baseRegionBreak(BlockBreakEvent event){

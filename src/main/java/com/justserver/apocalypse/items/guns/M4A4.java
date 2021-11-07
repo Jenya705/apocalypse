@@ -34,8 +34,5 @@ public class M4A4 extends Gun {
         return 20;
     }
 
-    @Override
-    protected void init() {
-
-    }
+    
 }

@@ -4,6 +4,7 @@ import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
 import org.bukkit.util.Vector;
 
+@SuppressWarnings("all")
 public class LocationUtil {
     public static Location addInDirection(Location inner, BlockFace direction, double addition){
         Location result = inner.clone();

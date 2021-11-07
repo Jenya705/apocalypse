@@ -9,6 +9,7 @@ import com.justserver.apocalypse.items.Item;
 import com.justserver.apocalypse.items.ItemRarity;
 import com.justserver.apocalypse.items.guns.FlyingAxe;
 import com.justserver.apocalypse.items.guns.modifications.Modify;
+import com.justserver.apocalypse.items.normal.Radio;
 import com.justserver.apocalypse.tasks.ChestLootTask;
 import com.justserver.apocalypse.utils.ItemBuilder;
 import io.papermc.paper.event.entity.EntityLoadCrossbowEvent;
@@ -24,16 +25,14 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerItemHeldEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import org.checkerframework.checker.units.qual.N;
 
 import java.lang.reflect.Field;
 import java.security.SecureRandom;
@@ -74,10 +73,15 @@ public class OverworldHandler implements Listener {
         System.out.println(randomTable.size());
     }
 
-    //    @EventHandler
-//    public void onJoin(PlayerJoinEvent event){
-//        event.getPlayer().getInventory().addItem(Registry.FLYING_AXE.createItemStack(plugin));
-//    }
+    @EventHandler
+    public void onJoin(PlayerJoinEvent event){
+        Arrays.stream(event.getPlayer().getInventory().getContents())
+                .filter(Objects::nonNull)
+                .filter(itemStack -> Registry.getItemByItemstack(itemStack) instanceof Radio)
+                .forEach(itemStack -> plugin.loadedBases.stream()
+                        .filter(base -> base.frequency.equals(itemStack.getItemMeta().getPersistentDataContainer().get(new NamespacedKey(plugin, "frequency"), PersistentDataType.STRING)))
+                        .forEach(base -> base.connectedPlayers.add(event.getPlayer())));
+    }
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
         plugin.guiManager.clear(event.getPlayer());
@@ -86,6 +90,7 @@ public class OverworldHandler implements Listener {
             Registry.FLYING_AXE.removePlayer(event.getPlayer().getUniqueId());
             chestLootTasks.remove(event.getPlayer().getUniqueId());
         }
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> plugin.loadedBases.forEach(base -> base.connectedPlayers.remove(event.getPlayer())));
     }
 
     private final SecureRandom random = new SecureRandom();
@@ -187,83 +192,103 @@ public class OverworldHandler implements Listener {
         }
     }
 
-        @EventHandler
-        public void onGuiClose (InventoryCloseEvent event){
-            if (event.getInventory().getHolder() != null) {
-                if (event.getInventory().getHolder() instanceof Chest) {
-                    Chest chest = (Chest) event.getInventory().getHolder();
+    @EventHandler
+    public void onGuiClose (InventoryCloseEvent event){
+        if (event.getInventory().getHolder() != null) {
+            if (event.getInventory().getHolder() instanceof Chest) {
+                Chest chest = (Chest) event.getInventory().getHolder();
 
-                    if (chestLootTasks.containsKey(event.getPlayer().getUniqueId())) {
-                        chestLootTasks.get(event.getPlayer().getUniqueId()).cancel();
-                        chestLootTasks.remove(event.getPlayer().getUniqueId());
-                        chest.getBlockInventory().clear();
-                        chest.update();
-                    }
+                if (chestLootTasks.containsKey(event.getPlayer().getUniqueId())) {
+                    chestLootTasks.get(event.getPlayer().getUniqueId()).cancel();
+                    chestLootTasks.remove(event.getPlayer().getUniqueId());
+                    chest.getBlockInventory().clear();
+                    chest.update();
                 }
-            }
-        }
-
-        @EventHandler
-        public void openCraftGui(PlayerInteractEvent event){
-            if(event.getAction().equals(Action.RIGHT_CLICK_AIR) && event.getPlayer().isSneaking()){
-                try {
-                    plugin.guiManager.setGui(event.getPlayer(), new WorkbenchGui(plugin, new PlayerCrafts(plugin)));
-                } catch (NoSuchFieldException e) {
-                    e.printStackTrace();
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        @EventHandler
-        public void onChangeEquipment (PlayerItemHeldEvent event){
-            Player player = event.getPlayer();
-            ItemStack itemStack = player.getInventory().getItem(event.getNewSlot());
-            if (itemStack == null) {
-                player.setWalkSpeed(0.2f);
-                return;
-            }
-            itemStack = (itemStack.getType().equals(Material.AIR) ? null : itemStack);
-            if (itemStack == null) {
-                player.setWalkSpeed(0.2f);
-                return;
-            }
-            Item possibleItem = Registry.getItemByItemstack(itemStack);
-            if (possibleItem == null) {
-                player.setWalkSpeed(0.2f);
-                return;
-            }
-            player.setWalkSpeed(0.2f - (0.2f * (possibleItem.getSlowdown() / 100f)));
-        }
-
-        @EventHandler
-        public void onCrossbowRecharge (EntityLoadCrossbowEvent event){
-            if (event.getEntity() instanceof Player) {
-                ItemStack itemStack = ((Player) event.getEntity()).getInventory().getItemInMainHand();
-                itemStack = (itemStack.getType().equals(Material.AIR) ? null : itemStack);
-                if (itemStack == null) return;
-                Item possibleItem = Registry.getItemByItemstack(itemStack);
-                if (possibleItem == null) return;
-                if (possibleItem instanceof Gun) {
-                    ItemMeta meta = itemStack.getItemMeta();
-                    PersistentDataContainer data = meta.getPersistentDataContainer();
-                    int currentAmmo = data.get(new NamespacedKey(plugin, "ammo_count"), PersistentDataType.INTEGER);
-                    if (currentAmmo != 0) {
-                        event.setCancelled(true);
-                        return;
-                    }
-                    data.set(new NamespacedKey(plugin, "ammo_count"), PersistentDataType.INTEGER, ((Gun) possibleItem).getInitialAmmoCount());
-                    itemStack.setItemMeta(meta);
-                }
-            }
-        }
-        //private final ArrayList<Material> bannedResults = new ArrayList<>()
-        @EventHandler
-        public void onCraft (CraftItemEvent event){
-            Material type = event.getRecipe().getResult().getType();
-            if (type.equals(Material.CRAFTING_TABLE) || type.name().contains("LEGGINGS") || type.name().contains("BOOTS")) {
-                event.setCancelled(true);
             }
         }
     }
+
+    @EventHandler
+    public void openCraftGui(PlayerInteractEvent event){
+        if(event.getAction().equals(Action.RIGHT_CLICK_AIR) && event.getPlayer().isSneaking()){
+            try {
+                plugin.guiManager.setGui(event.getPlayer(), new WorkbenchGui(plugin, new PlayerCrafts(plugin)));
+            } catch (NoSuchFieldException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @EventHandler
+    public void onChat(AsyncPlayerChatEvent event){
+        if(event.getMessage().startsWith("@")){
+            if(event.getPlayer().getInventory().getItemInMainHand().getType().equals(Material.AIR)){
+                event.getPlayer().sendMessage(ChatColor.RED + "У вас нет рации в руке");
+                return;
+            }
+            if(Registry.getItemByItemstack(event.getPlayer().getInventory().getItemInMainHand()) instanceof Radio){
+
+                String message = event.getMessage().substring(1);
+                plugin.loadedBases.stream().filter(base -> base.frequency.equals(
+                        event.getPlayer().getInventory().getItemInMainHand().getItemMeta().getPersistentDataContainer().get(new NamespacedKey(plugin, "frequency"), PersistentDataType.STRING)
+                )).forEach(base -> base.connectedPlayers.forEach(player -> player.sendMessage(ChatColor.GOLD + "[Рация] "+ ChatColor.DARK_GRAY + event.getPlayer().getName() + ": " + ChatColor.WHITE + message)));
+            } else {
+                event.getPlayer().sendMessage(ChatColor.RED + "У вас нет рации в руке");
+            }
+
+        }
+    }
+
+    @EventHandler
+    public void onChangeEquipment (PlayerItemHeldEvent event){
+        Player player = event.getPlayer();
+        ItemStack itemStack = player.getInventory().getItem(event.getNewSlot());
+        if (itemStack == null) {
+            player.setWalkSpeed(0.2f);
+            return;
+        }
+        itemStack = (itemStack.getType().equals(Material.AIR) ? null : itemStack);
+        if (itemStack == null) {
+            player.setWalkSpeed(0.2f);
+            return;
+        }
+        Item possibleItem = Registry.getItemByItemstack(itemStack);
+        if (possibleItem == null) {
+            player.setWalkSpeed(0.2f);
+            return;
+        }
+        player.setWalkSpeed(0.2f - (0.2f * (possibleItem.getSlowdown() / 100f)));
+    }
+
+    @EventHandler
+    public void onCrossbowRecharge (EntityLoadCrossbowEvent event){
+        if (event.getEntity() instanceof Player) {
+            ItemStack itemStack = ((Player) event.getEntity()).getInventory().getItemInMainHand();
+            itemStack = (itemStack.getType().equals(Material.AIR) ? null : itemStack);
+            if (itemStack == null) return;
+            Item possibleItem = Registry.getItemByItemstack(itemStack);
+            if (possibleItem == null) return;
+            if (possibleItem instanceof Gun) {
+                ItemMeta meta = itemStack.getItemMeta();
+                PersistentDataContainer data = meta.getPersistentDataContainer();
+                int currentAmmo = data.get(new NamespacedKey(plugin, "ammo_count"), PersistentDataType.INTEGER);
+                if (currentAmmo != 0) {
+                    event.setCancelled(true);
+                    return;
+                }
+                data.set(new NamespacedKey(plugin, "ammo_count"), PersistentDataType.INTEGER, ((Gun) possibleItem).getInitialAmmoCount());
+                itemStack.setItemMeta(meta);
+            }
+        }
+    }
+    //private final ArrayList<Material> bannedResults = new ArrayList<>()
+    @EventHandler
+    public void onCraft (CraftItemEvent event){
+        Material type = event.getRecipe().getResult().getType();
+        if (type.equals(Material.CRAFTING_TABLE) || type.name().contains("LEGGINGS") || type.name().contains("BOOTS")) {
+            event.setCancelled(true);
+        }
+    }
+}

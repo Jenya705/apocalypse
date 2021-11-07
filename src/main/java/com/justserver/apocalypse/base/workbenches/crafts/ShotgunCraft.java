@@ -1,6 +1,7 @@
 package com.justserver.apocalypse.base.workbenches.crafts;
 
 import com.justserver.apocalypse.Apocalypse;
+import com.justserver.apocalypse.Registry;
 import com.justserver.apocalypse.base.workbenches.Craft;
 import com.justserver.apocalypse.base.workbenches.CraftItem;
 import com.justserver.apocalypse.items.BukkitItem;
@@ -34,6 +35,6 @@ public class ShotgunCraft extends Craft {
 
     @Override
     public Item getCraftResult() {
-        return new Shotgun(plugin);
+        return Registry.SHOTGUN;
     }
 }

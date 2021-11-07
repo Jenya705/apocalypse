@@ -41,10 +41,7 @@ public class Bullets extends Item {
         return "Боеприпасы";
     }
 
-    @Override
-    protected void init() {
-
-    }
+    
 
     @Override
     public void onInteract(PlayerInteractEvent event) {

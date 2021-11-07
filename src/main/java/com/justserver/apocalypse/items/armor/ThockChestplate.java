@@ -42,8 +42,5 @@ public class ThockChestplate extends Armor {
         return 0;
     }
 
-    @Override
-    protected void init() {
-
-    }
+    
 }

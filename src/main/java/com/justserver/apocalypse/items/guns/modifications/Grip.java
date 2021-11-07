@@ -44,10 +44,7 @@ public class Grip extends Modify{
         return 0;
     }
 
-    @Override
-    protected void init() {
-
-    }
+    
 
     private final ArrayList<String> guns = new ArrayList<>(Arrays.asList("AK_47", "SVD", "M4A4"));
 

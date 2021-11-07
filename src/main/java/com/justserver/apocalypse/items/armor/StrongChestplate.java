@@ -41,8 +41,5 @@ public class StrongChestplate extends Armor {
         return 0;
     }
 
-    @Override
-    protected void init() {
-
-    }
+    
 }

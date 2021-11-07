@@ -35,6 +35,6 @@ public class PistolCraft extends Craft {
 
     @Override
     public Item getCraftResult() {
-        return new Pistol(plugin);
+        return Registry.PISTOL;
     }
 }

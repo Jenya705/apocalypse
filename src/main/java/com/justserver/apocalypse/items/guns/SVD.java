@@ -34,8 +34,5 @@ public class SVD extends Gun {
         return 30;
     }
 
-    @Override
-    protected void init() {
-
-    }
+    
 }

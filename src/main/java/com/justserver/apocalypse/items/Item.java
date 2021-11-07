@@ -4,6 +4,7 @@ import com.justserver.apocalypse.Apocalypse;
 import com.justserver.apocalypse.Registry;
 import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
@@ -22,7 +23,7 @@ public abstract class Item extends ItemLoader implements IItem {
     public Item(Apocalypse plugin){
         this.plugin = plugin;
         if(plugin == null){
-            plugin = Apocalypse.getInstance();
+            this.plugin = Apocalypse.getInstance();
         }
         String preId = getClass().getSimpleName().toUpperCase();
         for(Field field : Registry.class.getFields()){
@@ -33,6 +34,7 @@ public abstract class Item extends ItemLoader implements IItem {
             }
         }
         this.id = preId;
+        init();
     }
     public String getId(){
         return id;
@@ -79,5 +81,10 @@ public abstract class Item extends ItemLoader implements IItem {
 
         is.setItemMeta(meta);
         return is;
+    }
+
+    @Override
+    protected void init() {
+
     }
 }

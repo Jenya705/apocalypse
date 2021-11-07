@@ -41,10 +41,7 @@ public class StrongHelmet extends Armor implements Helmet {
         return 0;
     }
 
-    @Override
-    protected void init() {
-
-    }
+    
 
     @Override
     public double getHeadshotModifier() {

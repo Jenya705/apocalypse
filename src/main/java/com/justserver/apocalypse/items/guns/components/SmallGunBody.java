@@ -41,8 +41,5 @@ public class SmallGunBody extends Component {
         return 0;
     }
 
-    @Override
-    protected void init() {
-
-    }
+    
 }

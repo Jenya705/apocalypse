@@ -11,6 +11,7 @@ import com.justserver.apocalypse.items.guns.modifications.Scope;
 import com.justserver.apocalypse.items.guns.modifications.Silencer;
 import com.justserver.apocalypse.items.normal.Knife;
 import com.justserver.apocalypse.items.normal.Medkit;
+import com.justserver.apocalypse.items.normal.Radio;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -45,12 +46,14 @@ public class Registry {
     public final static MediumGunBody MEDIUM_GUN_BODY = new MediumGunBody(plugin);
     public final static SmallGunBody SMALL_GUN_BODY = new SmallGunBody(plugin);
     public final static Muzzle MUZZLE = new Muzzle(plugin);
+    public final static Radio RADIO = new Radio(plugin);
 
     public static void init(Apocalypse _plugin){
         plugin = _plugin;
         if(plugin == null){
             plugin = Apocalypse.getPlugin(Apocalypse.class);
         }
+
     }
     
     public static Item getItemByItemstack(ItemStack itemStack){

@@ -55,10 +55,7 @@ public class BukkitItem extends Item{
         return 0;
     }
 
-    @Override
-    protected void init() {
-
-    }
+    
     private final SecureRandom random = new SecureRandom();
     @Override
     public ItemStack createItemStack(Apocalypse plugin) {

@@ -41,8 +41,5 @@ public class FlismyChestplate extends Armor {
         return 2;
     }
 
-    @Override
-    protected void init() {
-
-    }
+    
 }

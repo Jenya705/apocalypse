@@ -40,8 +40,5 @@ public class MediumGunBody extends Component{
         return 0;
     }
 
-    @Override
-    protected void init() {
-
-    }
+    
 }

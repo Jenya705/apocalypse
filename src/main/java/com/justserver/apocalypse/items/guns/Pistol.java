@@ -30,10 +30,7 @@ public class Pistol extends Gun {
         return 5;
     }
 
-    @Override
-    protected void init() {
-
-    }
+    
 
     @Override
     public int getRechargeTime() {

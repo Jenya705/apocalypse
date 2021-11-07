@@ -19,10 +19,7 @@ public class Medkit extends Item {
         super(plugin);
     }
 
-    @Override
-    protected void init() {
-
-    }
+    
 
     @Override
     public String customName() {

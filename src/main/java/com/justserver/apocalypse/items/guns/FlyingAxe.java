@@ -142,8 +142,5 @@ public class FlyingAxe extends Item {
         return 10;
     }
 
-    @Override
-    protected void init() {
-
-    }
+    
 }

@@ -41,10 +41,7 @@ public class FlismyHelmet extends Armor implements Helmet {
         return 2;
     }
 
-    @Override
-    protected void init() {
-
-    }
+    
 
     @Override
     public double getHeadshotModifier() {

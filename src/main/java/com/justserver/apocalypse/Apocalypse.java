@@ -8,6 +8,7 @@ import com.justserver.apocalypse.commands.DungeonCommand;
 import com.justserver.apocalypse.commands.SetupCommand;
 import com.justserver.apocalypse.dungeons.DungeonHandler;
 import com.justserver.apocalypse.gui.GuiManager;
+import com.justserver.apocalypse.gui.sign.SignMenuFactory;
 import com.justserver.apocalypse.items.GunHandler;
 import com.justserver.apocalypse.overworld.OverworldHandler;
 import com.justserver.apocalypse.setup.SetupManager;
@@ -33,13 +34,17 @@ public final class Apocalypse extends JavaPlugin {
     public GuiManager guiManager = new GuiManager();
     public ArrayList<Base> loadedBases = new ArrayList<>();
     private static Apocalypse instance;
-    private static SetupManager setup = new SetupManager();
+    private static final SetupManager setup = new SetupManager();
+    public SignMenuFactory signMenuFactory;
 
     public List<Location> fires = new ArrayList<>();
 
     @Override
     public void onEnable() {
         instance = this;
+        getConfig().options().copyDefaults(true);
+        saveConfig();
+        this.signMenuFactory = new SignMenuFactory(this);
         Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
             @Override
             public void run() {
@@ -58,6 +63,7 @@ public final class Apocalypse extends JavaPlugin {
             Base base = new Base(this);
             base.id = bases.config.getString("bases." + key + ".id");
             base.owner = UUID.fromString(bases.config.getString("bases." + key + ".owner"));
+            base.frequency = bases.config.getString("bases." + key + ".frequency");
             List<String> stringUUIDs = bases.config.getStringList("bases." + key + ".players");
             for(String stringUUID : stringUUIDs){
                 base.players.add(UUID.fromString(stringUUID));
