@@ -67,6 +67,6 @@ public class Scope extends Modify{
 
     @Override
     protected void init() {
-        System.out.println("INIT");
+
     }
 }

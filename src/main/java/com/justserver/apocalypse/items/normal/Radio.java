@@ -58,6 +58,7 @@ public class Radio extends Item {
                             meta.setLore(List.of(ChatColor.GOLD + "Частота: " + ChatColor.YELLOW + frequency, ChatColor.GRAY + "Вы будете получать сообщения по частоте", ChatColor.GRAY + "до тех пор, пока рация у вас в инвентаре",
                                     "", ChatColor.GRAY + "Чтобы отправить сообщение по линии нужно", ChatColor.GRAY + "взять нужную рацию в руки и отправить в чат сообщение", ChatColor.GRAY + "В формате @ваше_сообщение"));
                             event.getItem().setItemMeta(meta);
+                            plugin.loadedBases.stream().filter(base -> base.frequency.equals(frequency)).forEach(base -> base.connectedPlayers.add(playerResponse));
                         } catch (Exception ex){
                             playerResponse.sendMessage(ChatColor.RED + "Введенные данные не число");
                             return false;
@@ -94,7 +95,7 @@ public class Radio extends Item {
         ItemStack itemStack = super.createItemStack(plugin);
         ItemMeta meta = itemStack.getItemMeta();
         meta.getPersistentDataContainer().set(new NamespacedKey(plugin, "frequency"), PersistentDataType.STRING, "1111");
-        meta.setLore(List.of(ChatColor.GOLD + "Установите частоту рации используя" + ChatColor.YELLOW + "ПКМ", ChatColor.DARK_GRAY + "Используйте рацию только если хотите общатся", ChatColor.DARK_GRAY + "с тиммейтами или подслушивать других)", ChatColor.GRAY + "Каждая база может установить себе частоту", ChatColor.GRAY + "И также абсолютно каждая рация", ChatColor.GRAY + "может подключиться, если человек знает частоту"));
+        meta.setLore(List.of(ChatColor.GOLD + "Установите частоту рации используя " + ChatColor.YELLOW + "ПКМ", ChatColor.DARK_GRAY + "Используйте рацию только если хотите общатся", ChatColor.DARK_GRAY + "с тиммейтами или подслушивать других)", ChatColor.GRAY + "Каждая база может установить себе частоту", ChatColor.GRAY + "И также абсолютно каждая рация", ChatColor.GRAY + "может подключиться, если человек знает частоту"));
         itemStack.setItemMeta(meta);
         return itemStack;
     }

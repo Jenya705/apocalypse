@@ -5,7 +5,7 @@ import com.justserver.apocalypse.items.ItemRarity;
 import org.bukkit.Material;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-public class MediumGunBody extends Component{
+public class MediumGunBody extends Component {
     public MediumGunBody(Apocalypse plugin) {
         super(plugin);
     }

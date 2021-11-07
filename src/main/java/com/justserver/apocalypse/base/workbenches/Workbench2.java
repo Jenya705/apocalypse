@@ -59,6 +59,4 @@ public class Workbench2 extends Workbench{
     public List<Craft> getCrafts() {
         return crafts;
     }
-
-    
 }

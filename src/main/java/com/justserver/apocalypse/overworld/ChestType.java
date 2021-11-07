@@ -44,6 +44,7 @@ public enum ChestType {
             Registry.MEDKIT,
             Registry.STRONG_HELMET,
             Registry.STRONG_CHESTPLATE,
+            Registry.RADIO,
             new BukkitItem(Apocalypse.getInstance(), Material.IRON_INGOT, -3, ItemRarity.EPIC)
     ),
 
@@ -57,7 +58,8 @@ public enum ChestType {
             new BukkitItem(Apocalypse.getInstance(), Material.BRICK, -4, ItemRarity.RARE),
             new BukkitItem(Apocalypse.getInstance(), Material.OAK_PLANKS, -5, ItemRarity.COMMON),
             new BukkitItem(Apocalypse.getInstance(), Material.SHIELD, 1, ItemRarity.LEGENDARY),
-            new BukkitItem(Apocalypse.getInstance(), Material.IRON_INGOT, -3, ItemRarity.EPIC)
+            new BukkitItem(Apocalypse.getInstance(), Material.IRON_INGOT, -3, ItemRarity.EPIC),
+            Registry.RADIO
         ),
     SHOP(
             new BukkitItem(Apocalypse.getInstance(), Material.CARROT, -3, ItemRarity.COMMON),

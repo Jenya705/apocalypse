@@ -218,10 +218,6 @@ public abstract class Gun extends Item {
         meta.getPersistentDataContainer().set(new NamespacedKey(plugin, "ammo_count"), PersistentDataType.INTEGER, 0);
         meta.getPersistentDataContainer().set(new NamespacedKey(plugin, "modifications"), PersistentDataType.STRING, "");
         meta.addEnchant(Enchantment.QUICK_CHARGE, getRechargeTime(), true);
-        if(isTriple()){
-            System.out.println(isTriple());
-            meta.addEnchant(Enchantment.MULTISHOT, 1, false);
-        }
         is.setItemMeta(meta);
         return is;
     }

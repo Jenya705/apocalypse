@@ -96,8 +96,7 @@ public record BaseHandler(Apocalypse plugin) implements Listener {
     @EventHandler
     public void openWorkbench(PlayerInteractEvent event) throws NoSuchFieldException, IllegalAccessException {
         if(event.getHand() != null && event.getHand().equals(EquipmentSlot.HAND) && event.getAction().equals(Action.RIGHT_CLICK_BLOCK)){
-            if(event.getClickedBlock().getState() instanceof TileState){
-                TileState state = (TileState) event.getClickedBlock().getState();
+            if(event.getClickedBlock().getState() instanceof TileState state){
                 PersistentDataContainer dataContainer = state.getPersistentDataContainer();
                 if(dataContainer.has(new NamespacedKey(plugin, "workbench"), PersistentDataType.INTEGER)){
                     String id = dataContainer.get(new NamespacedKey(plugin, "id"), PersistentDataType.STRING);

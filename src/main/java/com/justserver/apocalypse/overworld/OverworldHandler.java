@@ -1,5 +1,6 @@
 package com.justserver.apocalypse.overworld;
 
+import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent;
 import com.justserver.apocalypse.Apocalypse;
 import com.justserver.apocalypse.Registry;
 import com.justserver.apocalypse.base.workbenches.PlayerCrafts;
@@ -70,11 +71,13 @@ public class OverworldHandler implements Listener {
         for (int i = 0; i < 10; i++) {
             randomTable.add(ItemRarity.EPIC);
         }
-        System.out.println(randomTable.size());
     }
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event){
+        if(!event.getPlayer().hasPlayedBefore()){
+            randomTeleport(event.getPlayer());
+        }
         Arrays.stream(event.getPlayer().getInventory().getContents())
                 .filter(Objects::nonNull)
                 .filter(itemStack -> Registry.getItemByItemstack(itemStack) instanceof Radio)
@@ -82,6 +85,12 @@ public class OverworldHandler implements Listener {
                         .filter(base -> base.frequency.equals(itemStack.getItemMeta().getPersistentDataContainer().get(new NamespacedKey(plugin, "frequency"), PersistentDataType.STRING)))
                         .forEach(base -> base.connectedPlayers.add(event.getPlayer())));
     }
+
+    @EventHandler
+    public void onRespawn(PlayerPostRespawnEvent event){
+        randomTeleport(event.getPlayer());
+    }
+
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
         plugin.guiManager.clear(event.getPlayer());
@@ -91,6 +100,11 @@ public class OverworldHandler implements Listener {
             chestLootTasks.remove(event.getPlayer().getUniqueId());
         }
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> plugin.loadedBases.forEach(base -> base.connectedPlayers.remove(event.getPlayer())));
+    }
+
+    public void randomTeleport(Player player){
+        int x = random.nextInt(20) * (random.nextBoolean() ? -1 : 1), z = random.nextInt(20) * (random.nextBoolean() ? -1 : 1);
+        player.teleport(new Location(player.getWorld(), x, player.getWorld().getHighestBlockYAt(x, z), z));
     }
 
     private final SecureRandom random = new SecureRandom();
@@ -109,10 +123,15 @@ public class OverworldHandler implements Listener {
                     chest.setCustomName(chest.getPersistentDataContainer().get(new NamespacedKey(plugin, "chest_type"), PersistentDataType.STRING));
                     chest.update();
                     if (lootedChests.contains(event.getClickedBlock().getLocation())) return;
-                    if (chestLootTasks.containsValue(chest)) {
-                        event.getPlayer().sendMessage(ChatColor.RED + "Этот сундук уже лутают");
-                        return;
+                    for(ChestLootTask task : chestLootTasks.values()){
+                        if(task.getChest().equals(chest)){
+                            event.getPlayer().sendMessage(ChatColor.RED + "Этот сундук уже лутают");
+                            return;
+                        }
                     }
+//                    if (chestLootTasks.containsValue(chest)) {
+//
+//                    }
                     for (int i = 0; i < 27; i++) {
                         chest.getBlockInventory().setItem(i, new ItemBuilder(Material.RED_STAINED_GLASS_PANE).setName("&cОжидайте").toItemStack());
                     }
@@ -210,12 +229,14 @@ public class OverworldHandler implements Listener {
 
     @EventHandler
     public void openCraftGui(PlayerInteractEvent event){
-        if(event.getAction().equals(Action.RIGHT_CLICK_AIR) && event.getPlayer().isSneaking()){
+        //System.out.println("Amegus");
+        if(event.getAction().name().contains("RIGHT") && event.getPlayer().isSneaking() && event.getHand().equals(EquipmentSlot.HAND)){
+            if(event.getItem() != null){
+                if(Registry.getItemByItemstack(event.getItem()) != null) return;
+            }
             try {
                 plugin.guiManager.setGui(event.getPlayer(), new WorkbenchGui(plugin, new PlayerCrafts(plugin)));
-            } catch (NoSuchFieldException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
+            } catch (NoSuchFieldException | IllegalAccessException e) {
                 e.printStackTrace();
             }
         }
@@ -226,10 +247,12 @@ public class OverworldHandler implements Listener {
         if(event.getMessage().startsWith("@")){
             if(event.getPlayer().getInventory().getItemInMainHand().getType().equals(Material.AIR)){
                 event.getPlayer().sendMessage(ChatColor.RED + "У вас нет рации в руке");
+                event.setCancelled(true);
                 return;
             }
-            if(Registry.getItemByItemstack(event.getPlayer().getInventory().getItemInMainHand()) instanceof Radio){
 
+            if(Registry.getItemByItemstack(event.getPlayer().getInventory().getItemInMainHand()) instanceof Radio){
+                event.setCancelled(true);
                 String message = event.getMessage().substring(1);
                 plugin.loadedBases.stream().filter(base -> base.frequency.equals(
                         event.getPlayer().getInventory().getItemInMainHand().getItemMeta().getPersistentDataContainer().get(new NamespacedKey(plugin, "frequency"), PersistentDataType.STRING)

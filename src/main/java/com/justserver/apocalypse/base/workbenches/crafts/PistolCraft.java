@@ -20,8 +20,8 @@ public class PistolCraft extends Craft {
 
     public List<CraftItem> needItems = new ArrayList<>(Arrays.asList(
             new CraftItem(new BukkitItem(plugin, Material.IRON_INGOT, 3, ItemRarity.COMMON), 1),
-            new CraftItem(new Muzzle(plugin), 1),
-            new CraftItem(new SmallGunBody(plugin), 1)
+            new CraftItem(Registry.MUZZLE, 1),
+            new CraftItem(Registry.SMALL_GUN_BODY, 1)
     ));
 
     public PistolCraft(Apocalypse plugin) {

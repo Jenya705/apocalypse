@@ -2,6 +2,7 @@ package com.justserver.apocalypse;
 
 import com.justserver.apocalypse.base.workbenches.Workbench1;
 import com.justserver.apocalypse.base.workbenches.Workbench2;
+import com.justserver.apocalypse.base.workbenches.Workbench3;
 import com.justserver.apocalypse.items.Item;
 import com.justserver.apocalypse.items.armor.*;
 import com.justserver.apocalypse.items.guns.*;
@@ -41,6 +42,7 @@ public class Registry {
     public final static StrongChestplate STRONG_CHESTPLATE = new StrongChestplate(plugin);
     public final static Workbench1 WORKBENCH_1 = new Workbench1(plugin);
     public final static Workbench2 WORKBENCH_2 = new Workbench2(plugin);
+    public final static Workbench3 WORKBENCH_3 = new Workbench3(plugin);
     public final static Butt BUTT = new Butt(plugin);
     public final static GunBody GUN_BODY = new GunBody(plugin);
     public final static MediumGunBody MEDIUM_GUN_BODY = new MediumGunBody(plugin);

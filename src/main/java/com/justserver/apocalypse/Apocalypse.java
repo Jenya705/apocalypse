@@ -71,7 +71,7 @@ public final class Apocalypse extends JavaPlugin {
             base.location = bases.config.getLocation("bases." + key + ".location");
             base.blocks = (ArrayList<HashMap<String, Object>>) bases.config.getList("bases." + key + ".blocks");
             base.duration = Instant.ofEpochSecond(bases.config.getLong("bases." + key + ".duration"));
-            System.out.println(base.duration);
+            //System.out.println(base.duration);
             loadedBases.add(base);
         }
         Bukkit.getScheduler().runTaskTimer(this, () -> {

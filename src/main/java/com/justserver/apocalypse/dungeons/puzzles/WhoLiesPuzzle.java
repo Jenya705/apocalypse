@@ -37,6 +37,15 @@ public class WhoLiesPuzzle extends Gui implements Puzzle {
             itemBuilder.addLoreLine(loreLine);
         }
         inventory.addItem(itemBuilder.toItemStack());
+        int rightPosition = random.nextInt(3) + 1;
+        int inventoryPosition = switch (rightPosition) {
+
+            case 1 -> 1;
+            case 2 -> 4;
+            case 3 -> 7;
+            default -> 0;
+        };
+        inventory.setItem((9 * 4) + inventoryPosition, new ItemStack(Material.BEDROCK));
     }
 
     @Override

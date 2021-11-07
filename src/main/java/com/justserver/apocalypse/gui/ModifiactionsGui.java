@@ -94,11 +94,9 @@ public class ModifiactionsGui extends Gui{
 
     @Override
     public Gui handleInventoryClick(InventoryClickEvent event, Player player, ItemStack itemStack, ClickType clickType) {
-        System.out.println(123);
         ItemMeta itemMeta = gun.getItemMeta();
         PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
-        if(Registry.getItemByItemstack(itemStack) instanceof Modify){
-            Modify modify = (Modify) Registry.getItemByItemstack(itemStack);
+        if(Registry.getItemByItemstack(itemStack) instanceof Modify modify){
             Gun gunClass = (Gun) Registry.getItemByItemstack(gun);
             if(!modify.getForGuns().contains(gunClass.getId())){
                 player.sendMessage(ChatColor.DARK_RED + "Данный обвес нельзя установить на данное оружие!");
