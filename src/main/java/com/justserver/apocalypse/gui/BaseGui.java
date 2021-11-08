@@ -118,8 +118,8 @@ public class BaseGui extends Gui {
         }
         this.base.duration = this.base.duration.plus(3, ChronoUnit.HOURS);
         this.base.saveBase();
-        Apocalypse.getPlugin(Apocalypse.class).loadedBases.remove(this.base);
-        Apocalypse.getPlugin(Apocalypse.class).loadedBases.add(this.base);
+        Apocalypse.getInstance().loadedBases.remove(this.base);
+        Apocalypse.getInstance().loadedBases.add(this.base);
         player.sendMessage(ChatColor.GREEN + "Вы успешно продлили базу");
         return null;
     }

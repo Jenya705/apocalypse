@@ -41,10 +41,13 @@ public class SetupManager implements Listener {
         player.getInventory().addItem(new ItemBuilder(Material.RED_DYE).setName("&cПометить магазинный сундук").toItemStack());
     }
 
-    public void exitSetup(Player player){
+    public void exitSetup(Player player, boolean startup){
         UUID uuid = player.getUniqueId();
         if(!savedContents.containsKey(uuid)){
-            player.sendMessage(ChatColor.RED + "Вы не в режиме настройки");
+            if(!startup){
+                player.sendMessage(ChatColor.RED + "Вы не в режиме настройки");
+            }
+
             return;
         }
         player.setGameMode(GameMode.SURVIVAL);

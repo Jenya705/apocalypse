@@ -13,6 +13,7 @@ import com.justserver.apocalypse.items.guns.modifications.Silencer;
 import com.justserver.apocalypse.items.normal.Knife;
 import com.justserver.apocalypse.items.normal.Medkit;
 import com.justserver.apocalypse.items.normal.Radio;
+import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -40,22 +41,26 @@ public class Registry {
     public final static ThockChestplate THOCK_CHESTPLATE = new ThockChestplate(plugin);
     public final static StrongHelmet STRONG_HELMET = new StrongHelmet(plugin);
     public final static StrongChestplate STRONG_CHESTPLATE = new StrongChestplate(plugin);
-    public final static Workbench1 WORKBENCH_1 = new Workbench1(plugin);
-    public final static Workbench2 WORKBENCH_2 = new Workbench2(plugin);
-    public final static Workbench3 WORKBENCH_3 = new Workbench3(plugin);
     public final static Butt BUTT = new Butt(plugin);
     public final static GunBody GUN_BODY = new GunBody(plugin);
     public final static MediumGunBody MEDIUM_GUN_BODY = new MediumGunBody(plugin);
     public final static SmallGunBody SMALL_GUN_BODY = new SmallGunBody(plugin);
     public final static Muzzle MUZZLE = new Muzzle(plugin);
     public final static Radio RADIO = new Radio(plugin);
+    public static Workbench1 WORKBENCH_1;
+    public static Workbench2 WORKBENCH_2;
+    public static Workbench3 WORKBENCH_3;
 
     public static void init(Apocalypse _plugin){
         plugin = _plugin;
         if(plugin == null){
             plugin = Apocalypse.getPlugin(Apocalypse.class);
         }
-
+        Bukkit.getScheduler().runTaskLater(plugin, () -> { // bukkit api have very cool static loading and sometimes fields used here are null (so use enums :D)
+            WORKBENCH_1 = new Workbench1(plugin);
+            WORKBENCH_2 = new Workbench2(plugin);
+            WORKBENCH_3 = new Workbench3(plugin);
+        }, 5);
     }
     
     public static Item getItemByItemstack(ItemStack itemStack){

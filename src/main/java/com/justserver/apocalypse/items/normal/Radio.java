@@ -55,10 +55,10 @@ public class Radio extends Item {
                             playerResponse.sendMessage(ChatColor.GREEN + "Частота рации установлена: " + frequency);
                             ItemMeta meta = event.getItem().getItemMeta();
                             meta.getPersistentDataContainer().set(new NamespacedKey(plugin, "frequency"), PersistentDataType.STRING, frequency);
-                            meta.setLore(List.of(ChatColor.GOLD + "Частота: " + ChatColor.YELLOW + frequency, ChatColor.GRAY + "Вы будете получать сообщения по частоте", ChatColor.GRAY + "до тех пор, пока рация у вас в инвентаре",
+                            meta.setLore(List.of(ChatColor.GOLD + "Чтобы узнать частоту, нажмите: " + ChatColor.YELLOW + "ПКМ", ChatColor.GRAY + "Вы будете получать сообщения по частоте", ChatColor.GRAY + "до тех пор, пока рация у вас в инвентаре",
                                     "", ChatColor.GRAY + "Чтобы отправить сообщение по линии нужно", ChatColor.GRAY + "взять нужную рацию в руки и отправить в чат сообщение", ChatColor.GRAY + "В формате @ваше_сообщение"));
                             event.getItem().setItemMeta(meta);
-                            plugin.loadedBases.stream().filter(base -> base.frequency.equals(frequency)).forEach(base -> base.connectedPlayers.add(playerResponse));
+                            plugin.loadedBases.stream().filter(base -> base.frequency.equals(frequency)).forEach(base -> {base.connectedPlayers.remove(playerResponse); base.connectedPlayers.add(playerResponse);});
                         } catch (Exception ex){
                             playerResponse.sendMessage(ChatColor.RED + "Введенные данные не число");
                             return false;

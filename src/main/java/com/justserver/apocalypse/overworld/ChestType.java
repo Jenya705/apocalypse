@@ -12,7 +12,8 @@ public enum ChestType {
             new BukkitItem(Apocalypse.getInstance(), Material.BRICK, -6, ItemRarity.RARE),
             new BukkitItem(Apocalypse.getInstance(), Material.OAK_PLANKS, -4, ItemRarity.COMMON),
             new BukkitItem(Apocalypse.getInstance(), Material.FLINT_AND_STEEL, 1, ItemRarity.UNCOMMON),
-            new BukkitItem(Apocalypse.getInstance(), Material.IRON_INGOT, 1, ItemRarity.EPIC)
+            new BukkitItem(Apocalypse.getInstance(), Material.IRON_INGOT, 1, ItemRarity.EPIC),
+            new BukkitItem(Apocalypse.getInstance(), Material.COOKED_BEEF, 1, ItemRarity.RARE)
     ),
     FACTORY(Registry.MEDIUM_GUN_BODY,
             Registry.SCOPE,
@@ -64,7 +65,7 @@ public enum ChestType {
     SHOP(
             new BukkitItem(Apocalypse.getInstance(), Material.CARROT, -3, ItemRarity.COMMON),
             new BukkitItem(Apocalypse.getInstance(), Material.BREAD, -2, ItemRarity.UNCOMMON),
-            new BukkitItem(Apocalypse.getInstance(), Material.COOKED_BEEF, -2, ItemRarity.RARE),
+            new BukkitItem(Apocalypse.getInstance(), Material.COOKED_BEEF, -8, ItemRarity.RARE),
             new BukkitItem(Apocalypse.getInstance(), Material.COOKED_MUTTON, -2, ItemRarity.RARE),
             new BukkitItem(Apocalypse.getInstance(), Material.CAMPFIRE, -2, ItemRarity.RARE),
             new BukkitItem(Apocalypse.getInstance(), Material.FLINT_AND_STEEL, 1, ItemRarity.UNCOMMON)

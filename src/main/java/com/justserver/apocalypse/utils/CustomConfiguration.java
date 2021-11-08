@@ -1,6 +1,7 @@
 package com.justserver.apocalypse.utils;
 
 import com.justserver.apocalypse.Apocalypse;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -29,7 +30,13 @@ public class CustomConfiguration {
                 e.printStackTrace();
             }
         }
-        this.config = YamlConfiguration.loadConfiguration(config);
+        try {
+            this.config = YamlConfiguration.loadConfiguration(config);
+        } catch (IllegalArgumentException e){
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "reload confirm");
+            return;
+        }
+
     }
 
     private String readFromInputStream(InputStream inputStream)

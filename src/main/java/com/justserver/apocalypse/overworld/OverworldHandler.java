@@ -38,6 +38,9 @@ import org.checkerframework.checker.units.qual.N;
 import java.lang.reflect.Field;
 import java.security.SecureRandom;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class OverworldHandler implements Listener {
     private final Apocalypse plugin;
@@ -56,21 +59,37 @@ public class OverworldHandler implements Listener {
             }
             lootedChests.clear();
         }, 0, 20 * 60 * 5);
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 1; i++) {
             randomTable.add(ItemRarity.LEGENDARY);
         }
-        for (int i = 0; i < 40; i++) {
+        for (int i = 0; i < 50; i++) {
             randomTable.add(ItemRarity.COMMON);
         }
-        for (int i = 0; i < 30; i++) {
+        for (int i = 0; i < 25; i++) {
             randomTable.add(ItemRarity.UNCOMMON);
         }
-        for (int i = 0; i < 15; i++) {
+        for (int i = 0; i < 10; i++) {
             randomTable.add(ItemRarity.RARE);
         }
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 5; i++) {
             randomTable.add(ItemRarity.EPIC);
         }
+
+        Calendar due = Calendar.getInstance();
+        due.set(Calendar.MILLISECOND, 0);
+        due.set(Calendar.SECOND, 0);
+        due.set(Calendar.MINUTE,0);
+        due.set(Calendar.HOUR_OF_DAY, 18);
+        if (due.before(Calendar.getInstance())) {
+            due.add(Calendar.HOUR, 1);
+        }
+        long next =  due.getTimeInMillis() - new Date().getTime();
+        final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+        executor.scheduleAtFixedRate(() -> {
+            Bukkit.getScheduler().runTask(plugin, () -> {
+
+            });
+        }, next, 60*60*1000, TimeUnit.MILLISECONDS);
     }
 
     @EventHandler
@@ -104,7 +123,7 @@ public class OverworldHandler implements Listener {
 
     public void randomTeleport(Player player){
         int x = random.nextInt(20) * (random.nextBoolean() ? -1 : 1), z = random.nextInt(20) * (random.nextBoolean() ? -1 : 1);
-        player.teleport(new Location(player.getWorld(), x, player.getWorld().getHighestBlockYAt(x, z), z));
+        player.teleport(new Location(player.getWorld(), x, player.getWorld().getHighestBlockYAt(x, z) + 1, z));
     }
 
     private final SecureRandom random = new SecureRandom();
@@ -248,6 +267,7 @@ public class OverworldHandler implements Listener {
             if(event.getPlayer().getInventory().getItemInMainHand().getType().equals(Material.AIR)){
                 event.getPlayer().sendMessage(ChatColor.RED + "У вас нет рации в руке");
                 event.setCancelled(true);
+                event.setMessage("");
                 return;
             }
 

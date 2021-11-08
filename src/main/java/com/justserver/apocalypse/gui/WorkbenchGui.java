@@ -37,7 +37,10 @@ public class WorkbenchGui extends Gui{
             ItemMeta meta = item.getItemMeta();
             ArrayList<Component> lore = new ArrayList<>();
             for(CraftItem craftItem : workbench.getCrafts().get(slot).getNeedItems()){
+                if(craftItem == null) continue;
+                if(craftItem.item == null) continue;
                 String name = craftItem.item.getMaterial().getTranslationKey();
+
                 if(!(craftItem.item instanceof BukkitItem)){
                     name = craftItem.item.customName();
                 }
@@ -74,7 +77,8 @@ public class WorkbenchGui extends Gui{
             return null;
         }
         for(CraftItem itemInCraft : craft.getNeedItems()){
-            int nowI = itemInCraft.count;
+            if(itemInCraft == null) continue;
+            if(itemInCraft.item == null) continue;
             for(ItemStack item : player.getInventory()){
                 if(item == null) continue;
                 if(item.getType().equals(itemInCraft.item.getMaterial())){

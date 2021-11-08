@@ -2,6 +2,8 @@ package com.justserver.apocalypse.base;
 
 import com.justserver.apocalypse.Apocalypse;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -12,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public record BaseCommand(Apocalypse plugin) implements CommandExecutor, TabCompleter {
 
@@ -64,25 +67,55 @@ public record BaseCommand(Apocalypse plugin) implements CommandExecutor, TabComp
                 } else if (args.length == 2 && args[0].equals("remove")) {
                     Base base = Base.getBaseByBlock(plugin, player.getLocation().getBlock());
                     if (base == null) {
-                        player.sendMessage(ChatColor.DARK_RED + "Вы не находитесь на територии базы!"); // токого нет
+                        player.sendMessage(ChatColor.DARK_RED + "Вы не находитесь на територии базы!");
                         return true;
                     }
                     if (!base.owner.equals(player.getUniqueId())) {
                         player.sendMessage(ChatColor.DARK_RED + "Вы не владелец базы!");
                         return true;
                     }
-                    if (plugin.getServer().getPlayer(args[1]) == null) {
+                    OfflinePlayer playerToRemoveRaw = plugin.getServer().getOfflinePlayer(args[1]);
+                    if (playerToRemoveRaw == null) {
                         player.sendMessage(ChatColor.DARK_RED + "Игрок не найден!");
                         return true;
                     }
-                    Player playerToRemove = plugin.getServer().getPlayer(args[1]);
-                    if (!base.players.contains(playerToRemove.getUniqueId())) {
+                    UUID playerToRemove = playerToRemoveRaw.getUniqueId();
+                    if(base.owner.equals(playerToRemove)){
+                        player.sendMessage(ChatColor.DARK_RED + "Вы не можете удалить себя из базы");
+                        return true;
+                    }
+                    if (!base.players.contains(playerToRemove)) {
                         player.sendMessage(ChatColor.DARK_RED + "Игрока нет в вашей базе!");
                         return true;
                     }
-                    base.removePlayer(playerToRemove.getUniqueId());
-                    player.sendMessage(ChatColor.GREEN + "Игрок " + playerToRemove.getName() + " успешно удален из вашей базы");
+                    base.removePlayer(playerToRemove);
+                    player.sendMessage(ChatColor.GREEN + "Игрок " + args[1] + " успешно удален из вашей базы");
                     return true;
+                } else if(args.length == 1 && args[0].equals("delete")){
+                    Base base = Base.getBaseByBlock(plugin, player.getLocation().getBlock());
+                    if (base == null) {
+                        player.sendMessage(ChatColor.DARK_RED + "Вы не находитесь на територии базы!");
+                        return true;
+                    }
+                    if(base.owner.equals(player.getUniqueId())){
+                        ArrayList<Base> foundBases = new ArrayList<>();
+                        plugin.loadedBases.stream().filter(base1 -> base.id.equals(base1.id)).forEach(base1 -> {
+                            if(plugin.bases.config.contains("bases." + base1.id)){
+                                plugin.bases.config.set("bases." + base1.id, null);
+                                plugin.bases.save();
+                                plugin.bases.reload();
+                                if(!foundBases.contains(base1)) player.sendMessage(ChatColor.RED + "База удалена!");
+                                foundBases.add(base1);
+                                base1.location.getBlock().setType(Material.AIR);
+                            }
+                        });
+                        plugin.loadedBases.remove(base);
+                        for(Base found : foundBases){
+                            plugin.loadedBases.remove(found);
+                        }
+                    } else {
+                        player.sendMessage(ChatColor.DARK_RED + "Вы не владелец базы!");
+                    }
                 }
             }
         }

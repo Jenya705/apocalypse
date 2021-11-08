@@ -8,6 +8,7 @@ public class CraftItem {
 
     public CraftItem(Item item, int count){
         this.item = item;
+        System.out.println(item);
         this.count = count;
     }
 }

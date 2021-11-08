@@ -75,7 +75,43 @@ public class Base {
             if(hashMap.containsKey("location")) continue;
             ((Location) hashMap.get("location")).getBlock().setType(Material.AIR);
         }
-        this.location.getBlock().setType(Material.AIR);
+        if(this.location == null) {
+            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                if(this.location != null){
+                    this.location.getBlock().setType(Material.AIR);
+                }
+                ArrayList<Base> foundBases = new ArrayList<>();
+                plugin.loadedBases.stream().filter(base1 -> id.equals(base1.id)).forEach(base1 -> {
+                    if(plugin.bases.config.contains("bases." + base1.id)){
+                        plugin.bases.config.set("bases." + base1.id, null);
+                        plugin.bases.save();
+                        plugin.bases.reload();
+                        foundBases.add(base1);
+                        base1.location.getBlock().setType(Material.AIR);
+                    }
+                });
+                for(Base found : foundBases){
+                    plugin.loadedBases.remove(found);
+                }
+                plugin.bases.config.set("bases." + this.id, null);
+                plugin.loadedBases.remove(this);
+                plugin.bases.save();
+            }, 100);
+            return;
+        }
+        ArrayList<Base> foundBases = new ArrayList<>();
+        plugin.loadedBases.stream().filter(base1 -> id.equals(base1.id)).forEach(base1 -> {
+            if(plugin.bases.config.contains("bases." + base1.id)){
+                plugin.bases.config.set("bases." + base1.id, null);
+                plugin.bases.save();
+                plugin.bases.reload();
+                foundBases.add(base1);
+                base1.location.getBlock().setType(Material.AIR);
+            }
+        });
+        for(Base found : foundBases){
+            plugin.loadedBases.remove(found);
+        }
         plugin.bases.config.set("bases." + this.id, null);
         plugin.loadedBases.remove(this);
         plugin.bases.save();
@@ -151,6 +187,7 @@ public class Base {
 
     public static Base getBaseByBlock(Apocalypse plugin, Block block){
         for(Base base : plugin.loadedBases){
+            if(base.location == null) continue;
             int minX = base.location.getBlockX() - 15;
             int minY = base.location.getBlockY() - 15;
             int minZ = base.location.getBlockZ() - 15;

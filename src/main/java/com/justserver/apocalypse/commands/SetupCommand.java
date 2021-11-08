@@ -24,7 +24,7 @@ public class SetupCommand implements CommandExecutor {
                 }
             } else {
                 Bukkit.setWhitelist(false);
-                Apocalypse.getInstance().initEvents();
+                Apocalypse.getInstance().initEvents(false);
             }
         }
         return true;

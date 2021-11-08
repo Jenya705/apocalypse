@@ -1,6 +1,7 @@
 name: Apocalypse
 version: ${project.version}
 main: com.justserver.apocalypse.Apocalypse
+load: POSTWORLD
 api-version: 1.16
 commands:
   startdungeon:

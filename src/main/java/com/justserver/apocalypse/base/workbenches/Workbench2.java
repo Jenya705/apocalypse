@@ -52,7 +52,8 @@ public class Workbench2 extends Workbench{
 
     public List<Craft> crafts = new ArrayList<>(Arrays.asList(
             new ShotgunCraft(plugin),
-            new FlyingAxeCraft(plugin)
+            new FlyingAxeCraft(plugin),
+            new Workbench3Craft(plugin)
     ));
 
     @Override

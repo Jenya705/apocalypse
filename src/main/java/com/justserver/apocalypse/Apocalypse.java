@@ -10,26 +10,27 @@ import com.justserver.apocalypse.dungeons.DungeonHandler;
 import com.justserver.apocalypse.gui.GuiManager;
 import com.justserver.apocalypse.gui.sign.SignMenuFactory;
 import com.justserver.apocalypse.items.GunHandler;
+import com.justserver.apocalypse.items.normal.Radio;
 import com.justserver.apocalypse.overworld.OverworldHandler;
 import com.justserver.apocalypse.setup.SetupManager;
 import com.justserver.apocalypse.utils.CustomConfiguration;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.time.Instant;
 import java.util.*;
 
-public final class Apocalypse extends JavaPlugin {
+public final class Apocalypse extends JavaPlugin implements Listener {
 
-    public CustomConfiguration bases = new CustomConfiguration(this, "bases.yml");
+    public CustomConfiguration bases;
     //  CustomConfiguration lockers = new CustomConfiguration(this, "lockers.yml"); DISABLED FOR RENOVATIONS
     public GuiManager guiManager = new GuiManager();
     public ArrayList<Base> loadedBases = new ArrayList<>();
@@ -42,9 +43,11 @@ public final class Apocalypse extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
+        getServer().getPluginManager().registerEvents(this, this);
         getConfig().options().copyDefaults(true);
         saveConfig();
         this.signMenuFactory = new SignMenuFactory(this);
+        bases = new CustomConfiguration(this, "bases.yml");
         Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
             @Override
             public void run() {
@@ -58,35 +61,51 @@ public final class Apocalypse extends JavaPlugin {
         getCommand("base").setExecutor(new BaseCommand(this));
         getCommand("additem").setExecutor(new AddItemCommand());
         getCommand("setup").setExecutor(new SetupCommand());
-        initEvents();
+        initEvents(true);
         for(String key : bases.config.getConfigurationSection("bases").getKeys(false)){
             Base base = new Base(this);
             base.id = bases.config.getString("bases." + key + ".id");
-            base.owner = UUID.fromString(bases.config.getString("bases." + key + ".owner"));
+            if(base.id == null) continue;
+            base.location = bases.config.getLocation("bases." + key + ".location");
+            if(base.location == null) continue;
+            String owner = bases.config.getString("bases." + key + ".owner");
+            if(owner == null) continue;
+            base.owner = UUID.fromString(owner);
+
             base.frequency = bases.config.getString("bases." + key + ".frequency");
             List<String> stringUUIDs = bases.config.getStringList("bases." + key + ".players");
             for(String stringUUID : stringUUIDs){
                 base.players.add(UUID.fromString(stringUUID));
             }
-            base.location = bases.config.getLocation("bases." + key + ".location");
-            base.blocks = (ArrayList<HashMap<String, Object>>) bases.config.getList("bases." + key + ".blocks");
-            base.duration = Instant.ofEpochSecond(bases.config.getLong("bases." + key + ".duration"));
+            List blocks = bases.config.getList("bases." + key + ".blocks");
+            if(blocks == null) continue;
+            base.blocks = (ArrayList<HashMap<String, Object>>) blocks;
+            base.duration = Instant.ofEpochMilli(bases.config.getLong("bases." + key + ".duration"));
             //System.out.println(base.duration);
             loadedBases.add(base);
         }
         Bukkit.getScheduler().runTaskTimer(this, () -> {
-            for (int i = 0; i < loadedBases.size(); i++) {
-                Base loadedBase = loadedBases.get(i);
-                if(loadedBase == null) continue;
-                if(loadedBase.duration.isBefore(Instant.now())){
-                    loadedBases.remove(loadedBase);
-                    loadedBase.remove();
-                    i--;
+            try {
+                for(Base loadedBase : loadedBases) {
+                    long nowInNormal = Instant.now().toEpochMilli() / 1000;
+                    if (loadedBase.duration.isBefore(Instant.ofEpochMilli(nowInNormal))) {
+                        loadedBases.remove(loadedBase);
+                        loadedBase.remove();
+                    }
                 }
-            }
+            } catch (ConcurrentModificationException ignored){}
 
         }, 0, 20);
+        for (Player player : Bukkit.getOnlinePlayers()){
+            Arrays.stream(player.getInventory().getContents())
+                    .filter(Objects::nonNull)
+                    .filter(itemStack -> Registry.getItemByItemstack(itemStack) instanceof Radio)
+                    .forEach(itemStack -> loadedBases.stream()
+                            .filter(base -> base.frequency.equals(itemStack.getItemMeta().getPersistentDataContainer().get(new NamespacedKey(this, "frequency"), PersistentDataType.STRING)))
+                            .forEach(base -> base.connectedPlayers.add(player)));
+        }
     }
+
 
     @Override
     public void onDisable() {
@@ -104,9 +123,9 @@ public final class Apocalypse extends JavaPlugin {
             }
         }
     }
-    public void initEvents(){
+    public void initEvents(boolean startup){
         for(Player player : Bukkit.getOnlinePlayers()){
-            setup.exitSetup(player);
+            setup.exitSetup(player, startup);
         }
         uninit();
         Bukkit.getPluginManager().registerEvents(new DungeonHandler(this), this);
@@ -117,7 +136,7 @@ public final class Apocalypse extends JavaPlugin {
     }
 
     public void uninit(){
-        HandlerList.unregisterAll(this);
+        HandlerList.unregisterAll((Plugin) this);
     }
 
     public static void initSetup(){
