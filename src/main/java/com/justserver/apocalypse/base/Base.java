@@ -25,12 +25,13 @@ public class Base {
     public String id;
     public Location location;
     public ArrayList<HashMap<String, Object>> blocks = new ArrayList<>();
-    public Instant duration = Instant.now().plus(30, ChronoUnit.MINUTES);
+    public long duration;
     public String frequency = "0000";
     public ArrayList<Player> connectedPlayers = new ArrayList<>();
 
     public Base(Apocalypse plugin){
         this.plugin = plugin;
+        this.duration = 30 * 60 * 1000;
     }
 
     public HashMap<String, Object> getBlockByLocation(Location location){
@@ -140,6 +141,8 @@ public class Base {
                     value = ((Instant) value).getEpochSecond();
                 }else if(!value.getClass().isPrimitive()){
                     value = value.toString();
+                } else {
+                    value = value.getClass().cast(field.getClass());
                 }
 
                 config.config.set("bases." + this.id + "." + field.getName(), value);

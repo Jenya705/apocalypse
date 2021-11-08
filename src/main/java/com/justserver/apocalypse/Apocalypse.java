@@ -80,18 +80,21 @@ public final class Apocalypse extends JavaPlugin implements Listener {
             List blocks = bases.config.getList("bases." + key + ".blocks");
             if(blocks == null) continue;
             base.blocks = (ArrayList<HashMap<String, Object>>) blocks;
-            base.duration = Instant.ofEpochMilli(bases.config.getLong("bases." + key + ".duration"));
+            base.duration = Long.parseLong(bases.config.get("bases." + key + ".duration").toString());
             //System.out.println(base.duration);
             loadedBases.add(base);
         }
         Bukkit.getScheduler().runTaskTimer(this, () -> {
             try {
                 for(Base loadedBase : loadedBases) {
-                    long nowInNormal = Instant.now().toEpochMilli() / 1000;
-                    if (loadedBase.duration.isBefore(Instant.ofEpochMilli(nowInNormal))) {
-                        loadedBases.remove(loadedBase);
-                        loadedBase.remove();
+                    if (loadedBase.duration <= 0) {
+//                        loadedBases.remove(loadedBase);
+//                        loadedBase.remove();
+                        System.out.println("REMOVE: " + loadedBase.duration);
+                        return;
                     }
+                    loadedBase.duration -= 1000L;
+
                 }
             } catch (ConcurrentModificationException ignored){}
 
@@ -109,6 +112,10 @@ public final class Apocalypse extends JavaPlugin implements Listener {
 
     @Override
     public void onDisable() {
+
+        for(Base base : loadedBases){
+            base.saveBase();
+        }
         World lastWorld = null;
         for(Map.Entry<UUID, ItemStack> entry : Registry.FLYING_AXE.getThrownAxes().entrySet()){
             if(Bukkit.getPlayer(entry.getKey()) != null){

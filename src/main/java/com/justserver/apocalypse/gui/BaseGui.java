@@ -51,7 +51,8 @@ public class BaseGui extends Gui {
 
         ItemStack item = new ItemStack(Material.CLOCK);;
         ItemMeta itemMeta = item.getItemMeta();
-        int baseDuration = (int) Math.floor((base.duration.getEpochSecond() - Instant.now().getEpochSecond()) / 60);
+        //System.out.println(base.duration.toEpochMilli() + " "+  Instant.now().toEpochMilli());
+        int baseDuration = (int) Math.floor( (base.duration / 1000f / 60f));
         itemMeta.setDisplayName(ChatColor.GREEN + "Осталось у базы: " + baseDuration + " минут");
         ArrayList<Component> lore = new ArrayList<>();
         lore.add(Component.text("Для продления нужно:"));
@@ -116,7 +117,7 @@ public class BaseGui extends Gui {
                 }
             }
         }
-        this.base.duration = this.base.duration.plus(3, ChronoUnit.HOURS);
+        this.base.duration += 3 * 60 * 60 * 1000;
         this.base.saveBase();
         Apocalypse.getInstance().loadedBases.remove(this.base);
         Apocalypse.getInstance().loadedBases.add(this.base);
