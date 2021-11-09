@@ -10,6 +10,8 @@ public class Bullets extends Item {
     public Bullets(Apocalypse plugin){
         super(plugin);
         count = 1;
+        minIronNuggets = 1;
+        maxIronNuggets = 2;
     }
     @Override
     public String getId() {

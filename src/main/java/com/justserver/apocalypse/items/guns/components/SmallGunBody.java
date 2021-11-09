@@ -9,6 +9,8 @@ public class SmallGunBody extends Component {
 
     public SmallGunBody(Apocalypse plugin) {
         super(plugin);
+        minIronNuggets = 3;
+        maxIronNuggets = 5;
     }
 
     @Override

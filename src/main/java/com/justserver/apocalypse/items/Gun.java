@@ -7,6 +7,7 @@ import com.justserver.apocalypse.items.armor.Helmet;
 import com.justserver.apocalypse.items.armor.StrongHelmet;
 import com.justserver.apocalypse.items.guns.modifications.Modify;
 import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -135,16 +136,21 @@ public abstract class Gun extends Item {
         direction.multiply(getRange());
         direction.normalize();
         Location destination = null;
-        for (int i = 0; i < getRange(); i++) {
+        int range;
+        Block targetBlock = player.getTargetBlock((int)getRange());
+        if(targetBlock != null){
+            range = (int)targetBlock.getLocation().distance(player.getEyeLocation());
+        } else {
+            range = (int) getRange();
+        }
+        for (int i = 0; i < range; i++) {
             Location location = origin.add(direction);
-            if(!location.getBlock().isPassable() || location.getBlock().getType().equals(Material.WATER)) {
-                if(location.getBlock().getType().equals(Material.TNT)){
-                    location.getBlock().setType(Material.AIR);
-                    location.getWorld().spawn(location.clone().add(0.5, 0, 0.5), TNTPrimed.class);
-                }
-                spawnParticles(destination);
+            if(location.getBlock().getType().equals(Material.TNT)){
+                location.getBlock().setType(Material.AIR);
+                location.getWorld().spawn(location.clone().add(0.5, 0, 0.5), TNTPrimed.class);
                 break;
             }
+
             //location.getWorld().spawnParticle(Particle.VILLAGER_ANGRY, location, 3);
             Collection<LivingEntity> nearby = location.getNearbyEntitiesByType(LivingEntity.class, 0.4);
             for(LivingEntity shot : nearby){

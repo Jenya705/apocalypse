@@ -28,7 +28,7 @@ public class WorkbenchGui extends Gui{
     public WorkbenchGui(Apocalypse plugin, Workbench workbench) throws NoSuchFieldException, IllegalAccessException {
         this.level = workbench.getLevel();
         this.plugin = plugin;
-        Inventory inventory = Bukkit.createInventory(null, 9, getName());
+        Inventory inventory = Bukkit.createInventory(null, 27, getName());
         for(int slot = 0; slot < inventory.getSize();slot++){
             inventory.setItem(slot, new ItemStack(Material.GRAY_STAINED_GLASS_PANE));
         }

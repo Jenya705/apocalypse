@@ -28,6 +28,8 @@ public class FlyingAxe extends Item {
 
     public FlyingAxe(Apocalypse plugin) {
         super(plugin);
+        minIronNuggets = 6;
+        maxIronNuggets = 10;
     }
 
     private final HashMap<UUID, ItemStack> thrownAxes = new HashMap<>();
@@ -101,7 +103,7 @@ public class FlyingAxe extends Item {
                                 if(!entity.equals(player) && !entity.equals(armorStand)){
                                     if(entity instanceof LivingEntity){
                                         LivingEntity livingEntity = (LivingEntity) entity;
-                                        livingEntity.damage(5.0, player);
+                                        livingEntity.damage(3.0, player);
                                         entity.getWorld().playSound(entity.getLocation(), Sound.ITEM_FLINTANDSTEEL_USE, 1f, 0.3f);
                                         armorStand.remove();
                                         if(damage >= getMaterial().getMaxDurability()){

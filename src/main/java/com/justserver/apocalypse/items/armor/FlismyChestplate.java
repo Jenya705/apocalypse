@@ -9,6 +9,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 public class FlismyChestplate extends Armor {
     public FlismyChestplate(Apocalypse plugin) {
         super(plugin, 1, 0);
+        minIronNuggets = 4;
+        maxIronNuggets = 6;
     }
 
     @Override

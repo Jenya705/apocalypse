@@ -19,7 +19,8 @@ import java.util.List;
 public class Radio extends Item {
     public Radio(Apocalypse plugin) {
         super(plugin);
-
+        minIronNuggets = 2;
+        maxIronNuggets = 4;
     }
 
     @Override
@@ -34,6 +35,7 @@ public class Radio extends Item {
 
     @Override
     public void onInteract(PlayerInteractEvent event) {
+        event.setCancelled(true);
         if(event.getAction().name().contains("RIGHT")){
             String frequencyI = event.getItem().getItemMeta().getPersistentDataContainer().get(new NamespacedKey(plugin, "frequency"), PersistentDataType.STRING);
 

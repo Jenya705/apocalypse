@@ -19,5 +19,7 @@ public class BlockTypes {
         interactBlocks.add(Material.DISPENSER);
         // can place blocks
         canPlaceBlock.add(Material.TNT);
+        canPlaceBlock.add(Material.CHEST);
+        canPlaceBlock.add(Material.DISPENSER);
     }
 }

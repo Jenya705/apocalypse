@@ -30,8 +30,9 @@ public enum ChestType {
             Registry.SMALL_GUN_BODY,
             Registry.MUZZLE,
             Registry.BUTT,
-            new BukkitItem(Apocalypse.getInstance(), Material.IRON_INGOT, -3, ItemRarity.EPIC),
-            new BukkitItem(Apocalypse.getInstance(), Material.GUNPOWDER, -3, ItemRarity.RARE)
+            new BukkitItem(Apocalypse.getInstance(), Material.IRON_INGOT, -4, ItemRarity.EPIC),
+            new BukkitItem(Apocalypse.getInstance(), Material.GUNPOWDER, -8, ItemRarity.RARE),
+            new BukkitItem(Apocalypse.getInstance(), Material.DIAMOND_PICKAXE, 1, ItemRarity.EPIC)
     ),
     HOSPITAL(Registry.MEDKIT,Registry.MEDKIT, Registry.MEDKIT),
     MILITARY(Registry.BUTT,
@@ -60,6 +61,7 @@ public enum ChestType {
             new BukkitItem(Apocalypse.getInstance(), Material.OAK_PLANKS, -5, ItemRarity.COMMON),
             new BukkitItem(Apocalypse.getInstance(), Material.SHIELD, 1, ItemRarity.LEGENDARY),
             new BukkitItem(Apocalypse.getInstance(), Material.IRON_INGOT, -3, ItemRarity.EPIC),
+            new BukkitItem(Apocalypse.getInstance(), Material.DIAMOND_PICKAXE, 1, ItemRarity.EPIC),
             Registry.RADIO
         ),
     SHOP(

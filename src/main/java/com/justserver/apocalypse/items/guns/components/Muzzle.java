@@ -8,6 +8,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 public class Muzzle extends Component{
     public Muzzle(Apocalypse plugin) {
         super(plugin);
+        minIronNuggets = 4;
+        maxIronNuggets = 5;
     }
 
     @Override

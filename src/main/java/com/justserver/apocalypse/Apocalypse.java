@@ -12,9 +12,12 @@ import com.justserver.apocalypse.gui.sign.SignMenuFactory;
 import com.justserver.apocalypse.items.GunHandler;
 import com.justserver.apocalypse.items.normal.Radio;
 import com.justserver.apocalypse.overworld.OverworldHandler;
+import com.justserver.apocalypse.protection.BlacklistedItemsHandler;
 import com.justserver.apocalypse.setup.SetupManager;
+import com.justserver.apocalypse.tasks.ChestLootTask;
 import com.justserver.apocalypse.utils.CustomConfiguration;
 import org.bukkit.*;
+import org.bukkit.block.Chest;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -87,10 +90,11 @@ public final class Apocalypse extends JavaPlugin implements Listener {
         Bukkit.getScheduler().runTaskTimer(this, () -> {
             try {
                 for(Base loadedBase : loadedBases) {
+                    if(loadedBase.duration == -1) continue;
                     if (loadedBase.duration <= 0) {
-//                        loadedBases.remove(loadedBase);
-//                        loadedBase.remove();
-                        System.out.println("REMOVE: " + loadedBase.duration);
+                        loadedBases.remove(loadedBase);
+                        loadedBase.remove();
+
                         return;
                     }
                     loadedBase.duration -= 1000L;
@@ -99,14 +103,19 @@ public final class Apocalypse extends JavaPlugin implements Listener {
             } catch (ConcurrentModificationException ignored){}
 
         }, 0, 20);
+        try {
         for (Player player : Bukkit.getOnlinePlayers()){
-            Arrays.stream(player.getInventory().getContents())
-                    .filter(Objects::nonNull)
-                    .filter(itemStack -> Registry.getItemByItemstack(itemStack) instanceof Radio)
-                    .forEach(itemStack -> loadedBases.stream()
-                            .filter(base -> base.frequency.equals(itemStack.getItemMeta().getPersistentDataContainer().get(new NamespacedKey(this, "frequency"), PersistentDataType.STRING)))
-                            .forEach(base -> base.connectedPlayers.add(player)));
+
+                Arrays.stream(player.getInventory().getContents())
+                        .filter(Objects::nonNull)
+                        .filter(itemStack -> Registry.getItemByItemstack(itemStack) instanceof Radio)
+                        .forEach(itemStack -> loadedBases.stream()
+                                .filter(base -> base.frequency.equals(itemStack.getItemMeta().getPersistentDataContainer().get(new NamespacedKey(this, "frequency"), PersistentDataType.STRING)))
+                                .forEach(base -> base.connectedPlayers.add(player)));
+
+
         }
+        } catch (NullPointerException ignored){}
     }
 
 
@@ -129,6 +138,17 @@ public final class Apocalypse extends JavaPlugin implements Listener {
                 entity.remove();
             }
         }
+
+        for(Map.Entry<UUID, ChestLootTask> entry : OverworldHandler.chestLootTasks.entrySet()){
+            entry.getValue().cancel();
+            entry.getValue().getChest().getBlockInventory().clear();
+            Player player = Bukkit.getPlayer(entry.getKey());
+            if(player != null){
+                player.sendMessage(ChatColor.YELLOW + "Похоже, что админ перезагрузил сервер пока вы лутали сундук и он закрылся. Просто заново зайдите :)");
+                player.closeInventory();
+            }
+
+        }
     }
     public void initEvents(boolean startup){
         for(Player player : Bukkit.getOnlinePlayers()){
@@ -140,6 +160,7 @@ public final class Apocalypse extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(new BaseHandler(this), this);
         Bukkit.getPluginManager().registerEvents(guiManager, this);
         Bukkit.getPluginManager().registerEvents(new OverworldHandler(this), this);
+        Bukkit.getPluginManager().registerEvents(new BlacklistedItemsHandler(), this);
     }
 
     public void uninit(){

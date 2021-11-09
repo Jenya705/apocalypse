@@ -3,6 +3,7 @@ package com.justserver.apocalypse.items;
 import com.justserver.apocalypse.Apocalypse;
 import com.justserver.apocalypse.Registry;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemFlag;
@@ -12,6 +13,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.lang.reflect.Field;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +21,8 @@ public abstract class Item extends ItemLoader implements IItem {
     protected Apocalypse plugin;
     protected int count = 1;
     protected final String id;
+    public int minIronNuggets = 0;
+    public int maxIronNuggets = 0;
 
     public Item(Apocalypse plugin){
         this.plugin = plugin;
@@ -86,5 +90,15 @@ public abstract class Item extends ItemLoader implements IItem {
     @Override
     protected void init() {
 
+    }
+    private static final SecureRandom random = new SecureRandom();
+
+    public ItemStack generateRandomNuggets(int amount){
+        return new ItemStack(Material.IRON_NUGGET, generateInRange(minIronNuggets, maxIronNuggets) * amount);
+    }
+
+    private int generateInRange(int min, int max){
+        if(min == max) return min;
+        return random.nextInt(max - min) + min;
     }
 }

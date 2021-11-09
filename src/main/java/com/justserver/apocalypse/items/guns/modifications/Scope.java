@@ -40,6 +40,7 @@ public class Scope extends Modify{
 
     @Override
     public void onInteract(PlayerInteractEvent event) {
+        super.onInteract(event);
         Player player = event.getPlayer();
         if(!inScope.contains(player)){
             inScope.add(player);

@@ -5,6 +5,7 @@ import com.justserver.apocalypse.Registry;
 import com.justserver.apocalypse.base.workbenches.Workbench;
 import com.justserver.apocalypse.gui.BaseGui;
 import com.justserver.apocalypse.gui.WorkbenchGui;
+import com.justserver.apocalypse.items.Item;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
@@ -23,8 +24,10 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import org.checkerframework.checker.units.qual.N;
 
 import java.util.*;
 
@@ -37,12 +40,25 @@ public record BaseHandler(Apocalypse plugin) implements Listener {
 //    }
 
     @EventHandler
-    public void baseRegionBreak(BlockBreakEvent event){
+    public void baseRegionBreak(BlockBreakEvent event) throws NoSuchFieldException, IllegalAccessException {
         if(event.getPlayer().getWorld().getName().contains("dungeon")) return;
         if(BlockTypes.canPlaceBlock.contains(event.getBlock().getType())) return;
         if(Base.getBaseByBlock(plugin, event.getBlock()) == null || !Base.getBaseByBlock(plugin, event.getBlock()).players.contains(event.getPlayer().getUniqueId())){
             event.setCancelled(true);
             event.getPlayer().sendMessage(ChatColor.DARK_RED + "Вы не можете ломать блоки на чужой базе");
+        }
+        Material blockType = event.getBlock().getType();
+
+        if(blockType.name().contains("FURNACE") || blockType.equals(Material.SMOKER)){
+            String id = switch (blockType){
+                case SMOKER -> "WORKBENCH_2";
+                case BLAST_FURNACE -> "WORKBENCH_3";
+                default -> "WORKBENCH_1";
+            };
+            event.setCancelled(true);
+            event.getBlock().setType(Material.AIR);
+            Item needed = (Item) Registry.class.getDeclaredField(id).get(Registry.class);
+            event.getPlayer().getInventory().addItem(needed.createItemStack(plugin));
         }
     }
 
@@ -67,7 +83,10 @@ public record BaseHandler(Apocalypse plugin) implements Listener {
         Player player = event.getPlayer();
         if(Base.getBaseByBlock(plugin, block) != null){
             Base base = Base.getBaseByBlock(plugin, block);
+            if(base == null) return;
             if(base.players.contains(event.getPlayer().getUniqueId())) {
+                //Material blockType = event.getBlock().getType();
+
                 if(event.getBlock().getType().equals(Material.FIRE)){
                     plugin.fires.add(event.getBlock().getLocation());
                     return;
@@ -168,7 +187,9 @@ public record BaseHandler(Apocalypse plugin) implements Listener {
     @EventHandler
     public void baseInteract(PlayerInteractEvent event){
         if(event.getPlayer().getWorld().getName().contains("dungeon")) return;
-        if(event.getPlayer().isSneaking()) return;
+        if(event.getPlayer().isSneaking()){
+            event.setCancelled(true);
+        }
         if(event.getHand() != null && event.getHand().equals(EquipmentSlot.HAND) && event.getAction().equals(Action.RIGHT_CLICK_BLOCK)){
             Base base = Base.getBaseByBlock(plugin, event.getClickedBlock());
             if(base == null) return;

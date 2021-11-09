@@ -9,6 +9,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 public class FlismyHelmet extends Armor implements Helmet {
     public FlismyHelmet(Apocalypse plugin) {
         super(plugin, 0, 0);
+        minIronNuggets = 1;
+        maxIronNuggets = 3;
     }
 
     @Override

@@ -8,6 +8,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 public class MediumGunBody extends Component {
     public MediumGunBody(Apocalypse plugin) {
         super(plugin);
+        minIronNuggets = 6;
+        maxIronNuggets = 9;
     }
 
     @Override

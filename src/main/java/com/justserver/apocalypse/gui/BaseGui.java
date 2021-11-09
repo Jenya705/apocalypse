@@ -111,11 +111,23 @@ public class BaseGui extends Gui {
             return null;
         }
         for(Map.Entry<Material, Integer> entry : this.price.entrySet()){
-            for(ItemStack itemInInventory : player.getInventory()){
-                if(itemInInventory != null && itemInInventory.getType().equals(entry.getKey())){
-                    itemInInventory.setAmount(itemInInventory.getAmount() - entry.getValue());
+            int removed = 0;
+            for(ItemStack playerStack : player.getInventory()){
+                if(removed == entry.getValue()){
+                    break;
+                }
+                if(playerStack.getType().equals(entry.getKey())){
+                    if((entry.getValue() - removed) >= playerStack.getAmount()){
+                        removed += playerStack.getAmount();
+                        playerStack.setAmount(0);
+                    } else if((entry.getValue() - removed) <= playerStack.getAmount()) {
+                        int toRemove = (entry.getValue() - removed);
+                        playerStack.setAmount(playerStack.getAmount() - toRemove);
+                        removed += toRemove;
+                    }
                 }
             }
+            player.getInventory().remove(new ItemStack(entry.getKey(), entry.getValue()));
         }
         this.base.duration += 3 * 60 * 60 * 1000;
         this.base.saveBase();

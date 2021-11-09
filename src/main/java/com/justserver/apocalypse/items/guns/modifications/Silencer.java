@@ -12,6 +12,8 @@ import java.util.List;
 public class Silencer extends Modify{
     public Silencer(Apocalypse plugin) {
         super(plugin);
+        minIronNuggets = 3;
+        maxIronNuggets = 6;
     }
 
     @Override
@@ -26,7 +28,7 @@ public class Silencer extends Modify{
 
     @Override
     public void onInteract(PlayerInteractEvent event) {
-
+        super.onInteract(event);
     }
 
     @Override

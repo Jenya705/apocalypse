@@ -7,7 +7,9 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 public class Pistol extends Gun {
     public Pistol(Apocalypse plugin) {
-        super(plugin, false, 2.3, 30, 7, 5);
+        super(plugin, false, 2.3, 30, 7, 7);
+        minIronNuggets = 4;
+        maxIronNuggets = 6;
     }
 
     @Override
@@ -29,8 +31,6 @@ public class Pistol extends Gun {
     public int getSlowdown() {
         return 5;
     }
-
-    
 
     @Override
     public int getRechargeTime() {

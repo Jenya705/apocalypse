@@ -54,4 +54,9 @@ public abstract class Modify extends Item {
         //dataContainer.set(new NamespacedKey(plugin, "is_modify"), PersistentDataType.INTEGER, 1);
         return is;
     }
+
+    @Override
+    public void onInteract(PlayerInteractEvent event) {
+        event.setCancelled(true);
+    }
 }

@@ -36,7 +36,7 @@ public class GunHandler implements Listener {
         if(event.getHand().equals(EquipmentSlot.HAND) && event.getAction().equals(Action.LEFT_CLICK_AIR)){
             Player player = event.getPlayer();
             if(event.getItem() == null) return;
-            if(Registry.getItemByItemstack(event.getItem()) instanceof Gun && player.isSneaking()){
+            if(Registry.getItemByItemstack(event.getItem()) instanceof Gun && player.isSneaking() && !player.hasPotionEffect(PotionEffectType.SLOW)){
                 plugin.guiManager.setGui(player, new ModifiactionsGui(player.getInventory().getItemInMainHand(), plugin));
             }else if(Registry.getItemByItemstack(player.getInventory().getItemInMainHand()) instanceof Gun){
                 List<String> modifications = Modify.getModifications(plugin, player.getInventory().getItemInMainHand());

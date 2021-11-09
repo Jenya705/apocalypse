@@ -9,6 +9,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 public class Knife extends Item {
     public Knife(Apocalypse plugin) {
         super(plugin);
+        minIronNuggets = 2;
+        maxIronNuggets = 2;
     }
 
     @Override

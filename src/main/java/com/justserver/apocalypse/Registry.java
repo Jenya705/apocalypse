@@ -56,11 +56,12 @@ public class Registry {
         if(plugin == null){
             plugin = Apocalypse.getPlugin(Apocalypse.class);
         }
-        Bukkit.getScheduler().runTaskLater(plugin, () -> { // bukkit api have very cool static loading and sometimes fields used here are null (so use enums :D)
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {// bukkit api have very cool static loading and sometimes fields used here are null (so use enums :D)
             WORKBENCH_1 = new Workbench1(plugin);
             WORKBENCH_2 = new Workbench2(plugin);
             WORKBENCH_3 = new Workbench3(plugin);
-        }, 5);
+            System.out.println("Workbenches inited successfully");
+        }, 20);
     }
     
     public static Item getItemByItemstack(ItemStack itemStack){

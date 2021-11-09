@@ -2,6 +2,7 @@ package com.justserver.apocalypse.base.workbenches;
 
 import com.justserver.apocalypse.Apocalypse;
 import com.justserver.apocalypse.base.workbenches.crafts.BulletCraft;
+import com.justserver.apocalypse.base.workbenches.crafts.IronIngotCraft;
 import com.justserver.apocalypse.base.workbenches.crafts.PistolCraft;
 import com.justserver.apocalypse.base.workbenches.crafts.Workbench1Craft;
 import com.justserver.apocalypse.items.ItemRarity;
@@ -53,7 +54,8 @@ public class PlayerCrafts extends Workbench{
     }
 
     public List<Craft> crafts = new ArrayList<>(Arrays.asList(
-            new Workbench1Craft(plugin)
+            new Workbench1Craft(plugin),
+            new IronIngotCraft(plugin)
     ));
 
     @Override

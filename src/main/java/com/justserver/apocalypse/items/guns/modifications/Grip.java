@@ -26,7 +26,7 @@ public class Grip extends Modify{
 
     @Override
     public void onInteract(PlayerInteractEvent event) {
-
+        super.onInteract(event);
     }
 
     @Override

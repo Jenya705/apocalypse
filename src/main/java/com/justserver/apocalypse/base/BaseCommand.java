@@ -1,6 +1,7 @@
 package com.justserver.apocalypse.base;
 
 import com.justserver.apocalypse.Apocalypse;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -24,15 +25,26 @@ public record BaseCommand(Apocalypse plugin) implements CommandExecutor, TabComp
 
             if (player.getWorld().getName().contains("dungeon")) return true;
             if (label.equals("base") && args.length > 0) {
-                if (args.length == 1 && args[0].equals("create")) {
-                    if (Base.getBasesByPlayer(plugin, player).size() + 1 > 1) {
+                if (args[0].equals("create")) {
+                    List<Base> playersBases = Base.getBasesByPlayer(plugin, player);
+                    if (playersBases.size() + 1 > 1) {
                         player.sendMessage(ChatColor.DARK_RED + "У вас уже есть база");
+                        if(args.length > 1){
+                            StringBuilder bases = new StringBuilder();
+                            int counter = 1;
+                            for(Base playersBase : playersBases){
+                                bases.append(ChatColor.AQUA + "База #").append(counter).append(": X: ").append(playersBase.location.getBlockX()).append(" Y: ").append(playersBase.location.getBlockY()).append(" Z: ").append(playersBase.location.getBlockZ()).append("\n");
+                                counter++;
+                            }
+                            player.sendMessage(bases.toString());
+                        }
+
                         return true;
                     }
-                    double lowestDistance = 31; // ты кодишь?
+                    double lowestDistance = 31;
                     for (Base base : plugin.loadedBases) {
                         if (base.location.distance(player.getLocation()) < lowestDistance) {
-                            player.sendMessage(ChatColor.DARK_RED + "Вы не можете поставить тут базу!");
+                            player.sendMessage(ChatColor.DARK_RED + "Вы не можете поставить тут базу! Дистанция: " + base.location.distance(player.getLocation()));
                             return true;
                         }
                     }
@@ -107,6 +119,7 @@ public record BaseCommand(Apocalypse plugin) implements CommandExecutor, TabComp
                                 if(!foundBases.contains(base1)) player.sendMessage(ChatColor.RED + "База удалена!");
                                 foundBases.add(base1);
                                 base1.location.getBlock().setType(Material.AIR);
+                                base1.remove();
                             }
                         });
                         plugin.loadedBases.remove(base);
@@ -116,6 +129,21 @@ public record BaseCommand(Apocalypse plugin) implements CommandExecutor, TabComp
                     } else {
                         player.sendMessage(ChatColor.DARK_RED + "Вы не владелец базы!");
                     }
+                } else if(args.length == 1 && args[0].equals("list")){
+                    Base base = Base.getBaseByBlock(plugin, player.getLocation().getBlock());
+                    if(base == null){
+                        player.sendMessage(ChatColor.RED + "Вы находитесь не на территории базы");
+                        return true;
+                    }
+                    if(!base.owner.equals(player.getUniqueId())){
+                        player.sendMessage(ChatColor.RED + "Вы не владелец");
+                        return true;
+                    }
+                    StringBuilder players = new StringBuilder();
+                    for(UUID basePlayer : base.players){
+                        players.append(ChatColor.AQUA).append(Bukkit.getOfflinePlayer(basePlayer).getName()).append("\n");
+                    }
+                    player.sendMessage(players.toString());
                 }
             }
         }

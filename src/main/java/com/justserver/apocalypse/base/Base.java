@@ -92,10 +92,18 @@ public class Base {
                     }
                 });
                 for(Base found : foundBases){
+                    for(HashMap<String, Object> blockProperty : found.blocks){
+                        Location blockLocation = (Location) blockProperty.get("location");
+                        if(BlockTypes.blocks.containsKey(blockLocation.getBlock().getType())){
+                            blockLocation.getBlock().setType(Material.AIR);
+                        }
+                    }
                     plugin.loadedBases.remove(found);
                 }
                 plugin.bases.config.set("bases." + this.id, null);
-                plugin.loadedBases.remove(this);
+                try {
+                    plugin.loadedBases.remove(this);
+                } catch (ConcurrentModificationException ignored){}
                 plugin.bases.save();
             }, 100);
             return;
@@ -111,6 +119,12 @@ public class Base {
             }
         });
         for(Base found : foundBases){
+            for(HashMap<String, Object> blockProperty : found.blocks){
+                Location blockLocation = (Location) blockProperty.get("location");
+                if(BlockTypes.blocks.containsKey(blockLocation.getBlock().getType())){
+                    blockLocation.getBlock().setType(Material.AIR);
+                }
+            }
             plugin.loadedBases.remove(found);
         }
         plugin.bases.config.set("bases." + this.id, null);

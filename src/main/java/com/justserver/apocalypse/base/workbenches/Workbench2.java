@@ -51,6 +51,12 @@ public class Workbench2 extends Workbench{
     }
 
     public List<Craft> crafts = new ArrayList<>(Arrays.asList(
+            new IronIngotCraft(plugin),
+            new ChestCraft(plugin),
+            new PistolCraft(plugin),
+            new BulletCraft(plugin),
+            new SilencerCraft(plugin),
+            new KnifeCraft(plugin),
             new ShotgunCraft(plugin),
             new FlyingAxeCraft(plugin),
             new Workbench3Craft(plugin)

@@ -6,6 +6,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 public class CustomConfiguration {
     public final Apocalypse plugin;
@@ -22,7 +23,7 @@ public class CustomConfiguration {
                 config.createNewFile();
                 InputStream inputStream = plugin.getResource(name);
                 String data = readFromInputStream(inputStream);
-                PrintWriter writer = new PrintWriter(config, "UTF-8");
+                PrintWriter writer = new PrintWriter(config, StandardCharsets.UTF_8);
                 writer.print(data);
                 writer.close();
 

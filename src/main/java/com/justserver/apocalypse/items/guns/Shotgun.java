@@ -6,7 +6,7 @@ import com.justserver.apocalypse.items.ItemRarity;
 
 public class Shotgun extends Gun{
     public Shotgun(Apocalypse plugin) {
-        super(plugin, true, 3, 10, 10, 5);
+        super(plugin, true, 3, 10, 5, 5);
     }
 
     @Override
@@ -45,6 +45,4 @@ public class Shotgun extends Gun{
     public int getCooldown() {
         return 10;
     }
-
-    // Фанни начни с пистолета пж пж
 }

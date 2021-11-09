@@ -1,10 +1,7 @@
 package com.justserver.apocalypse.base.workbenches;
 
 import com.justserver.apocalypse.Apocalypse;
-import com.justserver.apocalypse.base.workbenches.crafts.AK47Craft;
-import com.justserver.apocalypse.base.workbenches.crafts.FlyingAxeCraft;
-import com.justserver.apocalypse.base.workbenches.crafts.SVDCraft;
-import com.justserver.apocalypse.base.workbenches.crafts.ShotgunCraft;
+import com.justserver.apocalypse.base.workbenches.crafts.*;
 import com.justserver.apocalypse.items.Item;
 import com.justserver.apocalypse.items.ItemRarity;
 import org.bukkit.Material;
@@ -55,6 +52,14 @@ public class Workbench3 extends Workbench {
     }
 
     public List<Craft> crafts = new ArrayList<>(Arrays.asList(
+            new IronIngotCraft(plugin),
+            new ChestCraft(plugin),
+            new PistolCraft(plugin),
+            new BulletCraft(plugin),
+            new SilencerCraft(plugin),
+            new KnifeCraft(plugin),
+            new ShotgunCraft(plugin),
+            new FlyingAxeCraft(plugin),
             new AK47Craft(plugin),
             new SVDCraft(plugin),
             new AK47Craft(plugin)

@@ -9,6 +9,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 public class StrongHelmet extends Armor implements Helmet {
     public StrongHelmet(Apocalypse plugin) {
         super(plugin, 4, 2);
+        minIronNuggets = 7;
+        maxIronNuggets = 10;
     }
 
     @Override

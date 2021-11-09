@@ -3,7 +3,9 @@ package com.justserver.apocalypse.overworld;
 import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent;
 import com.justserver.apocalypse.Apocalypse;
 import com.justserver.apocalypse.Registry;
+import com.justserver.apocalypse.base.Base;
 import com.justserver.apocalypse.base.workbenches.PlayerCrafts;
+import com.justserver.apocalypse.gui.MeceratorGui;
 import com.justserver.apocalypse.gui.WorkbenchGui;
 import com.justserver.apocalypse.items.Gun;
 import com.justserver.apocalypse.items.Item;
@@ -62,19 +64,19 @@ public class OverworldHandler implements Listener {
         for (int i = 0; i < 1; i++) {
             randomTable.add(ItemRarity.LEGENDARY);
         }
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < 52; i++) {
             randomTable.add(ItemRarity.COMMON);
         }
-        for (int i = 0; i < 25; i++) {
+        for (int i = 0; i < 28; i++) {
             randomTable.add(ItemRarity.UNCOMMON);
         }
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 14; i++) {
             randomTable.add(ItemRarity.RARE);
         }
         for (int i = 0; i < 5; i++) {
             randomTable.add(ItemRarity.EPIC);
         }
-
+        System.out.println(randomTable.size());
         Calendar due = Calendar.getInstance();
         due.set(Calendar.MILLISECOND, 0);
         due.set(Calendar.SECOND, 0);
@@ -87,7 +89,7 @@ public class OverworldHandler implements Listener {
         final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
         executor.scheduleAtFixedRate(() -> {
             Bukkit.getScheduler().runTask(plugin, () -> {
-
+                Bukkit.broadcastMessage("Тест: эирдроп");
             });
         }, next, 60*60*1000, TimeUnit.MILLISECONDS);
     }
@@ -107,7 +109,17 @@ public class OverworldHandler implements Listener {
 
     @EventHandler
     public void onRespawn(PlayerPostRespawnEvent event){
-        randomTeleport(event.getPlayer());
+        List<Base> playerBases = Base.getBasesByPlayer(plugin, event.getPlayer());
+        if(playerBases.size() > 0){
+            if(playerBases.size() == 1){
+                event.getPlayer().teleport(playerBases.get(0).location);
+            } else {
+                event.getPlayer().teleport(playerBases.get(random.nextInt(playerBases.size())).location);
+            }
+        } else {
+            randomTeleport(event.getPlayer());
+        }
+
     }
 
     @EventHandler
@@ -145,6 +157,7 @@ public class OverworldHandler implements Listener {
                     for(ChestLootTask task : chestLootTasks.values()){
                         if(task.getChest().equals(chest)){
                             event.getPlayer().sendMessage(ChatColor.RED + "Этот сундук уже лутают");
+                            event.setCancelled(true);
                             return;
                         }
                     }
@@ -191,9 +204,23 @@ public class OverworldHandler implements Listener {
                     lootTask.runTaskTimer(plugin, 7, 7);
                     chestLootTasks.put(event.getPlayer().getUniqueId(), lootTask);
 
+                } else {
+                    event.setCancelled(true);
                 }
                 return;
             } else if (event.getClickedBlock().getType().equals(Material.ANVIL)) {
+                event.setCancelled(true);
+                return;
+            } else if(event.getClickedBlock().getType().equals(Material.OBSIDIAN)){
+                if(event.getHand().equals(EquipmentSlot.OFF_HAND)) return;
+                if(plugin.guiManager.playerToGuiMap.values().stream().anyMatch(gui -> gui instanceof MeceratorGui)){
+                    event.getPlayer().sendMessage("Переработчиком уже пользуются");
+                } else {
+                    plugin.guiManager.setGui(event.getPlayer(), new MeceratorGui());
+                }
+
+                return;
+            } else if(event.getClickedBlock().getType().equals(Material.BARREL)){
                 event.setCancelled(true);
                 return;
             }
@@ -207,6 +234,7 @@ public class OverworldHandler implements Listener {
         //System.out.println("Got item :" + possibleItem);
         if (possibleItem == null) return;
         //System.out.println("Interaction end");
+
         possibleItem.onInteract(event);
     }
 
@@ -249,7 +277,7 @@ public class OverworldHandler implements Listener {
     @EventHandler
     public void openCraftGui(PlayerInteractEvent event){
         //System.out.println("Amegus");
-        if(event.getAction().name().contains("RIGHT") && event.getPlayer().isSneaking() && event.getHand().equals(EquipmentSlot.HAND)){
+        if(event.getAction().name().contains("RIGHT") && event.getPlayer().isSneaking() && event.getHand().equals(EquipmentSlot.HAND) && !event.hasItem()){
             if(event.getItem() != null){
                 if(Registry.getItemByItemstack(event.getItem()) != null) return;
             }
@@ -330,7 +358,7 @@ public class OverworldHandler implements Listener {
     @EventHandler
     public void onCraft (CraftItemEvent event){
         Material type = event.getRecipe().getResult().getType();
-        if (type.equals(Material.CRAFTING_TABLE) || type.name().contains("LEGGINGS") || type.name().contains("BOOTS")) {
+        if (type.equals(Material.CRAFTING_TABLE) || type.name().contains("LEGGINGS") || type.name().contains("BOOTS") || type.equals(Material.OAK_PLANKS)) {
             event.setCancelled(true);
         }
     }
