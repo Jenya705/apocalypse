@@ -1,4 +1,4 @@
-package com.justserver.apocalypse.message;
+package com.github.jenya705.message;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
