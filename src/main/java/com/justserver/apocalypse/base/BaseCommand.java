@@ -20,6 +20,7 @@ import java.util.UUID;
 public record BaseCommand(Apocalypse plugin) implements CommandExecutor, TabCompleter {
 
     @Override
+    @SuppressWarnings("deprecation")
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (sender instanceof Player player) {
 
@@ -30,10 +31,10 @@ public record BaseCommand(Apocalypse plugin) implements CommandExecutor, TabComp
                     if (playersBases.size() + 1 > 1) {
                         player.sendMessage(ChatColor.DARK_RED + "У вас уже есть база");
                         if(args.length > 1){
-                            StringBuilder bases = new StringBuilder();
+                            StringBuilder bases = new StringBuilder(ChatColor.AQUA + "");
                             int counter = 1;
                             for(Base playersBase : playersBases){
-                                bases.append(ChatColor.AQUA + "База #").append(counter).append(": X: ").append(playersBase.location.getBlockX()).append(" Y: ").append(playersBase.location.getBlockY()).append(" Z: ").append(playersBase.location.getBlockZ()).append("\n");
+                                bases.append("База #").append(counter).append(": X: ").append(playersBase.location.getBlockX()).append(" Y: ").append(playersBase.location.getBlockY()).append(" Z: ").append(playersBase.location.getBlockZ()).append("\n");
                                 counter++;
                             }
                             player.sendMessage(bases.toString());
@@ -44,11 +45,11 @@ public record BaseCommand(Apocalypse plugin) implements CommandExecutor, TabComp
                     double lowestDistance = 31;
                     for (Base base : plugin.loadedBases) {
                         if (base.location.distance(player.getLocation()) < lowestDistance) {
-                            player.sendMessage(ChatColor.DARK_RED + "Вы не можете поставить тут базу! Дистанция: " + base.location.distance(player.getLocation()));
+                            player.sendMessage(ChatColor.DARK_RED + "Вы не можете поставить тут базу! Дистанция: " + Math.round(base.location.distance(player.getLocation())));
                             return true;
                         }
                     }
-                    Base base = Base.createBase(plugin, player);
+                    Base.createBase(plugin, player);
                     return true;
                 } else if (args.length == 2 && args[0].equals("add")) {
                     Base base = Base.getBaseByBlock(plugin, player.getLocation().getBlock());
@@ -65,6 +66,10 @@ public record BaseCommand(Apocalypse plugin) implements CommandExecutor, TabComp
                         return true;
                     }
                     Player playerToAdd = plugin.getServer().getPlayer(args[1]);
+                    if(playerToAdd == null){
+                        player.sendMessage(ChatColor.DARK_RED + "Игрок оффлайн");
+                        return true;
+                    }
                     if (Base.getBasesByPlayer(plugin, playerToAdd).size() + 1 > 1) {
                         player.sendMessage(ChatColor.DARK_RED + "У игрока уже есть база");
                         return true;
@@ -87,10 +92,6 @@ public record BaseCommand(Apocalypse plugin) implements CommandExecutor, TabComp
                         return true;
                     }
                     OfflinePlayer playerToRemoveRaw = plugin.getServer().getOfflinePlayer(args[1]);
-                    if (playerToRemoveRaw == null) {
-                        player.sendMessage(ChatColor.DARK_RED + "Игрок не найден!");
-                        return true;
-                    }
                     UUID playerToRemove = playerToRemoveRaw.getUniqueId();
                     if(base.owner.equals(playerToRemove)){
                         player.sendMessage(ChatColor.DARK_RED + "Вы не можете удалить себя из базы");
@@ -144,6 +145,8 @@ public record BaseCommand(Apocalypse plugin) implements CommandExecutor, TabComp
                         players.append(ChatColor.AQUA).append(Bukkit.getOfflinePlayer(basePlayer).getName()).append("\n");
                     }
                     player.sendMessage(players.toString());
+                } else if(args.length == 1 && args[0].equals("dummy") && player.isOp()){
+                    Base.createBase(plugin, player);
                 }
             }
         }

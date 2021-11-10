@@ -2,20 +2,13 @@ package com.justserver.apocalypse.base;
 
 import com.justserver.apocalypse.Apocalypse;
 import com.justserver.apocalypse.utils.CustomConfiguration;
-import it.unimi.dsi.fastutil.Hash;
-import net.kyori.adventure.text.TranslatableComponent;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.Field;
-import java.time.Duration;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class Base {
@@ -224,7 +217,7 @@ public class Base {
         return null;
     }
 
-    public static Base createBase(Apocalypse plugin, Player owner){
+    public static void createBase(Apocalypse plugin, Player owner){
         Base base = new Base(plugin);
         base.id = UUID.randomUUID().toString();
         base.owner = owner.getUniqueId();
@@ -234,7 +227,6 @@ public class Base {
         base.saveBase();
         plugin.loadedBases.add(base);
         plugin.bases.reload();
-        return base;
     }
 
     public static List<Base> getBasesByPlayer(Apocalypse plugin, Player player){
