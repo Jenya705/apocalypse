@@ -171,7 +171,7 @@ public class OverworldHandler implements Listener {
                 if (lootedChests.contains(event.getClickedBlock().getLocation())) return;
                 for(ChestLootTask task : chestLootTasks.values()){
                     if(task.getChest().equals(chest)){
-                        event.getPlayer().sendMessage(ChatColor.RED + "Этот сундук уже лутают");
+                        event.getPlayer().sendMessage(ChatColor.RED + "Этот сундук уже лутают"); // что
                         event.setCancelled(true);
                         return;
                     }
