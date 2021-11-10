@@ -6,6 +6,8 @@ import com.justserver.apocalypse.items.BukkitItem;
 import com.justserver.apocalypse.items.Item;
 import com.justserver.apocalypse.items.ItemRarity;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.persistence.PersistentDataType;
 
 public enum ChestType {
     HOUSE(Registry.FLYING_AXE, Registry.GRIP, Registry.KNIFE,
@@ -80,5 +82,29 @@ public enum ChestType {
 
     public Item[] getWhatSpawns() {
         return whatSpawns;
+    }
+    public String translate(){
+        switch (this){
+
+            case HOUSE -> {
+                return "Обычный";
+            }
+            case FACTORY -> {
+                return "Фабричный";
+            }
+            case HOSPITAL -> {
+                return "Медецинский";
+            }
+            case MILITARY -> {
+                return "Военный";
+            }
+            case POLICE -> {
+                return "Полицейский";
+            }
+            case SHOP -> {
+                return "Магазинский";
+            }
+        }
+        return "Обычный";
     }
 }

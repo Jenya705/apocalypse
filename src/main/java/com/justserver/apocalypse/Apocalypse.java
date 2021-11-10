@@ -32,6 +32,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 
@@ -91,22 +92,47 @@ public final class Apocalypse extends JavaPlugin implements Listener {
             //System.out.println(base.duration);
             loadedBases.add(base);
         }
-        Bukkit.getScheduler().runTaskTimer(this, () -> {
-            try {
-                for(Base loadedBase : loadedBases) {
-                    if(loadedBase.duration == -1) continue;
-                    if (loadedBase.duration <= 0) {
-                        loadedBases.remove(loadedBase);
-                        loadedBase.remove();
+        Calendar due = Calendar.getInstance();
+        due.set(Calendar.MILLISECOND, 0);
+        due.set(Calendar.SECOND, 0);
+        due.set(Calendar.MINUTE,0);
+        due.set(Calendar.HOUR_OF_DAY, 18);
+        if (due.before(Calendar.getInstance())) {
+            System.out.println("ABSURD!");
+            due.add(Calendar.HOUR, 24);
+        }
+        long next = due.getTimeInMillis() - new Date().getTime();
+        new BukkitRunnable(){
+            long timerToAirdrop = next / 1000;
+            @Override
+            public void run() {
+                try {
+                    for(Base loadedBase : loadedBases) {
+                        if(loadedBase.duration == -1) continue;
+                        if (loadedBase.duration <= 0) {
+                            loadedBases.remove(loadedBase);
+                            loadedBase.remove();
 
-                        return;
+                            return;
+                        }
+                        loadedBase.duration -= 1000L;
+
                     }
-                    loadedBase.duration -= 1000L;
-
+                } catch (ConcurrentModificationException ignored){}
+                if(timerToAirdrop <= 0){
+                    timerToAirdrop = 24 * 60 * 60;
+                    return;
+                } else if(timerToAirdrop == 600){
+                    Bukkit.broadcastMessage(ChatColor.RED + "Эирдроп с топовым лутом на X: 0 Z: 0 появиться через 10 минут!");
+                } else if(timerToAirdrop == 300){
+                    Bukkit.broadcastMessage(ChatColor.RED + "Эирдроп с топовым лутом на X: 0 Z: 0 появиться через 5 минут!");
+                } else if(timerToAirdrop == 60){
+                    Bukkit.broadcastMessage(ChatColor.RED + "" + ChatColor.BOLD + "Эирдроп с топовым лутом на X: 0 Z: 0 появиться через 1 минут!");
                 }
-            } catch (ConcurrentModificationException ignored){}
+                timerToAirdrop--;
+            }
+        }.runTaskTimer(this, 0, 20);
 
-        }, 0, 20);
         try {
         for (Player player : Bukkit.getOnlinePlayers()){
 

@@ -226,9 +226,8 @@ public record BaseHandler(Apocalypse plugin) implements Listener {
                         blockTnt.getLocation().getWorld().spawnEntity(blockTnt.getLocation(), EntityType.PRIMED_TNT);
                         blockTnt.setType(Material.AIR);
                     }
-                    if(base.getBlockByLocation(new Location(location.getWorld(), x, y, z)) != null && damage > 0){
+                    if(base.getBlockByLocation(new Location(location.getWorld(), x, y, z)) != null){
                         HashMap<String, Object> hashMap = base.getBlockByLocation(new Location(location.getWorld(), x, y, z));
-                        int index = base.blocks.indexOf(hashMap);
                         hashMap.replace("health", (double) hashMap.get("health") - damage);
                         for(int i = 0; i < base.blocks.size(); i++){
                             HashMap<String, Object> block = base.blocks.get(i);
@@ -244,10 +243,11 @@ public record BaseHandler(Apocalypse plugin) implements Listener {
                                 i--;
                             }
                         }
-                        base.saveBase();
+
                     }
                 }
             }
         }
+        base.saveBase();
     }
 }

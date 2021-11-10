@@ -3,16 +3,14 @@ package com.justserver.apocalypse.setup;
 import com.justserver.apocalypse.Apocalypse;
 import com.justserver.apocalypse.overworld.ChestType;
 import com.justserver.apocalypse.utils.ItemBuilder;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 

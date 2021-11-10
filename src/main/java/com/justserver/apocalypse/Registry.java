@@ -80,4 +80,8 @@ public class Registry {
         }
         return null;
     }
+
+    public static int size(){
+        return Registry.class.getFields().length;
+    }
 }

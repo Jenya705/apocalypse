@@ -49,7 +49,7 @@ public class FlyingAxe extends Item {
 
     @Override
     public ItemRarity getRarity() {
-        return ItemRarity.EPIC;
+        return ItemRarity.LEGENDARY;
     }
 
     @Override

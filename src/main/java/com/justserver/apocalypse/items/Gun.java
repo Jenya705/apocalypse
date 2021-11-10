@@ -166,7 +166,7 @@ public abstract class Gun extends Item {
                     }
                     if(player.isBlocking()){
                         player.clearActiveItem();
-                        player.setCooldown(Material.SHIELD, 70);
+                        player.setCooldown(Material.SHIELD, (int) Math.floor(damage * 70));
                         return;
                     }
                     shot.damage(isHeadShot((Player)shot, location) ? getDamage() * headshotModifier : getDamage(), player);
