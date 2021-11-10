@@ -17,33 +17,28 @@ import com.justserver.apocalypse.tasks.ChestLootTask;
 import com.justserver.apocalypse.utils.ItemBuilder;
 import io.papermc.paper.event.entity.EntityLoadCrossbowEvent;
 import org.bukkit.*;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
-import org.checkerframework.checker.units.qual.N;
 
-import java.lang.reflect.Field;
 import java.security.SecureRandom;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+@SuppressWarnings("deprecation")
 public class OverworldHandler implements Listener {
     private final Apocalypse plugin;
     public final ArrayList<Location> lootedChests = new ArrayList<>();
@@ -87,33 +82,31 @@ public class OverworldHandler implements Listener {
         }
         long next = due.getTimeInMillis() - new Date().getTime();
         final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-        executor.scheduleAtFixedRate(() -> {
-            Bukkit.getScheduler().runTask(plugin, () -> {
-                Bukkit.broadcastMessage(ChatColor.RED + "" + ChatColor.BOLD + "ЭИРДРОП С ТОПОВЫМ ЛУТОМ НА X: 0 Z: 0");
-                Location chestLocation = Bukkit.getWorld("world").getHighestBlockAt(0, 0).getLocation().clone().add(0, 1, 0);
-                chestLocation.getBlock().setType(Material.CHEST);
-                Chest chest = (Chest) chestLocation.getBlock().getState();
-                int randomTop = random.nextInt(4);
-                Item randomWeapon = Registry.AK_47;
-                if(randomTop == 1){
-                    randomWeapon = Registry.SVD;
-                } else if(randomTop == 2) {
-                    randomWeapon = Registry.M4A4;
-                }
-                chest.getBlockInventory().addItem(randomWeapon.createItemStack(plugin));
-                chest.getBlockInventory().addItem(new ItemStack(Material.IRON_INGOT, random.nextInt(32) + 31), new ItemStack(Material.BRICK, random.nextInt(32) + 31), new ItemStack(Material.OAK_PLANKS, 64));
-                if(random.nextInt(4) == 3){
-                    chest.getBlockInventory().addItem(Registry.WORKBENCH_3.createItemStack(plugin));
-                }
-                try {
-                    chest.getBlockInventory().addItem(
-                            ((Item)Registry.class.getFields()[random.nextInt(Registry.size())].get(Registry.class)
-                    ).createItemStack(plugin)); // страшный код ну да ладно
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                }
-            });
-        }, next, 24 * 60 * 60 * 1000, TimeUnit.MILLISECONDS);
+        executor.scheduleAtFixedRate(() -> Bukkit.getScheduler().runTask(plugin, () -> {
+            Bukkit.broadcastMessage(ChatColor.RED + "" + ChatColor.BOLD + "ЭИРДРОП С ТОПОВЫМ ЛУТОМ НА X: 0 Z: 0");
+            Location chestLocation = Bukkit.getWorld("world").getHighestBlockAt(0, 0).getLocation().clone().add(0, 1, 0);
+            chestLocation.getBlock().setType(Material.CHEST);
+            Chest chest = (Chest) chestLocation.getBlock().getState();
+            int randomTop = random.nextInt(4);
+            Item randomWeapon = Registry.AK_47;
+            if(randomTop == 1){
+                randomWeapon = Registry.SVD;
+            } else if(randomTop == 2) {
+                randomWeapon = Registry.M4A4;
+            }
+            chest.getBlockInventory().addItem(randomWeapon.createItemStack(plugin));
+            chest.getBlockInventory().addItem(new ItemStack(Material.IRON_INGOT, random.nextInt(32) + 31), new ItemStack(Material.BRICK, random.nextInt(32) + 31), new ItemStack(Material.OAK_PLANKS, 64));
+            if(random.nextInt(4) == 3){
+                chest.getBlockInventory().addItem(Registry.WORKBENCH_3.createItemStack(plugin));
+            }
+            try {
+                chest.getBlockInventory().addItem(
+                        ((Item)Registry.class.getFields()[random.nextInt(Registry.size())].get(Registry.class)
+                ).createItemStack(plugin)); // страшный код ну да ладно
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }), next, 24 * 60 * 60 * 1000, TimeUnit.MILLISECONDS);
     }
 
     @EventHandler
