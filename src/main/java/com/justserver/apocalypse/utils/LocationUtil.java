@@ -6,9 +6,9 @@ import org.bukkit.util.Vector;
 
 @SuppressWarnings("all")
 public class LocationUtil {
-    public static Location addInDirection(Location inner, BlockFace direction, double addition){
+    public static Location addInDirection(Location inner, BlockFace direction, double addition) {
         Location result = inner.clone();
-        switch (direction){
+        switch (direction) {
             case NORTH:
                 result = result.add(0, 0, -addition);
                 break;
@@ -16,7 +16,7 @@ public class LocationUtil {
                 result = result.add(addition, 0, 0);
                 break;
             case WEST:
-                result = result.add(-addition, 0,0);
+                result = result.add(-addition, 0, 0);
                 break;
             case SOUTH:
                 result = result.add(0, 0, addition);
@@ -31,9 +31,9 @@ public class LocationUtil {
         return result;
     }
 
-    public static Location addInDirection(Location inner, BlockFace direction, Vector add){
+    public static Location addInDirection(Location inner, BlockFace direction, Vector add) {
         Location result = inner.clone();
-        switch (direction){
+        switch (direction) {
             case NORTH:
                 result = result.add(add.getX(), add.getY(), -add.getZ());
                 break;
@@ -41,7 +41,7 @@ public class LocationUtil {
                 result = result.add(-add.getZ(), add.getY(), add.getX());
                 break;
             case WEST:
-                result = result.add(add.getZ(), add.getY(),-add.getX());
+                result = result.add(add.getZ(), add.getY(), -add.getX());
                 break;
             case SOUTH:
                 result = result.add(-add.getX(), add.getY(), add.getZ());
@@ -51,9 +51,9 @@ public class LocationUtil {
         return result;
     }
 
-    public static Location subtractInDirection(Location inner, BlockFace direction, Vector add){
+    public static Location subtractInDirection(Location inner, BlockFace direction, Vector add) {
         Location result = inner.clone();
-        switch (direction){
+        switch (direction) {
             case NORTH:
                 result = result.add(-add.getX(), -add.getY(), add.getZ());
                 break;
@@ -61,7 +61,7 @@ public class LocationUtil {
                 result = result.add(add.getZ(), -add.getY(), -add.getX());
                 break;
             case WEST:
-                result = result.add(-add.getZ(), -add.getY(),add.getX());
+                result = result.add(-add.getZ(), -add.getY(), add.getX());
                 break;
             case SOUTH:
                 result = result.add(add.getX(), -add.getY(), -add.getZ());
@@ -71,28 +71,29 @@ public class LocationUtil {
         return result;
     }
 
-    public static BlockFace getOpposite(BlockFace direction){
-        switch (direction){
+    public static BlockFace getOpposite(BlockFace direction) {
+        switch (direction) {
             case NORTH:
                 return BlockFace.SOUTH;
             case EAST:
                 return BlockFace.WEST;
             case WEST:
                 return BlockFace.EAST;
-            default:return BlockFace.NORTH;
+            default:
+                return BlockFace.NORTH;
         }
     }
 
-    public static Location addInRelativeSide(Location inner, RelativeDirection direction, BlockFace facing, int toAdd){
+    public static Location addInRelativeSide(Location inner, RelativeDirection direction, BlockFace facing, int toAdd) {
         Location result = inner.clone();
-        switch (direction){
+        switch (direction) {
 
             case FORWARD:
-                if(facing.equals(BlockFace.NORTH)){
+                if (facing.equals(BlockFace.NORTH)) {
                     result.add(0, 0, -toAdd);
-                } else if(facing.equals(BlockFace.SOUTH)){
+                } else if (facing.equals(BlockFace.SOUTH)) {
                     result.add(0, 0, toAdd);
-                } else if(facing.equals(BlockFace.WEST)){
+                } else if (facing.equals(BlockFace.WEST)) {
                     result.add(-toAdd, 0, 0);
                 } else {
                     result.add(toAdd, 0, 0);
@@ -108,9 +109,9 @@ public class LocationUtil {
         return result;
     }
 
-    public static Location addInHorizontalRel(Location inner, BlockFace facing, int add){
+    public static Location addInHorizontalRel(Location inner, BlockFace facing, int add) {
         Location result = inner.clone();
-        switch (facing){
+        switch (facing) {
             case NORTH:
                 result = result.add(add, 0, 0);
                 break;
@@ -128,29 +129,29 @@ public class LocationUtil {
         return result;
     }
 
-    public static BlockFace getRelative(RelativeDirection direction, BlockFace facing){
-        switch (direction){
+    public static BlockFace getRelative(RelativeDirection direction, BlockFace facing) {
+        switch (direction) {
 
             case FORWARD:
                 return facing;
             case BACKWARDS:
                 return getOpposite(facing);
             case LEFT:
-                if(facing.equals(BlockFace.NORTH)){
+                if (facing.equals(BlockFace.NORTH)) {
                     return BlockFace.WEST;
-                } else if(facing.equals(BlockFace.SOUTH)){
+                } else if (facing.equals(BlockFace.SOUTH)) {
                     return BlockFace.EAST;
-                } else if(facing.equals(BlockFace.WEST)){
+                } else if (facing.equals(BlockFace.WEST)) {
                     return BlockFace.SOUTH;
                 } else {
                     return BlockFace.NORTH;
                 }
             case RIGHT:
-                if(facing.equals(BlockFace.NORTH)){
+                if (facing.equals(BlockFace.NORTH)) {
                     return BlockFace.EAST;
-                } else if(facing.equals(BlockFace.SOUTH)){
+                } else if (facing.equals(BlockFace.SOUTH)) {
                     return BlockFace.WEST;
-                } else if(facing.equals(BlockFace.WEST)){
+                } else if (facing.equals(BlockFace.WEST)) {
                     return BlockFace.NORTH;
                 } else {
                     return BlockFace.SOUTH;

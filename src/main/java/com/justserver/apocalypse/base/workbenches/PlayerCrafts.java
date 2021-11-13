@@ -1,9 +1,7 @@
 package com.justserver.apocalypse.base.workbenches;
 
 import com.justserver.apocalypse.Apocalypse;
-import com.justserver.apocalypse.base.workbenches.crafts.BulletCraft;
 import com.justserver.apocalypse.base.workbenches.crafts.IronIngotCraft;
-import com.justserver.apocalypse.base.workbenches.crafts.PistolCraft;
 import com.justserver.apocalypse.base.workbenches.crafts.Workbench1Craft;
 import com.justserver.apocalypse.items.ItemRarity;
 import org.bukkit.Material;
@@ -13,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class PlayerCrafts extends Workbench{
+public class PlayerCrafts extends Workbench {
     public PlayerCrafts(Apocalypse plugin) {
         super(plugin);
     }
@@ -63,5 +61,5 @@ public class PlayerCrafts extends Workbench{
         return crafts;
     }
 
-    
+
 }

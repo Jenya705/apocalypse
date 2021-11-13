@@ -5,6 +5,7 @@ import org.bukkit.util.Vector;
 
 public class Doorway extends Vector {
     private final RelativeDirection relativeDirection;
+
     public Doorway(int x, int y, int z, RelativeDirection direction) {
         super(x, y, z);
         this.relativeDirection = direction;

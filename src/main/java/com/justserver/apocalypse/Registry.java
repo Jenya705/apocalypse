@@ -24,7 +24,7 @@ import org.bukkit.persistence.PersistentDataType;
 
 import java.lang.reflect.Field;
 
-public class Registry{
+public class Registry {
     private static Apocalypse plugin = null;
     public final static Medkit MEDKIT = new Medkit(plugin);
     public final static FlyingAxe FLYING_AXE = new FlyingAxe(plugin);
@@ -55,9 +55,9 @@ public class Registry{
     public static Workbench2 WORKBENCH_2;
     public static Workbench3 WORKBENCH_3;
 
-    public static void init(Apocalypse _plugin){
+    public static void init(Apocalypse _plugin) {
         plugin = _plugin;
-        if(plugin == null){
+        if (plugin == null) {
             plugin = Apocalypse.getPlugin(Apocalypse.class);
         }
         Bukkit.getScheduler().runTaskLater(plugin, () -> {// bukkit api have very cool static loading and sometimes fields used here are null (so use enums :D)
@@ -67,19 +67,20 @@ public class Registry{
             Bukkit.getLogger().info("Workbenches inited successfully");
         }, 20);
     }
-    
-    public static Item getItemByItemstack(ItemStack itemStack){
-        if(!itemStack.getItemMeta().getPersistentDataContainer().has(new NamespacedKey(plugin, "APO_ID"), PersistentDataType.STRING)) return null;
+
+    public static Item getItemByItemstack(ItemStack itemStack) {
+        if (!itemStack.getItemMeta().getPersistentDataContainer().has(new NamespacedKey(plugin, "APO_ID"), PersistentDataType.STRING))
+            return null;
         ItemMeta meta = itemStack.getItemMeta();
         String id = meta.getPersistentDataContainer().get(new NamespacedKey(plugin, "APO_ID"), PersistentDataType.STRING);
-        for(Field field : Registry.class.getFields()){
+        for (Field field : Registry.class.getFields()) {
             try {
                 Item item = (Item) field.get(Registry.class);
-                if(item.getId().equalsIgnoreCase(id)){
-                    if(item instanceof Gun){
-                        return (Gun) item;
-                    } else if(item instanceof Modify){
-                        return (Modify) item;
+                if (item.getId().equalsIgnoreCase(id)) {
+                    if (item instanceof Gun) {
+                        return item;
+                    } else if (item instanceof Modify) {
+                        return item;
                     } else {
                         return item;
                     }
@@ -91,7 +92,7 @@ public class Registry{
         return null;
     }
 
-    public static int size(){
+    public static int size() {
         return Registry.class.getFields().length;
     }
 }

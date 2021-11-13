@@ -4,7 +4,7 @@ import com.justserver.apocalypse.Apocalypse;
 import com.justserver.apocalypse.items.Gun;
 import com.justserver.apocalypse.items.ItemRarity;
 
-public class Shotgun extends Gun{
+public class Shotgun extends Gun {
     public Shotgun(Apocalypse plugin) {
         super(plugin, true, 3, 10, 5, 5);
     }
@@ -34,7 +34,6 @@ public class Shotgun extends Gun{
         return 20;
     }
 
-    
 
     @Override
     public boolean isTriple() {

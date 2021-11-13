@@ -43,5 +43,5 @@ public class SmallGunBody extends Component {
         return 0;
     }
 
-    
+
 }

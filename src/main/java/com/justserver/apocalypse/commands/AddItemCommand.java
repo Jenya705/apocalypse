@@ -14,12 +14,11 @@ public class AddItemCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if(args.length != 1) return false;
-        if(sender instanceof Player && sender.isOp()){
+        if (args.length != 1) return false;
+        if (sender instanceof Player && sender.isOp()) {
             try {
-                ((Player) sender).getInventory().addItem(((Item)Registry.class.getDeclaredField(args[0]).get(Registry.class)).createItemStack(Apocalypse.getPlugin(Apocalypse.class)));
-            }
-            catch (NoSuchFieldException e) {
+                ((Player) sender).getInventory().addItem(((Item) Registry.class.getDeclaredField(args[0]).get(Registry.class)).createItemStack(Apocalypse.getPlugin(Apocalypse.class)));
+            } catch (NoSuchFieldException e) {
                 sender.sendMessage(ChatColor.RED + "Предмет не найден");
             } catch (IllegalAccessException e) {
                 sender.sendMessage("Произошла ошибка. Посмотрите консоль для деталей");

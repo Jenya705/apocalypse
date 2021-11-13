@@ -15,6 +15,8 @@ public abstract class Workbench extends Item {
     }
 
     public abstract Material getMaterial();
+
     public abstract Integer getLevel();
+
     public abstract List<Craft> getCrafts();
 }

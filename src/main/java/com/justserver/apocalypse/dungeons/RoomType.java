@@ -6,7 +6,6 @@ import com.justserver.apocalypse.utils.RelativeDirection;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.bukkit.BukkitWorld;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
@@ -16,11 +15,9 @@ import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.transform.AffineTransform;
-import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.util.Vector;
 
@@ -30,8 +27,8 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
 public enum RoomType {
-    FIRST(StartRoom.class,null, new Doorway(2, 2, 4, RelativeDirection.FORWARD)),
-    L(DungeonRoom.class, new Vector(4,3, 0), new Doorway(0, 3, 4, RelativeDirection.LEFT)),
+    FIRST(StartRoom.class, null, new Doorway(2, 2, 4, RelativeDirection.FORWARD)),
+    L(DungeonRoom.class, new Vector(4, 3, 0), new Doorway(0, 3, 4, RelativeDirection.LEFT)),
     ZIGZAG(DungeonRoom.class, new Vector(5, 3, 0), new Doorway(2, 3, 7, RelativeDirection.FORWARD)),
     //DOORWAY3X2(new Vector(2, 2, 0), new Doorway(7, 2, 8, RelativeDirection.FORWARD), new Doorway(11, 2, 4, RelativeDirection.RIGHT)),
     ;
@@ -41,7 +38,7 @@ public enum RoomType {
     private final Vector inDoorway;
     private final Class<? extends DungeonRoom> roomClass;
 
-    RoomType(Class<? extends DungeonRoom> roomClass, Vector inDoorway, Doorway... outDoorways){
+    RoomType(Class<? extends DungeonRoom> roomClass, Vector inDoorway, Doorway... outDoorways) {
         Schematic schematic1;
         this.roomFile = new File(Apocalypse.getInstance().getDataFolder().getAbsolutePath() + File.separator + "maps" + File.separator + this.name().toLowerCase() + ".room");
         try {
@@ -61,7 +58,7 @@ public enum RoomType {
 
     public DungeonRoom paste(Location location, BlockFace rotation) throws IOException, WorldEditException {
         ClipboardFormat clipboardFormat = ClipboardFormats.findByFile(roomFile);
-        if(clipboardFormat == null) {
+        if (clipboardFormat == null) {
             Bukkit.getLogger().severe("Cannot paste room: " + name() + "! Room file exists?:" + roomFile.exists() + ". Path: " + roomFile.getCanonicalPath());
             return null;
         }
@@ -72,7 +69,7 @@ public enum RoomType {
         EditSession session = WorldEdit.getInstance().newEditSession(new BukkitWorld(location.getWorld()));
 
         double rotationValue;
-        switch (rotation){
+        switch (rotation) {
             case EAST:
                 rotationValue = 270;
                 break;

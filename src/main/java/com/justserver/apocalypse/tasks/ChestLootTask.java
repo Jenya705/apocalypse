@@ -1,9 +1,7 @@
 package com.justserver.apocalypse.tasks;
 
 import com.justserver.apocalypse.overworld.OverworldHandler;
-import org.bukkit.Material;
 import org.bukkit.block.Chest;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Map;
@@ -14,7 +12,8 @@ public class ChestLootTask extends BukkitRunnable {
     private final OverworldHandler handler;
     private final Runnable whatAfter;
     private int counter = 0;
-    public ChestLootTask(Chest chest, OverworldHandler handler, Runnable whatAfter){
+
+    public ChestLootTask(Chest chest, OverworldHandler handler, Runnable whatAfter) {
         this.chest = chest;
         this.handler = handler;
         this.whatAfter = whatAfter;
@@ -22,11 +21,11 @@ public class ChestLootTask extends BukkitRunnable {
 
     @Override
     public void run() {
-        if(counter == 27){
+        if (counter == 27) {
             handler.lootedChests.add(chest.getLocation());
-            for(Map.Entry<UUID, ChestLootTask> entry : handler.chestLootTasks.entrySet()){
-                if(entry.getValue().equals(this)){
-                    handler.chestLootTasks.remove(entry.getKey());
+            for (Map.Entry<UUID, ChestLootTask> entry : OverworldHandler.chestLootTasks.entrySet()) {
+                if (entry.getValue().equals(this)) {
+                    OverworldHandler.chestLootTasks.remove(entry.getKey());
                     break;
                 }
             }

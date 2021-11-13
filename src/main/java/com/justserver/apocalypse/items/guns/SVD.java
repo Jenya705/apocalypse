@@ -34,5 +34,5 @@ public class SVD extends Gun {
         return 30;
     }
 
-    
+
 }

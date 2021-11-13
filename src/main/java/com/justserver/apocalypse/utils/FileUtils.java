@@ -1,7 +1,5 @@
 package com.justserver.apocalypse.utils;
 
-import org.bukkit.Bukkit;
-
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,7 +7,7 @@ import java.util.Arrays;
 public class FileUtils {
     public static boolean deleteWorld(File path) {
 
-        if(path.exists()) {
+        if (path.exists()) {
             File[] files = path.listFiles();
             for (File file : files) {
                 if (file.isDirectory()) {
@@ -22,14 +20,14 @@ public class FileUtils {
         return path.delete();
     }
 
-    public static void copyDirectory(File source, File target){
+    public static void copyDirectory(File source, File target) {
         try {
             ArrayList<String> ignore = new ArrayList<String>(Arrays.asList("uid.dat", "session.dat"));
-            if(!ignore.contains(source.getName())) {
-                if(source.isDirectory()) {
-                    if(!target.exists())
+            if (!ignore.contains(source.getName())) {
+                if (source.isDirectory()) {
+                    if (!target.exists())
                         target.mkdirs();
-                    String files[] = source.list();
+                    String[] files = source.list();
                     for (String file : files) {
                         File srcFile = new File(source, file);
                         File destFile = new File(target, file);

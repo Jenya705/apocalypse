@@ -43,5 +43,5 @@ public class Knife extends Item {
         return 0;
     }
 
-    
+
 }

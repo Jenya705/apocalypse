@@ -1,12 +1,13 @@
 package com.justserver.apocalypse.items;
 
 import org.bukkit.ChatColor;
+
 import static org.bukkit.ChatColor.*;
 
 public enum ItemRarity {
-    COMMON,UNCOMMON,RARE,EPIC,LEGENDARY,MYTHIC,DUNGEON,SUPREME;
+    COMMON, UNCOMMON, RARE, EPIC, LEGENDARY, MYTHIC, DUNGEON, SUPREME;
 
-    ChatColor getColor(){
+    ChatColor getColor() {
         return switch (this) {
             case UNCOMMON -> GREEN;
             case RARE -> BLUE;
@@ -19,7 +20,7 @@ public enum ItemRarity {
         };
     }
 
-    String translate(){
+    String translate() {
         return switch (this) {
             case UNCOMMON -> GREEN + "" + BOLD + "Необычный";
             case RARE -> BLUE + "" + BOLD + "Редкий";

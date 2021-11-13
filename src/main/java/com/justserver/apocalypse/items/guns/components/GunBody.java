@@ -5,7 +5,7 @@ import com.justserver.apocalypse.items.ItemRarity;
 import org.bukkit.Material;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-public class GunBody extends Component{
+public class GunBody extends Component {
     public GunBody(Apocalypse plugin) {
         super(plugin);
         minIronNuggets = 9;
@@ -42,5 +42,5 @@ public class GunBody extends Component{
         return 0;
     }
 
-    
+
 }

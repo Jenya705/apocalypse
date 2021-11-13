@@ -15,7 +15,6 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.security.SecureRandom;
 import java.util.*;
 
@@ -27,7 +26,7 @@ public class Dungeon implements Listener {
     private final HashMap<UUID, Location> playerToStartLocation = new HashMap<>();
 
 
-    public Dungeon(Player... players){
+    public Dungeon(Player... players) {
         Collections.addAll(this.players, players);
         WorldCreator creator = new WorldCreator("dungeon_" + System.currentTimeMillis());
         creator.type(WorldType.FLAT);
@@ -35,7 +34,7 @@ public class Dungeon implements Listener {
         creator.hardcore(false);
         creator.generator(new DungeonChunkGenerator());
         this.world = creator.createWorld();
-        if(world == null){
+        if (world == null) {
             announceMessage("Cannot generate dungeon");
             return;
         }
@@ -50,21 +49,21 @@ public class Dungeon implements Listener {
         Bukkit.getPluginManager().registerEvents(this, Apocalypse.getInstance());
     }
 
-    public void announceMessage(String message){
+    public void announceMessage(String message) {
         players.forEach(player -> player.sendMessage(message));
     }
 
     @EventHandler
-    public void onChat(AsyncPlayerChatEvent event){
-        if(event.getMessage().equalsIgnoreCase("end")){
+    public void onChat(AsyncPlayerChatEvent event) {
+        if (event.getMessage().equalsIgnoreCase("end")) {
             Bukkit.getScheduler().runTask(Apocalypse.getInstance(), this::endDungeon);
 
         }
     }
 
-    public void endDungeon(){
-        for(Map.Entry<UUID, Location> entry : playerToStartLocation.entrySet()){
-            if(Bukkit.getPlayer(entry.getKey()) != null){
+    public void endDungeon() {
+        for (Map.Entry<UUID, Location> entry : playerToStartLocation.entrySet()) {
+            if (Bukkit.getPlayer(entry.getKey()) != null) {
                 Bukkit.getPlayer(entry.getKey()).teleport(entry.getValue());
             }
         }
@@ -74,6 +73,7 @@ public class Dungeon implements Listener {
     }
 
     private final static SecureRandom random = new SecureRandom();
+
     public void generate(Location start, int roomsCount) {
         Location starterLocation = start.clone();
         try {

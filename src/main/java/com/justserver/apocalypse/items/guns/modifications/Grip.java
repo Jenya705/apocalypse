@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Grip extends Modify{
+public class Grip extends Modify {
     public Grip(Apocalypse plugin) {
         super(plugin);
     }
@@ -44,7 +44,6 @@ public class Grip extends Modify{
         return 0;
     }
 
-    
 
     private final ArrayList<String> guns = new ArrayList<>(Arrays.asList("AK_47", "SVD", "M4A4"));
 

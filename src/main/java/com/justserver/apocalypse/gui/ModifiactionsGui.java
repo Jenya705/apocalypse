@@ -20,7 +20,7 @@ import org.bukkit.persistence.PersistentDataContainer;
 
 import java.util.List;
 
-public class ModifiactionsGui extends Gui{
+public class ModifiactionsGui extends Gui {
 
     public ItemStack gun;
 
@@ -31,22 +31,22 @@ public class ModifiactionsGui extends Gui{
 
     public final Apocalypse plugin;
 
-    public ModifiactionsGui(ItemStack gun, Apocalypse plugin){
+    public ModifiactionsGui(ItemStack gun, Apocalypse plugin) {
         this.gun = gun;
         this.plugin = plugin;
         Inventory inventory = Bukkit.createInventory(null, 27, getName());
-        for(int slot = 0; slot < inventory.getSize();slot++){
+        for (int slot = 0; slot < inventory.getSize(); slot++) {
             inventory.setItem(slot, new ItemStack(Material.GRAY_STAINED_GLASS_PANE));
         }
-        for(int slot = 10; slot < 15; slot++){
+        for (int slot = 10; slot < 15; slot++) {
             inventory.setItem(slot, new ItemStack(Material.GRAY_DYE));
         }
         inventory.setItem(16, new ItemStack(Material.BARRIER));
 
         List<String> modifications = Modify.getModifications(plugin, gun);
-        for(int slot = 10; slot < 10 + modifications.size(); slot++){
+        for (int slot = 10; slot < 10 + modifications.size(); slot++) {
             try {
-                if(modifications.get(slot - 10).trim().equals("")){
+                if (modifications.get(slot - 10).trim().equals("")) {
                     continue;
                 }
                 inventory.setItem(slot, ((Item) Registry.class.getDeclaredField(modifications.get(slot - 10)).get(Registry.class)).createItemStack(plugin));
@@ -64,11 +64,11 @@ public class ModifiactionsGui extends Gui{
     public Gui handleClick(InventoryClickEvent event, Player player, ItemStack itemStack, InventoryView view, ClickType clickType) {
         ItemMeta itemMeta = gun.getItemMeta();
         PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
-        if(Registry.getItemByItemstack(itemStack) instanceof Modify){
+        if (Registry.getItemByItemstack(itemStack) instanceof Modify) {
             List<String> modifications = Modify.getModifications(plugin, gun);
-            if(modifications.contains(Registry.getItemByItemstack(itemStack).getId())){
-                modifications.remove(modifications.indexOf(Registry.getItemByItemstack(itemStack).getId()));
-            }else{
+            if (modifications.contains(Registry.getItemByItemstack(itemStack).getId())) {
+                modifications.remove(Registry.getItemByItemstack(itemStack).getId());
+            } else {
                 player.sendMessage(ChatColor.DARK_RED + "Обвеса нет!");
             }
             Modify.setModifications(plugin, gun, modifications, dataContainer);
@@ -79,11 +79,11 @@ public class ModifiactionsGui extends Gui{
             plugin.guiManager.setGui(player, new ModifiactionsGui(gun, plugin));
             return this;
         }
-        if(itemStack.getType().equals(Material.BARRIER)){
+        if (itemStack.getType().equals(Material.BARRIER)) {
             plugin.guiManager.clear(player);
             player.closeInventory();
             return null;
-        }else{
+        } else {
             return this;
         }
     }
@@ -92,21 +92,21 @@ public class ModifiactionsGui extends Gui{
     public void handleInventoryClick(InventoryClickEvent event, Player player, ItemStack itemStack, ClickType clickType) {
         ItemMeta itemMeta = gun.getItemMeta();
         PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
-        if(Registry.getItemByItemstack(itemStack) instanceof Modify modify){
+        if (Registry.getItemByItemstack(itemStack) instanceof Modify modify) {
             Gun gunClass = (Gun) Registry.getItemByItemstack(gun);
-            if(!modify.getForGuns().contains(gunClass.getId())){
+            if (!modify.getForGuns().contains(gunClass.getId())) {
                 player.sendMessage(ChatColor.DARK_RED + "Данный обвес нельзя установить на данное оружие!");
                 return;
             }
             List<String> modifications = Modify.getModifications(plugin, gun);
-            if(modifications.size() + 1 > 5){
+            if (modifications.size() + 1 > 5) {
                 player.sendMessage(ChatColor.DARK_RED + "У вас максимальное кол-во обвесов!");
                 return;
             }
 
-            if(!modifications.contains(Registry.getItemByItemstack(itemStack).getId())){
+            if (!modifications.contains(Registry.getItemByItemstack(itemStack).getId())) {
                 modifications.add(Registry.getItemByItemstack(itemStack).getId());
-            }else{
+            } else {
                 player.sendMessage(ChatColor.DARK_RED + "Обвес уже установлен!");
                 return;
             }

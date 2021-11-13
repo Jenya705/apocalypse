@@ -1,7 +1,6 @@
 package com.justserver.apocalypse.commands;
 
 import com.justserver.apocalypse.Apocalypse;
-
 import com.justserver.apocalypse.dungeons.Dungeon;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;

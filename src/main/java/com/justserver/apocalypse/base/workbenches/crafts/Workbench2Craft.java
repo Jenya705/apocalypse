@@ -4,8 +4,6 @@ import com.justserver.apocalypse.Apocalypse;
 import com.justserver.apocalypse.Registry;
 import com.justserver.apocalypse.base.workbenches.Craft;
 import com.justserver.apocalypse.base.workbenches.CraftItem;
-import com.justserver.apocalypse.base.workbenches.Workbench1;
-import com.justserver.apocalypse.base.workbenches.Workbench2;
 import com.justserver.apocalypse.items.BukkitItem;
 import com.justserver.apocalypse.items.Item;
 import com.justserver.apocalypse.items.ItemRarity;

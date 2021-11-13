@@ -20,7 +20,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 
-public class WorkbenchGui extends Gui{
+public class WorkbenchGui extends Gui {
     public final Integer level;
     public final Workbench workbench;
     public final Apocalypse plugin;
@@ -29,19 +29,19 @@ public class WorkbenchGui extends Gui{
         this.level = workbench.getLevel();
         this.plugin = plugin;
         Inventory inventory = Bukkit.createInventory(null, 27, getName());
-        for(int slot = 0; slot < inventory.getSize();slot++){
+        for (int slot = 0; slot < inventory.getSize(); slot++) {
             inventory.setItem(slot, new ItemStack(Material.GRAY_STAINED_GLASS_PANE));
         }
-        for(int slot = 0; slot < workbench.getCrafts().size();slot++){
+        for (int slot = 0; slot < workbench.getCrafts().size(); slot++) {
             ItemStack item = workbench.getCrafts().get(slot).getCraftResult().createItemStack(plugin);
             ItemMeta meta = item.getItemMeta();
             ArrayList<Component> lore = new ArrayList<>();
-            for(CraftItem craftItem : workbench.getCrafts().get(slot).getNeedItems()){
-                if(craftItem == null) continue;
-                if(craftItem.getItem() == null) continue;
+            for (CraftItem craftItem : workbench.getCrafts().get(slot).getNeedItems()) {
+                if (craftItem == null) continue;
+                if (craftItem.getItem() == null) continue;
                 String name = craftItem.getItem().getMaterial().getTranslationKey();
 
-                if(!(craftItem.getItem() instanceof BukkitItem)){
+                if (!(craftItem.getItem() instanceof BukkitItem)) {
                     name = craftItem.getItem().customName();
                 }
                 lore.add(Component.text(ChatColor.GRAY + String.valueOf(craftItem.getCount()) + " ").append(Component.translatable(name).color(NamedTextColor.GRAY)));
@@ -57,7 +57,7 @@ public class WorkbenchGui extends Gui{
     @Override
     public String getName() {
         String name = "Верстак " + level + " лвл";
-        if(level == 0){
+        if (level == 0) {
             name = "Крафты";
         }
         return name;
@@ -67,24 +67,24 @@ public class WorkbenchGui extends Gui{
     public Gui handleClick(InventoryClickEvent event, Player player, ItemStack itemStack, InventoryView view, ClickType clickType) {
         Craft craft = workbench.getCrafts().get(event.getSlot());
         boolean canRemove = true;
-        for(CraftItem itemInCraft : craft.getNeedItems()){
-            if(!player.getInventory().contains(itemInCraft.getItem().getMaterial(), itemInCraft.getCount())){
+        for (CraftItem itemInCraft : craft.getNeedItems()) {
+            if (!player.getInventory().contains(itemInCraft.getItem().getMaterial(), itemInCraft.getCount())) {
                 canRemove = false;
             }
         }
-        if(!canRemove) {
+        if (!canRemove) {
             player.sendMessage(ChatColor.DARK_RED + "У вас недостаточно ресурсов!");
             return null;
         }
-        for(CraftItem itemInCraft : craft.getNeedItems()){
-            if(itemInCraft == null) continue;
-            if(itemInCraft.getItem() == null) continue;
-            for(ItemStack item : player.getInventory()){
-                if(item == null) continue;
-                if(item.getType().equals(itemInCraft.getItem().getMaterial())){
-                    if(item.getAmount() < itemInCraft.getCount()){
+        for (CraftItem itemInCraft : craft.getNeedItems()) {
+            if (itemInCraft == null) continue;
+            if (itemInCraft.getItem() == null) continue;
+            for (ItemStack item : player.getInventory()) {
+                if (item == null) continue;
+                if (item.getType().equals(itemInCraft.getItem().getMaterial())) {
+                    if (item.getAmount() < itemInCraft.getCount()) {
                         item.setAmount(0);
-                    }else{
+                    } else {
                         item.setAmount(item.getAmount() - itemInCraft.getCount());
                     }
                     break;

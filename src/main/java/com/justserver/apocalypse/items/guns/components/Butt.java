@@ -5,7 +5,7 @@ import com.justserver.apocalypse.items.ItemRarity;
 import org.bukkit.Material;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-public class Butt extends Component{
+public class Butt extends Component {
     public Butt(Apocalypse plugin) {
         super(plugin);
     }
@@ -40,5 +40,5 @@ public class Butt extends Component{
         return 0;
     }
 
-    
+
 }

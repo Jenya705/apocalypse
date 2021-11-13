@@ -2,7 +2,6 @@ package com.justserver.apocalypse.utils;
 
 import com.justserver.apocalypse.Apocalypse;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.*;
@@ -13,11 +12,11 @@ public class CustomConfiguration {
     public String name;
     public YamlConfiguration config;
 
-    public CustomConfiguration(Apocalypse plugin, String name){
+    public CustomConfiguration(Apocalypse plugin, String name) {
         this.plugin = plugin;
         this.name = name;
         File config = new File(plugin.getDataFolder(), name);
-        if(!config.exists()){
+        if (!config.exists()) {
             try {
                 config.getParentFile().mkdir();
                 config.createNewFile();
@@ -33,7 +32,7 @@ public class CustomConfiguration {
         }
         try {
             this.config = YamlConfiguration.loadConfiguration(config);
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "reload confirm");
             return;
         }
@@ -72,8 +71,8 @@ public class CustomConfiguration {
             OutputStream out = new FileOutputStream(file);
             byte[] buf = new byte[1024];
             int len;
-            while((len=in.read(buf))>0){
-                out.write(buf,0,len);
+            while ((len = in.read(buf)) > 0) {
+                out.write(buf, 0, len);
             }
             out.close();
             in.close();

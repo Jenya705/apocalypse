@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Workbench2 extends Workbench{
+public class Workbench2 extends Workbench {
     public Workbench2(Apocalypse plugin) {
         super(plugin);
     }

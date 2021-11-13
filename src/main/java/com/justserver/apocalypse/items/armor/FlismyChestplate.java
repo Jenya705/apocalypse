@@ -1,7 +1,6 @@
 package com.justserver.apocalypse.items.armor;
 
 import com.justserver.apocalypse.Apocalypse;
-import com.justserver.apocalypse.items.Item;
 import com.justserver.apocalypse.items.ItemRarity;
 import org.bukkit.Material;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -43,5 +42,5 @@ public class FlismyChestplate extends Armor {
         return 2;
     }
 
-    
+
 }

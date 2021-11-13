@@ -18,22 +18,23 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 
 public class WhoLiesPuzzle extends Gui implements Puzzle {
-    private ArrayList<ArrayList<Pair<String, Boolean>>> answers = new ArrayList<>();
+    private final ArrayList<ArrayList<Pair<String, Boolean>>> answers = new ArrayList<>();
     private final SecureRandom random = new SecureRandom();
-    public WhoLiesPuzzle(Apocalypse plugin){
+
+    public WhoLiesPuzzle(Apocalypse plugin) {
 
         int size = plugin.getConfig().getConfigurationSection("wholies").getKeys(false).size();
-        for(int i = 0; i < size; i++){
+        for (int i = 0; i < size; i++) {
             ArrayList<Pair<String, Boolean>> pairs = new ArrayList<>();
             String path = "wholies." + (i + 1);
-            for(String question : plugin.getConfig().getConfigurationSection(path).getKeys(false)){
+            for (String question : plugin.getConfig().getConfigurationSection(path).getKeys(false)) {
                 pairs.add(new Pair<>(question, plugin.getConfig().getBoolean(path + "." + question)));
             }
             answers.add(pairs);
         }
         inventory = Bukkit.createInventory(null, 54, getName());
         ItemBuilder itemBuilder = new ItemBuilder(Material.PAPER).setName(ChatColor.GREEN + "Что нужно?");
-        for(String loreLine : getLoreDescription()){
+        for (String loreLine : getLoreDescription()) {
             itemBuilder.addLoreLine(loreLine);
         }
         inventory.addItem(itemBuilder.toItemStack());
@@ -70,7 +71,7 @@ public class WhoLiesPuzzle extends Gui implements Puzzle {
 
     @Override
     public String[] getLoreDescription() {
-        return new String[] {
+        return new String[]{
                 ChatColor.GRAY + "У вас есть несколько показаний нескольких людей",
                 ChatColor.GRAY + "но на вид все они говорят неправду",
                 ChatColor.GRAY + "От вас требуется, чтобы вы нашли того, кто говорит",

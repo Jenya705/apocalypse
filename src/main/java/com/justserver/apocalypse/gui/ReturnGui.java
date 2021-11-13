@@ -6,7 +6,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 
-public class ReturnGui extends Gui{
+public class ReturnGui extends Gui {
     @Override
     public String getName() {
         return null;

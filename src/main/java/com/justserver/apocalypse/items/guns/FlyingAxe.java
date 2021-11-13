@@ -1,7 +1,6 @@
 package com.justserver.apocalypse.items.guns;
 
 import com.justserver.apocalypse.Apocalypse;
-import com.justserver.apocalypse.Registry;
 import com.justserver.apocalypse.items.Item;
 import com.justserver.apocalypse.items.ItemRarity;
 import org.bukkit.ChatColor;
@@ -11,18 +10,18 @@ import org.bukkit.Sound;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Objects;
+import java.util.UUID;
 
 public class FlyingAxe extends Item {
 
@@ -38,7 +37,7 @@ public class FlyingAxe extends Item {
         return thrownAxes;
     }
 
-    public void removePlayer(UUID uuid){
+    public void removePlayer(UUID uuid) {
         thrownAxes.remove(uuid);
     }
 
@@ -54,12 +53,12 @@ public class FlyingAxe extends Item {
 
     @Override
     public void onInteract(PlayerInteractEvent event) {
-            if(this.plugin == null) {
-                this.plugin = Apocalypse.getPlugin(Apocalypse.class);
-            }
-        if(event.getAction().name().contains("RIGHT_CLICK") && Objects.equals(event.getHand(), EquipmentSlot.HAND)) {
+        if (this.plugin == null) {
+            this.plugin = Apocalypse.getPlugin(Apocalypse.class);
+        }
+        if (event.getAction().name().contains("RIGHT_CLICK") && Objects.equals(event.getHand(), EquipmentSlot.HAND)) {
             Player player = event.getPlayer();
-            if(thrownAxes.containsKey(player.getUniqueId())){
+            if (thrownAxes.containsKey(player.getUniqueId())) {
                 player.sendMessage(ChatColor.RED + "Вы не можете пускать несколько топоров");
                 return;
             }
@@ -77,8 +76,9 @@ public class FlyingAxe extends Item {
             Location destination = player.getEyeLocation().clone().add(player.getEyeLocation().getDirection().multiply(20));
             Vector vector = destination.subtract(player.getEyeLocation()).toVector();
             new BukkitRunnable() {
-                int distance = 40;
+                final int distance = 40;
                 int counter = 0;
+
                 @Override
                 public void run() {
 
@@ -87,23 +87,23 @@ public class FlyingAxe extends Item {
                     armorStand.setRightArmPose(newRotation);
                     armorStand.teleport(armorStand.getLocation().clone().add(vector.normalize()));
 
-                    if(armorStand.getTargetBlockExact(1) != null && !armorStand.getTargetBlockExact(1).isPassable()){
-                        if(!armorStand.isDead()){
+                    if (armorStand.getTargetBlockExact(1) != null && !armorStand.getTargetBlockExact(1).isPassable()) {
+                        if (!armorStand.isDead()) {
                             armorStand.remove();
                             thrownAxes.remove(player.getUniqueId());
                             cancel();
                         }
                     }
 
-                    for(Entity entity : armorStand.getChunk().getEntities()){
-                        if(!armorStand.isDead()) {
-                            if(armorStand.getLocation().distanceSquared(entity.getLocation().add(0, entity.getHeight() / 2, 0)) <= entity.getHeight() / 2){
-                                if(!entity.equals(player) && !entity.equals(armorStand)){
-                                    if(entity instanceof LivingEntity livingEntity){
+                    for (Entity entity : armorStand.getChunk().getEntities()) {
+                        if (!armorStand.isDead()) {
+                            if (armorStand.getLocation().distanceSquared(entity.getLocation().add(0, entity.getHeight() / 2, 0)) <= entity.getHeight() / 2) {
+                                if (!entity.equals(player) && !entity.equals(armorStand)) {
+                                    if (entity instanceof LivingEntity livingEntity) {
                                         livingEntity.damage(3.0 * (Item.rarityUpgraded(event.getItem()) ? 1.3 : 1), player);
                                         entity.getWorld().playSound(entity.getLocation(), Sound.ITEM_FLINTANDSTEEL_USE, 1f, 0.3f);
                                         armorStand.remove();
-                                        if(damage >= getMaterial().getMaxDurability()){
+                                        if (damage >= getMaterial().getMaxDurability()) {
                                             entity.getWorld().playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 1f, 0.9f);
                                             return;
                                         }
@@ -114,7 +114,7 @@ public class FlyingAxe extends Item {
                             }
                         }
                     }
-                    if(counter > distance){
+                    if (counter > distance) {
                         armorStand.remove();
                         thrownAxes.remove(player.getUniqueId());
                         cancel();
@@ -141,5 +141,5 @@ public class FlyingAxe extends Item {
         return 10;
     }
 
-    
+
 }

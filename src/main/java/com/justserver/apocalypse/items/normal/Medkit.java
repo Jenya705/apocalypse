@@ -3,15 +3,12 @@ package com.justserver.apocalypse.items.normal;
 import com.justserver.apocalypse.Apocalypse;
 import com.justserver.apocalypse.items.Item;
 import com.justserver.apocalypse.items.ItemRarity;
-import org.bukkit.*;
+import org.bukkit.Material;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitTask;
-
-import java.util.ArrayList;
 
 public class Medkit extends Item {
 
@@ -19,7 +16,6 @@ public class Medkit extends Item {
         super(plugin);
     }
 
-    
 
     @Override
     public String customName() {

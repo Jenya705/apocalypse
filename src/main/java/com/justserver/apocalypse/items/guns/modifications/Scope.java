@@ -2,7 +2,6 @@ package com.justserver.apocalypse.items.guns.modifications;
 
 import com.justserver.apocalypse.Apocalypse;
 import com.justserver.apocalypse.items.ItemRarity;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -11,17 +10,18 @@ import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
-public class Scope extends Modify{
+public class Scope extends Modify {
 
     public static ArrayList<Player> inScope = new ArrayList<>();
 
     public Scope(Apocalypse plugin) {
         super(plugin);
     }
+
     private final ArrayList<String> guns = new ArrayList<>(Arrays.asList("PISTOL", "M4A4", "SVD"));
+
     @Override
     public List<String> getForGuns() {
         return guns;
@@ -42,10 +42,10 @@ public class Scope extends Modify{
     public void onInteract(PlayerInteractEvent event) {
         super.onInteract(event);
         Player player = event.getPlayer();
-        if(!inScope.contains(player)){
+        if (!inScope.contains(player)) {
             inScope.add(player);
             player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Integer.MAX_VALUE, 255, true, false, false));
-        }else{
+        } else {
             player.removePotionEffect(PotionEffectType.SLOW);
             inScope.remove(player);
         }

@@ -42,5 +42,5 @@ public class MediumGunBody extends Component {
         return 0;
     }
 
-    
+
 }

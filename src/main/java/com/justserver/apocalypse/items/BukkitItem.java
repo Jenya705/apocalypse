@@ -2,13 +2,12 @@ package com.justserver.apocalypse.items;
 
 import com.justserver.apocalypse.Apocalypse;
 import org.bukkit.Material;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.security.SecureRandom;
 
-public class BukkitItem extends Item{
+public class BukkitItem extends Item {
     private final int count;
     private final Material material;
     private final ItemRarity rarity;
@@ -55,8 +54,9 @@ public class BukkitItem extends Item{
         return 0;
     }
 
-    
+
     private final SecureRandom random = new SecureRandom();
+
     @Override
     public ItemStack createItemStack(Apocalypse plugin) {
         return new ItemStack(material, count > 0 ? count : random.nextInt(-count) + 1);

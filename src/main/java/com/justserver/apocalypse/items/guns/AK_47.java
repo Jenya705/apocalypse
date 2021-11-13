@@ -34,5 +34,5 @@ public class AK_47 extends Gun {
         return 20;
     }
 
-    
+
 }

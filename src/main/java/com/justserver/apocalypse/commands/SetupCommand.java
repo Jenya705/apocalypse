@@ -11,11 +11,11 @@ import org.jetbrains.annotations.NotNull;
 public class SetupCommand implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
-        if(commandSender.isOp()){
-            if(args[0].equalsIgnoreCase("start")){
+        if (commandSender.isOp()) {
+            if (args[0].equalsIgnoreCase("start")) {
                 Apocalypse.initSetup();
-                for(Player player : Bukkit.getOnlinePlayers()){
-                    if(player.isOp()){
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    if (player.isOp()) {
                         Apocalypse.getSetup().enterSetup(player);
                     } else {
                         player.kickPlayer("Setup");

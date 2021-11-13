@@ -24,7 +24,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.*;
@@ -78,7 +77,7 @@ public class OverworldHandler implements Listener {
         Calendar due = Calendar.getInstance();
         due.set(Calendar.MILLISECOND, 0);
         due.set(Calendar.SECOND, 0);
-        due.set(Calendar.MINUTE,0);
+        due.set(Calendar.MINUTE, 0);
         due.set(Calendar.HOUR_OF_DAY, 18);
         if (due.before(Calendar.getInstance())) {
             due.add(Calendar.HOUR, 24);
@@ -92,23 +91,23 @@ public class OverworldHandler implements Listener {
             Chest chest = (Chest) chestLocation.getBlock().getState();
             int randomTop = random.nextInt(4);
             Item randomWeapon = Registry.AK_47;
-            if(randomTop == 1){
+            if (randomTop == 1) {
                 randomWeapon = Registry.SVD;
-            } else if(randomTop == 2) {
+            } else if (randomTop == 2) {
                 randomWeapon = Registry.M4A4;
             }
             chest.getBlockInventory().addItem(randomWeapon.createItemStack(plugin));
             chest.getBlockInventory().addItem(new ItemStack(Material.IRON_INGOT, random.nextInt(32) + 31), new ItemStack(Material.BRICK, random.nextInt(32) + 31), new ItemStack(Material.OAK_PLANKS, 64));
-            if(random.nextInt(4) == 3){
+            if (random.nextInt(4) == 3) {
                 chest.getBlockInventory().addItem(Registry.WORKBENCH_3.createItemStack(plugin));
             }
             try {
-                if (random.nextInt(3) == 2){
+                if (random.nextInt(3) == 2) {
                     chest.getBlockInventory().addItem(Registry.RECOMBOBULATOR.createItemStack(plugin));
                 }
                 chest.getBlockInventory().addItem(
-                        ((Item)Registry.class.getFields()[random.nextInt(Registry.size())].get(Registry.class)
-                ).createItemStack(plugin)); // страшный код ну да ладно
+                        ((Item) Registry.class.getFields()[random.nextInt(Registry.size())].get(Registry.class)
+                        ).createItemStack(plugin)); // страшный код ну да ладно
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
@@ -116,8 +115,8 @@ public class OverworldHandler implements Listener {
     }
 
     @EventHandler
-    public void onJoin(PlayerJoinEvent event){
-        if(!event.getPlayer().hasPlayedBefore()){
+    public void onJoin(PlayerJoinEvent event) {
+        if (!event.getPlayer().hasPlayedBefore()) {
             randomTeleport(event.getPlayer());
         }
         Arrays.stream(event.getPlayer().getInventory().getContents())
@@ -129,10 +128,10 @@ public class OverworldHandler implements Listener {
     }
 
     @EventHandler
-    public void onRespawn(PlayerPostRespawnEvent event){
+    public void onRespawn(PlayerPostRespawnEvent event) {
         List<Base> playerBases = Base.getBasesByPlayer(plugin, event.getPlayer());
-        if(playerBases.size() > 0){
-            if(playerBases.size() == 1){
+        if (playerBases.size() > 0) {
+            if (playerBases.size() == 1) {
                 event.getPlayer().teleport(playerBases.get(0).location);
             } else {
                 event.getPlayer().teleport(playerBases.get(random.nextInt(playerBases.size())).location);
@@ -153,7 +152,7 @@ public class OverworldHandler implements Listener {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> plugin.loadedBases.forEach(base -> base.connectedPlayers.remove(event.getPlayer())));
     }
 
-    public void randomTeleport(Player player){
+    public void randomTeleport(Player player) {
 
         int x = random.nextInt(20) * (random.nextBoolean() ? -1 : 1), z = random.nextInt(20) * (random.nextBoolean() ? -1 : 1);
         Location preLocation = player.getWorld().getSpawnLocation().clone();
@@ -167,23 +166,23 @@ public class OverworldHandler implements Listener {
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
         if (event.getClickedBlock() != null) {
-            if(event.getHand().equals(EquipmentSlot.OFF_HAND)) return;
+            if (event.getHand().equals(EquipmentSlot.OFF_HAND)) return;
             if (event.getClickedBlock().getType().equals(Material.CHEST) && !event.getPlayer().isSneaking()) {
                 Chest chest = (Chest) event.getClickedBlock().getState();
                 ChestType chestType;
-                if(clickedChests.containsKey(chest.getLocation())){
+                if (clickedChests.containsKey(chest.getLocation())) {
                     chestType = clickedChests.get(chest.getLocation());
                 } else {
                     if (chest.getPersistentDataContainer().has(new NamespacedKey(Apocalypse.getInstance(), "chest_type"), PersistentDataType.STRING)) {
                         chestType = ChestType.valueOf(chest.getPersistentDataContainer().get(new NamespacedKey(plugin, "chest_type"), PersistentDataType.STRING));
                     } else {
                         int chance = random.nextInt(100);
-                        switch (randomTable.get(chance)){
+                        switch (randomTable.get(chance)) {
                             case RARE -> chestType = ChestType.FACTORY;
                             case EPIC -> chestType = ChestType.POLICE;
                             case LEGENDARY -> chestType = ChestType.MILITARY;
                             default -> chestType = ChestType.HOUSE;
-                        };
+                        }
                         clickedChests.put(chest.getLocation(), chestType);
                         //chestType = ALLOWED_RANDOM[random.nextInt(ALLOWED_RANDOM.length)];
                     }
@@ -191,8 +190,8 @@ public class OverworldHandler implements Listener {
                 chest.setCustomName(chestType.translate());
                 chest.update();
                 if (lootedChests.contains(event.getClickedBlock().getLocation())) return;
-                for(ChestLootTask task : chestLootTasks.values()){
-                    if(task.getChest().equals(chest)){
+                for (ChestLootTask task : chestLootTasks.values()) {
+                    if (task.getChest().equals(chest)) {
                         event.getPlayer().sendMessage(ChatColor.RED + "Этот сундук уже лутают"); // что
                         event.setCancelled(true);
                         return;
@@ -203,7 +202,7 @@ public class OverworldHandler implements Listener {
                 }
                 ChestLootTask lootTask = new ChestLootTask(chest, this, () -> {
                     lootedChests.add(event.getClickedBlock().getLocation());
-                    if(random.nextInt(200) == 199){
+                    if (random.nextInt(200) == 199) {
                         chest.getBlockInventory().addItem(Registry.RECOMBOBULATOR.createItemStack(plugin));
                     }
                     int lootCount = random.nextInt(5) + 1;
@@ -237,20 +236,20 @@ public class OverworldHandler implements Listener {
                 chestLootTasks.put(event.getPlayer().getUniqueId(), lootTask);
                 return;
             } else if (event.getClickedBlock().getType().equals(Material.ANVIL)) {
-                if(event.getHand().equals(EquipmentSlot.OFF_HAND) || event.getAction().name().contains("LEFT")) return;
+                if (event.getHand().equals(EquipmentSlot.OFF_HAND) || event.getAction().name().contains("LEFT")) return;
                 event.setCancelled(true);
                 plugin.guiManager.setGui(event.getPlayer(), new CustomAnvilGui());
                 return;
-            } else if(event.getClickedBlock().getType().equals(Material.OBSIDIAN)){
-                if(event.getHand().equals(EquipmentSlot.OFF_HAND)) return;
-                if(plugin.guiManager.playerToGuiMap.values().stream().anyMatch(gui -> gui instanceof MeceratorGui)){
+            } else if (event.getClickedBlock().getType().equals(Material.OBSIDIAN)) {
+                if (event.getHand().equals(EquipmentSlot.OFF_HAND)) return;
+                if (plugin.guiManager.playerToGuiMap.values().stream().anyMatch(gui -> gui instanceof MeceratorGui)) {
                     event.getPlayer().sendMessage("Переработчиком уже пользуются");
                 } else {
                     plugin.guiManager.setGui(event.getPlayer(), new MeceratorGui());
                 }
 
                 return;
-            } else if(event.getClickedBlock().getType().equals(Material.BARREL)){
+            } else if (event.getClickedBlock().getType().equals(Material.BARREL)) {
                 event.setCancelled(true);
                 return;
             }
@@ -297,10 +296,10 @@ public class OverworldHandler implements Listener {
     }
 
     @EventHandler
-    public void openCraftGui(PlayerInteractEvent event){
-        if(event.getAction().name().contains("RIGHT") && event.getPlayer().isSneaking() && event.getHand().equals(EquipmentSlot.HAND) && !event.hasItem()){
-            if(event.getClickedBlock() != null){
-                if(event.getClickedBlock().getType().equals(Material.CHEST)){
+    public void openCraftGui(PlayerInteractEvent event) {
+        if (event.getAction().name().contains("RIGHT") && event.getPlayer().isSneaking() && event.getHand().equals(EquipmentSlot.HAND) && !event.hasItem()) {
+            if (event.getClickedBlock() != null) {
+                if (event.getClickedBlock().getType().equals(Material.CHEST)) {
                     return;
                 }
             }
@@ -313,21 +312,21 @@ public class OverworldHandler implements Listener {
     }
 
     @EventHandler
-    public void onChat(AsyncPlayerChatEvent event){
-        if(event.getMessage().startsWith("@")){
+    public void onChat(AsyncPlayerChatEvent event) {
+        if (event.getMessage().startsWith("@")) {
             event.setCancelled(true);
-            if(event.getPlayer().getInventory().getItemInMainHand().getType().equals(Material.AIR)){
+            if (event.getPlayer().getInventory().getItemInMainHand().getType().equals(Material.AIR)) {
                 event.getPlayer().sendMessage(ChatColor.RED + "У вас нет рации в руке");
                 event.setMessage("");
                 return;
             }
 
-            if(Registry.getItemByItemstack(event.getPlayer().getInventory().getItemInMainHand()) instanceof Radio){
+            if (Registry.getItemByItemstack(event.getPlayer().getInventory().getItemInMainHand()) instanceof Radio) {
                 event.setCancelled(true);
                 String message = event.getMessage().substring(1);
                 plugin.loadedBases.stream().filter(base -> base.frequency.equals(
                         event.getPlayer().getInventory().getItemInMainHand().getItemMeta().getPersistentDataContainer().get(new NamespacedKey(plugin, "frequency"), PersistentDataType.STRING)
-                )).forEach(base -> base.connectedPlayers.forEach(player -> player.sendMessage(ChatColor.GOLD + "[Рация] "+ ChatColor.DARK_GRAY + event.getPlayer().getName() + ": " + ChatColor.WHITE + message)));
+                )).forEach(base -> base.connectedPlayers.forEach(player -> player.sendMessage(ChatColor.GOLD + "[Рация] " + ChatColor.DARK_GRAY + event.getPlayer().getName() + ": " + ChatColor.WHITE + message)));
             } else {
                 event.getPlayer().sendMessage(ChatColor.RED + "У вас нет рации в руке");
             }
@@ -335,7 +334,7 @@ public class OverworldHandler implements Listener {
     }
 
     @EventHandler
-    public void onChangeEquipment(PlayerItemHeldEvent event){
+    public void onChangeEquipment(PlayerItemHeldEvent event) {
         Player player = event.getPlayer();
         ItemStack itemStack = player.getInventory().getItem(event.getNewSlot());
         if (itemStack == null) {
@@ -357,7 +356,7 @@ public class OverworldHandler implements Listener {
     }
 
     @EventHandler
-    public void onCrossbowRecharge(EntityLoadCrossbowEvent event){
+    public void onCrossbowRecharge(EntityLoadCrossbowEvent event) {
         if (event.getEntity() instanceof Player) {
             ItemStack itemStack = ((Player) event.getEntity()).getInventory().getItemInMainHand();
             itemStack = (itemStack.getType().equals(Material.AIR) ? null : itemStack);
@@ -379,7 +378,7 @@ public class OverworldHandler implements Listener {
     }
 
     @EventHandler
-    public void onCraft(PrepareItemCraftEvent event){
+    public void onCraft(PrepareItemCraftEvent event) {
 //        Material type = event.getRecipe().getResult().getType();
 //        if (type.equals(Material.CRAFTING_TABLE) || type.name().contains("LEGGINGS") || type.name().contains("BOOTS") || type.equals(Material.OAK_PLANKS)) {
 //            event.setCancelled(true);

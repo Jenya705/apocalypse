@@ -6,11 +6,10 @@ import com.justserver.apocalypse.items.ItemRarity;
 import org.bukkit.Material;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Workbench1 extends Workbench{
+public class Workbench1 extends Workbench {
     public Workbench1(Apocalypse plugin) {
         super(plugin);
     }
@@ -67,5 +66,5 @@ public class Workbench1 extends Workbench{
         return crafts;
     }
 
-    
+
 }

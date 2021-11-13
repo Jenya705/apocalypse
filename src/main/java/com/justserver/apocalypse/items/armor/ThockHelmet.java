@@ -42,7 +42,6 @@ public class ThockHelmet extends Armor implements Helmet {
         return 0;
     }
 
-    
 
     @Override
     public double getHeadshotModifier() {

@@ -7,12 +7,13 @@ import org.bukkit.Material;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 public class Bullets extends Item {
-    public Bullets(Apocalypse plugin){
+    public Bullets(Apocalypse plugin) {
         super(plugin);
         count = 1;
         minIronNuggets = 1;
         maxIronNuggets = 2;
     }
+
     @Override
     public String getId() {
         return "BULLETS";
@@ -43,7 +44,6 @@ public class Bullets extends Item {
         return "Боеприпасы";
     }
 
-    
 
     @Override
     public void onInteract(PlayerInteractEvent event) {

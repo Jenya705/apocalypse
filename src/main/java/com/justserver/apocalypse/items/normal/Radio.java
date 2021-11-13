@@ -12,7 +12,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -36,7 +35,7 @@ public class Radio extends Item {
     @Override
     public void onInteract(PlayerInteractEvent event) {
         event.setCancelled(true);
-        if(event.getAction().name().contains("RIGHT")){
+        if (event.getAction().name().contains("RIGHT")) {
             String frequencyI = event.getItem().getItemMeta().getPersistentDataContainer().get(new NamespacedKey(plugin, "frequency"), PersistentDataType.STRING);
 
             SignMenuFactory.Menu menu = plugin.signMenuFactory.newMenu(Arrays.asList("", "===========", "Введите частоту", frequencyI.equals("1111") ? "" : "Текущая: " + frequencyI))
@@ -44,12 +43,12 @@ public class Radio extends Item {
                     .response((playerResponse, strings) -> {
                         try {
                             String frequency = strings[0];
-                            if(frequency.trim().equals("")){
+                            if (frequency.trim().equals("")) {
                                 return true;
-                            } else if(frequency.length() != 4){
+                            } else if (frequency.length() != 4) {
                                 playerResponse.sendMessage(ChatColor.RED + "Частота должна состоять из 4 символов");
                                 return false;
-                            } else if(frequency.equals("0000")){
+                            } else if (frequency.equals("0000")) {
                                 playerResponse.sendMessage(ChatColor.RED + "Эта частота зарезервирована для глобального чата");
                                 return false;
                             }
@@ -60,8 +59,11 @@ public class Radio extends Item {
                             meta.setLore(List.of(ChatColor.GOLD + "Чтобы узнать частоту, нажмите: " + ChatColor.YELLOW + "ПКМ", ChatColor.GRAY + "Вы будете получать сообщения по частоте", ChatColor.GRAY + "до тех пор, пока рация у вас в инвентаре",
                                     "", ChatColor.GRAY + "Чтобы отправить сообщение по линии нужно", ChatColor.GRAY + "взять нужную рацию в руки и отправить в чат сообщение", ChatColor.GRAY + "В формате @ваше_сообщение"));
                             event.getItem().setItemMeta(meta);
-                            plugin.loadedBases.stream().filter(base -> base.frequency.equals(frequency)).forEach(base -> {base.connectedPlayers.remove(playerResponse); base.connectedPlayers.add(playerResponse);});
-                        } catch (Exception ex){
+                            plugin.loadedBases.stream().filter(base -> base.frequency.equals(frequency)).forEach(base -> {
+                                base.connectedPlayers.remove(playerResponse);
+                                base.connectedPlayers.add(playerResponse);
+                            });
+                        } catch (Exception ex) {
                             playerResponse.sendMessage(ChatColor.RED + "Введенные данные не число");
                             return false;
                         }

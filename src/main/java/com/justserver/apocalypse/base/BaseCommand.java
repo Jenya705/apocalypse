@@ -3,7 +3,6 @@ package com.justserver.apocalypse.base;
 import com.justserver.apocalypse.Apocalypse;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -15,7 +14,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 public record BaseCommand(Apocalypse plugin) implements CommandExecutor, TabCompleter {
@@ -31,10 +29,10 @@ public record BaseCommand(Apocalypse plugin) implements CommandExecutor, TabComp
                     List<Base> playersBases = Base.getBasesByPlayer(plugin, player);
                     if (playersBases.size() + 1 > 1) {
                         player.sendMessage(ChatColor.DARK_RED + "У вас уже есть база");
-                        if(args.length > 1){
+                        if (args.length > 1) {
                             StringBuilder bases = new StringBuilder(ChatColor.AQUA + "");
                             int counter = 1;
-                            for(Base playersBase : playersBases){
+                            for (Base playersBase : playersBases) {
                                 bases.append("База #").append(counter).append(": X: ").append(playersBase.location.getBlockX()).append(" Y: ").append(playersBase.location.getBlockY()).append(" Z: ").append(playersBase.location.getBlockZ()).append("\n");
                                 counter++;
                             }
@@ -67,7 +65,7 @@ public record BaseCommand(Apocalypse plugin) implements CommandExecutor, TabComp
                         return true;
                     }
                     Player playerToAdd = plugin.getServer().getPlayer(args[1]);
-                    if(playerToAdd == null){
+                    if (playerToAdd == null) {
                         player.sendMessage(ChatColor.DARK_RED + "Игрок оффлайн");
                         return true;
                     }
@@ -94,7 +92,7 @@ public record BaseCommand(Apocalypse plugin) implements CommandExecutor, TabComp
                     }
                     OfflinePlayer playerToRemoveRaw = plugin.getServer().getOfflinePlayer(args[1]);
                     UUID playerToRemove = playerToRemoveRaw.getUniqueId();
-                    if(base.owner.equals(playerToRemove)){
+                    if (base.owner.equals(playerToRemove)) {
                         player.sendMessage(ChatColor.DARK_RED + "Вы не можете удалить себя из базы");
                         return true;
                     }
@@ -105,34 +103,34 @@ public record BaseCommand(Apocalypse plugin) implements CommandExecutor, TabComp
                     base.removePlayer(playerToRemove);
                     player.sendMessage(ChatColor.GREEN + "Игрок " + args[1] + " успешно удален из вашей базы");
                     return true;
-                } else if(args.length == 1 && args[0].equals("delete")){
+                } else if (args.length == 1 && args[0].equals("delete")) {
                     Base base = Base.getBaseByBlock(plugin, player.getLocation().getBlock());
                     System.out.println(base);
                     if (base == null) {
                         player.sendMessage(ChatColor.DARK_RED + "Вы не находитесь на територии базы!");
                         return true;
                     }
-                    if(base.owner.equals(player.getUniqueId())){
+                    if (base.owner.equals(player.getUniqueId())) {
                         Base.delete(base);
                     } else {
                         player.sendMessage(ChatColor.DARK_RED + "Вы не владелец базы!");
                     }
-                } else if(args.length == 1 && args[0].equals("list")){
+                } else if (args.length == 1 && args[0].equals("list")) {
                     Base base = Base.getBaseByBlock(plugin, player.getLocation().getBlock());
-                    if(base == null){
+                    if (base == null) {
                         player.sendMessage(ChatColor.RED + "Вы находитесь не на территории базы");
                         return true;
                     }
-                    if(!base.owner.equals(player.getUniqueId())){
+                    if (!base.owner.equals(player.getUniqueId())) {
                         player.sendMessage(ChatColor.RED + "Вы не владелец");
                         return true;
                     }
                     StringBuilder players = new StringBuilder();
-                    for(UUID basePlayer : base.players){
+                    for (UUID basePlayer : base.players) {
                         players.append(ChatColor.AQUA).append(Bukkit.getOfflinePlayer(basePlayer).getName()).append("\n");
                     }
                     player.sendMessage(players.toString());
-                } else if(args.length == 1 && args[0].equals("dummy") && player.isOp()){
+                } else if (args.length == 1 && args[0].equals("dummy") && player.isOp()) {
                     Base.createBase(plugin, player);
                 }
             }

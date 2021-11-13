@@ -5,7 +5,7 @@ import com.justserver.apocalypse.items.ItemRarity;
 import org.bukkit.Material;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-public class Muzzle extends Component{
+public class Muzzle extends Component {
     public Muzzle(Apocalypse plugin) {
         super(plugin);
         minIronNuggets = 4;
@@ -42,5 +42,5 @@ public class Muzzle extends Component{
         return 0;
     }
 
-    
+
 }

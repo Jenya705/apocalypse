@@ -25,6 +25,7 @@ public class M4A4Craft extends Craft {
     public List<CraftItem> getNeedItems() {
         return needItems;
     }
+
     public M4A4Craft(Apocalypse plugin) {
         super(plugin);
     }

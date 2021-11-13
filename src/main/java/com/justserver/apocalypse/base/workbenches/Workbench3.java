@@ -2,7 +2,6 @@ package com.justserver.apocalypse.base.workbenches;
 
 import com.justserver.apocalypse.Apocalypse;
 import com.justserver.apocalypse.base.workbenches.crafts.*;
-import com.justserver.apocalypse.items.Item;
 import com.justserver.apocalypse.items.ItemRarity;
 import org.bukkit.Material;
 import org.bukkit.event.player.PlayerInteractEvent;

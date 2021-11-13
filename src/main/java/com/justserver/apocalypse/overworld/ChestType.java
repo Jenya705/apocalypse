@@ -6,8 +6,6 @@ import com.justserver.apocalypse.items.BukkitItem;
 import com.justserver.apocalypse.items.Item;
 import com.justserver.apocalypse.items.ItemRarity;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.persistence.PersistentDataType;
 
 public enum ChestType {
     HOUSE(Registry.FLYING_AXE, Registry.GRIP, Registry.KNIFE,
@@ -36,7 +34,7 @@ public enum ChestType {
             new BukkitItem(Apocalypse.getInstance(), Material.GUNPOWDER, -8, ItemRarity.RARE),
             new BukkitItem(Apocalypse.getInstance(), Material.DIAMOND_PICKAXE, 1, ItemRarity.EPIC)
     ),
-    HOSPITAL(Registry.MEDKIT,Registry.MEDKIT, Registry.MEDKIT),
+    HOSPITAL(Registry.MEDKIT, Registry.MEDKIT, Registry.MEDKIT),
     MILITARY(Registry.BUTT,
             Registry.GUN_BODY,
             Registry.MUZZLE,
@@ -52,7 +50,7 @@ public enum ChestType {
             new BukkitItem(Apocalypse.getInstance(), Material.IRON_INGOT, -3, ItemRarity.EPIC)
     ),
 
-    POLICE( Registry.MEDIUM_GUN_BODY,
+    POLICE(Registry.MEDIUM_GUN_BODY,
             Registry.MUZZLE,
             new BukkitItem(Apocalypse.getInstance(), Material.GUNPOWDER, -3, ItemRarity.RARE),
             Registry.SILENCER,
@@ -65,7 +63,7 @@ public enum ChestType {
             new BukkitItem(Apocalypse.getInstance(), Material.IRON_INGOT, -3, ItemRarity.EPIC),
             new BukkitItem(Apocalypse.getInstance(), Material.DIAMOND_PICKAXE, 1, ItemRarity.EPIC),
             Registry.RADIO
-        ),
+    ),
     SHOP(
             new BukkitItem(Apocalypse.getInstance(), Material.CARROT, -3, ItemRarity.COMMON),
             new BukkitItem(Apocalypse.getInstance(), Material.BREAD, -2, ItemRarity.UNCOMMON),
@@ -76,15 +74,17 @@ public enum ChestType {
     );
 
     private final Item[] whatSpawns;
-    ChestType(Item... whatSpawns){
+
+    ChestType(Item... whatSpawns) {
         this.whatSpawns = whatSpawns;
     }
 
     public Item[] getWhatSpawns() {
         return whatSpawns;
     }
-    public String translate(){
-        switch (this){
+
+    public String translate() {
+        switch (this) {
 
             case HOUSE -> {
                 return "Обычный";

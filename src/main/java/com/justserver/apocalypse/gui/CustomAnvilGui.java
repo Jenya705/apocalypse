@@ -19,11 +19,11 @@ import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
-public class CustomAnvilGui extends Gui{
+public class CustomAnvilGui extends Gui {
 
-    public CustomAnvilGui(){
+    public CustomAnvilGui() {
         inventory = Bukkit.createInventory(null, 54, getName());
-        for(int i = 0; i < 54; i++){
+        for (int i = 0; i < 54; i++) {
             inventory.setItem(i, new ItemStack(Material.GRAY_STAINED_GLASS_PANE));
         }
         inventory.setItem(0, new ItemBuilder(Material.PAPER).setName(ChatColor.GREEN + "Как это работает?").setLore(
@@ -45,7 +45,7 @@ public class CustomAnvilGui extends Gui{
 
     @Override
     public Gui handleClick(InventoryClickEvent event, Player player, ItemStack itemStack, InventoryView view, ClickType clickType) throws NoSuchFieldException, IllegalAccessException {
-        if(isInventory(event.getView())) {
+        if (isInventory(event.getView())) {
             return handle(player, event);
         }
         return new CustomAnvilGui();
@@ -56,10 +56,10 @@ public class CustomAnvilGui extends Gui{
         event.setCancelled(false);
     }
 
-    public Gui handle(Player player, InventoryClickEvent event){
-        if(event.getClickedInventory() != null){
-            if(event.getCurrentItem() != null) {
-                if(Registry.getItemByItemstack(event.getCurrentItem()) != null){
+    public Gui handle(Player player, InventoryClickEvent event) {
+        if (event.getClickedInventory() != null) {
+            if (event.getCurrentItem() != null) {
+                if (Registry.getItemByItemstack(event.getCurrentItem()) != null) {
                     event.setCancelled(false);
                     return new CustomAnvilGui();
                 } else if (event.getCurrentItem().getType().equals(Material.LIME_STAINED_GLASS_PANE)) {
@@ -75,7 +75,7 @@ public class CustomAnvilGui extends Gui{
                         player.sendMessage(ChatColor.RED + "Этот предмет нельзя улучшить");
                         return null;
                     }
-                    if(itemToUpgrade.getItemMeta().getPersistentDataContainer().has(new NamespacedKey(Apocalypse.getInstance(), "rarity_upgraded"), PersistentDataType.INTEGER)){
+                    if (itemToUpgrade.getItemMeta().getPersistentDataContainer().has(new NamespacedKey(Apocalypse.getInstance(), "rarity_upgraded"), PersistentDataType.INTEGER)) {
                         player.sendMessage(ChatColor.RED + "Редкость предмета можно улучшить только 1 раз");
                         return new CustomAnvilGui();
                     }
@@ -85,7 +85,7 @@ public class CustomAnvilGui extends Gui{
                         inventory.setItem(40, possibleItem.createItemStack(Apocalypse.getInstance(), true));
                     }
                 } else event.setCancelled(true);
-            }else {
+            } else {
                 event.setCancelled(false);
             }
         }
@@ -97,13 +97,13 @@ public class CustomAnvilGui extends Gui{
         ItemStack itemToUpgrade = event.getInventory().getItem(10);
         ItemStack upgradeItem = event.getInventory().getItem(16);
         ItemStack upgradedItem = event.getInventory().getItem(40);
-        if(itemToUpgrade != null){
+        if (itemToUpgrade != null) {
             event.getPlayer().getInventory().addItem(itemToUpgrade);
         }
-        if(upgradeItem != null){
+        if (upgradeItem != null) {
             event.getPlayer().getInventory().addItem(upgradeItem);
         }
-        if(upgradedItem != null){
+        if (upgradedItem != null) {
             event.getPlayer().getInventory().addItem(upgradedItem);
         }
     }

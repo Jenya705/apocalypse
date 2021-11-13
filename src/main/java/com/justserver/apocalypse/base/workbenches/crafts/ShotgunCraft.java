@@ -7,10 +7,6 @@ import com.justserver.apocalypse.base.workbenches.CraftItem;
 import com.justserver.apocalypse.items.BukkitItem;
 import com.justserver.apocalypse.items.Item;
 import com.justserver.apocalypse.items.ItemRarity;
-import com.justserver.apocalypse.items.guns.Shotgun;
-import com.justserver.apocalypse.items.guns.components.MediumGunBody;
-import com.justserver.apocalypse.items.guns.components.Muzzle;
-import com.justserver.apocalypse.items.guns.components.SmallGunBody;
 import org.bukkit.Material;
 
 import java.util.ArrayList;

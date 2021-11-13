@@ -3,7 +3,6 @@ package com.justserver.apocalypse.items.guns.modifications;
 import com.justserver.apocalypse.Apocalypse;
 import com.justserver.apocalypse.items.Item;
 import org.bukkit.NamespacedKey;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -21,29 +20,26 @@ public abstract class Modify extends Item {
 
     abstract public List<String> getForGuns();
 
-    public static List<String> getModifications(Apocalypse plugin, ItemStack gun){
+    public static List<String> getModifications(Apocalypse plugin, ItemStack gun) {
         PersistentDataContainer dataContainer = gun.getItemMeta().getPersistentDataContainer();
         String modificationsString = dataContainer.get(new NamespacedKey(plugin, "modifications"), PersistentDataType.STRING);
         List<String> modifications;
-        if(modificationsString == null){
+        if (modificationsString == null) {
             modifications = new ArrayList<>();
-        }else{
+        } else {
             modifications = new ArrayList<String>(Arrays.asList(modificationsString.split(";")));
             modifications.removeIf((i) -> i.trim().equals(""));
         }
         return modifications;
     }
 
-    public static PersistentDataContainer setModifications(Apocalypse plugin, ItemStack gun, List<String> modifications, PersistentDataContainer dataContainer){
+    public static PersistentDataContainer setModifications(Apocalypse plugin, ItemStack gun, List<String> modifications, PersistentDataContainer dataContainer) {
         dataContainer.set(new NamespacedKey(plugin, "modifications"), PersistentDataType.STRING, String.join(";", modifications));
         return dataContainer;
     }
 
-    public static boolean checkModifications(Apocalypse plugin, ItemStack gun, String name){
-        if(getModifications(plugin, gun).contains(name)){
-            return true;
-        }
-        return false;
+    public static boolean checkModifications(Apocalypse plugin, ItemStack gun, String name) {
+        return getModifications(plugin, gun).contains(name);
     }
 
     @Override

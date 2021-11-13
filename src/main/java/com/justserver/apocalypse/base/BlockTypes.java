@@ -10,6 +10,7 @@ public class BlockTypes {
     public static ArrayList<Material> interactBlocks = new ArrayList<>();
     public static ArrayList<Material> canPlaceBlock = new ArrayList<>();
     public static ArrayList<Material> canBreakBlocksOnBase = new ArrayList<>();
+
     static {
         // BLOCKS
         blocks.put(Material.OAK_PLANKS, 25.0);

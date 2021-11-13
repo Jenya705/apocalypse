@@ -3,7 +3,6 @@ package com.justserver.apocalypse.items.guns;
 import com.justserver.apocalypse.Apocalypse;
 import com.justserver.apocalypse.items.Gun;
 import com.justserver.apocalypse.items.ItemRarity;
-import org.bukkit.event.player.PlayerInteractEvent;
 
 public class Pistol extends Gun {
     public Pistol(Apocalypse plugin) {
