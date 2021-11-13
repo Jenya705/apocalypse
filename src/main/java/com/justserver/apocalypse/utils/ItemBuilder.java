@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
@@ -76,6 +77,13 @@ public class ItemBuilder {
     public ItemBuilder setName(String name){
         ItemMeta im = is.getItemMeta();
         im.setDisplayName(ChatColor.translateAlternateColorCodes('&', name));
+        is.setItemMeta(im);
+        return this;
+    }
+
+    public ItemBuilder setName(Component component){
+        ItemMeta im = is.getItemMeta();
+        im.displayName(component);
         is.setItemMeta(im);
         return this;
     }

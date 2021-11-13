@@ -1,15 +1,26 @@
 package com.justserver.apocalypse.gui;
 
+import com.justserver.apocalypse.Apocalypse;
 import com.justserver.apocalypse.Registry;
 import com.justserver.apocalypse.items.Item;
+import com.justserver.apocalypse.items.dungeon.Recombobulator;
+import com.justserver.apocalypse.items.guns.components.Component;
+import com.justserver.apocalypse.items.guns.modifications.Modify;
+import com.justserver.apocalypse.utils.ItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataType;
+import static ru.epserv.epmodule.util.StyleUtils.*;
+
+import java.util.Objects;
 
 public class MeceratorGui extends Gui{
     public MeceratorGui(){
@@ -18,37 +29,16 @@ public class MeceratorGui extends Gui{
             if(i == 0) continue;
             inventory.setItem(i, new ItemStack(Material.GRAY_STAINED_GLASS_PANE));
         }
+        inventory.setItem(8, new ItemBuilder(Material.LIME_STAINED_GLASS_PANE).setName(regular(green("Продолжить"))).toItemStack());
     }
     @Override
     public String getName() {
         return "Переработчик";
     }
 
-    @Override
-    public Gui handleClick(InventoryClickEvent event, Player player, ItemStack itemStack, InventoryView view, ClickType clickType) throws NoSuchFieldException, IllegalAccessException {
-        event.setCancelled(false);
-        handle(player, event);
-        return new MeceratorGui();
-    }
-
-    @Override
-    public void handleInventoryClick(InventoryClickEvent event, Player player, ItemStack itemStack, ClickType clickType) {
-        event.setCancelled(false);
-        handle(player, event);
-        new MeceratorGui();
-    }
-
-    public void handle(Player player, InventoryClickEvent event){
-        if(event.getCurrentItem() != null){
-            if(event.getCurrentItem().getType().name().contains("_GLASS")){
-
-                event.setCancelled(true);
-                return;
-            }
-        }
-
-        ItemStack recycleItem = inventory.getItem(0);
-        //if(recycleItem == null) return;
+    /*
+    ItemStack recycleItem = inventory.getItem(0);
+        if(recycleItem == null) return;
         Item possibleItem = Registry.getItemByItemstack(recycleItem);
         if(possibleItem == null) {
             player.sendMessage(ChatColor.RED + "Этот предмет нельзя переработать");
@@ -61,5 +51,58 @@ public class MeceratorGui extends Gui{
         }
         player.getWorld().dropItem(player.getLocation(), possibleItem.generateRandomNuggets(recycleItem.getAmount()));
         recycleItem.setAmount(0);
+     */
+
+    @Override
+    public Gui handleClick(InventoryClickEvent event, Player player, ItemStack itemStack, InventoryView view, ClickType clickType) throws NoSuchFieldException, IllegalAccessException {
+        if(isInventory(event.getView())) {
+            return handle(player, event);
+        }
+        return new MeceratorGui();
+    }
+
+    @Override
+    public void handleInventoryClick(InventoryClickEvent event, Player player, ItemStack itemStack, ClickType clickType) {
+        event.setCancelled(false);
+    }
+
+    public Gui handle(Player player, InventoryClickEvent event){
+        if(event.getClickedInventory() != null){
+            if(event.getCurrentItem() != null) {
+                if(Registry.getItemByItemstack(event.getCurrentItem()) != null){
+                    event.setCancelled(false);
+                    return new MeceratorGui();
+                } else if (event.getCurrentItem().getType().equals(Material.LIME_STAINED_GLASS_PANE)) {
+                    event.setCancelled(true);
+                    ItemStack recycleItem = event.getClickedInventory().getItem(00);
+
+                    if (recycleItem == null) {
+                        return new ReturnGui();
+                    }
+                    Item possibleItem = Registry.getItemByItemstack(recycleItem);
+                    if(possibleItem == null) {
+                        player.sendMessage(ChatColor.RED + "Этот предмет нельзя переработать");
+                        event.setCancelled(true);
+                        return new MeceratorGui();
+                    }
+                    if(possibleItem.minIronNuggets == 0 || possibleItem.maxIronNuggets == 0){
+                        event.setCancelled(true);
+                        return new MeceratorGui();
+                    }
+                    player.getWorld().dropItem(player.getLocation(), possibleItem.generateRandomNuggets(recycleItem.getAmount()));
+                    recycleItem.setAmount(0);
+                } else event.setCancelled(true);
+            }else {
+                event.setCancelled(false);
+            }
+        }
+        return new CustomAnvilGui();
+    }
+
+    @Override
+    public void onClose(InventoryCloseEvent event) {
+        ItemStack returnItem = event.getInventory().getItem(0);
+        if(returnItem == null) return;
+        event.getPlayer().getInventory().addItem(returnItem);
     }
 }

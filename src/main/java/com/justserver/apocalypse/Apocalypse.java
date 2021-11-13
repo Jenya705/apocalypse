@@ -38,7 +38,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
-
+/*
+TODO LIST:
+New mecerator GUI
+ */
 public final class Apocalypse extends JavaPlugin implements Listener {
 
     public CustomConfiguration bases;

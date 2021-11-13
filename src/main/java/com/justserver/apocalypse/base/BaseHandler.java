@@ -76,10 +76,15 @@ public record BaseHandler(Apocalypse plugin) implements Listener {
     public void baseRegionPlace(BlockPlaceEvent event){
         if(event.getPlayer().getWorld().getName().contains("dungeon")) return;
         if(BlockTypes.canPlaceBlock.contains(event.getBlock().getType())) return;
-        if(Base.getBaseByBlock(plugin, event.getBlock()) == null || !Base.getBaseByBlock(plugin, event.getBlock()).players.contains(event.getPlayer().getUniqueId())) {
+        Base base = Base.getBaseByBlock(plugin, event.getBlock());
+        Block block = event.getBlock();
+        if(base == null || !base.players.contains(event.getPlayer().getUniqueId())) {
             event.setCancelled(true);
             event.getPlayer().sendMessage(ChatColor.DARK_RED + "Вы не можете ставить блоки на чужой базе");
             return;
+        }
+        if(base.blocks.stream().map((value) -> (Location) value.get("location")).noneMatch((it) -> it.equals(event.getBlock().getLocation())) && !BlockTypes.canBreakBlocksOnBase.contains(block.getType())){
+            event.setCancelled(true);
         }
         if(event.getBlock().getType().equals(Material.CHEST)){
             event.getBlock().setType(Material.DISPENSER);
@@ -146,17 +151,18 @@ public record BaseHandler(Apocalypse plugin) implements Listener {
     @EventHandler
     public void onBreakBlock(BlockBreakEvent event){
         if(event.getPlayer().getWorld().getName().contains("dungeon")) return;
+        if(!BlockTypes.canBreakBlocksOnBase.contains(event.getBlock().getType())){
+            event.setCancelled(true);
+            return;
+        }
         if(event.getBlock().getType().equals(Material.CHEST)){
             event.setCancelled(true);
             return;
         }
         Block block = event.getBlock();
         Player player = event.getPlayer();
-        if(Base.getBaseByBlock(plugin, block) != null){
-            Base base = Base.getBaseByBlock(plugin, block);
-            if(!base.blocks.stream().map((value) -> (Location) value.get("location")).anyMatch((it) -> it.equals(event.getBlock().getLocation()))){
-                event.setCancelled(true);
-            }
+        Base base = Base.getBaseByBlock(plugin, block);
+        if(base != null){
             if(base.getBlockByLocation(block.getLocation()) != null) {
                 if(base.players.contains(event.getPlayer().getUniqueId())) {
                     base.blocks.remove(base.getBlockByLocation(block.getLocation()));

@@ -92,7 +92,7 @@ public abstract class Item extends ItemLoader implements IItem {
         int slowdown = (int) Math.floor(getSlowdown() / (rarityUpgraded ? 1.3 : 1));
         ArrayList<String> lore = new ArrayList<>();
         if(getLeftDamage() != 0){
-            lore.add(ChatColor.GRAY + "Урон: " + ChatColor.RED + "+" + getLeftDamage() * Math.floor(rarityUpgraded ? 1.3 : 1));
+            lore.add(ChatColor.GRAY + "Урон: " + ChatColor.RED + "+" + Math.floor(getLeftDamage() * (rarityUpgraded ? 1.3 : 1)));
         }
         if(slowdown != 0){
             if(slowdown > 0){

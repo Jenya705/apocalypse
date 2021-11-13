@@ -168,7 +168,7 @@ public class OverworldHandler implements Listener {
     public void onInteract(PlayerInteractEvent event) {
         if (event.getClickedBlock() != null) {
             if(event.getHand().equals(EquipmentSlot.OFF_HAND)) return;
-            if (event.getClickedBlock().getType().equals(Material.CHEST)) {
+            if (event.getClickedBlock().getType().equals(Material.CHEST) && !event.getPlayer().isSneaking()) {
                 Chest chest = (Chest) event.getClickedBlock().getState();
                 ChestType chestType;
                 if(clickedChests.containsKey(chest.getLocation())){
@@ -237,7 +237,7 @@ public class OverworldHandler implements Listener {
                 chestLootTasks.put(event.getPlayer().getUniqueId(), lootTask);
                 return;
             } else if (event.getClickedBlock().getType().equals(Material.ANVIL)) {
-                if(event.getHand().equals(EquipmentSlot.OFF_HAND)) return;
+                if(event.getHand().equals(EquipmentSlot.OFF_HAND) || event.getAction().name().contains("LEFT")) return;
                 event.setCancelled(true);
                 plugin.guiManager.setGui(event.getPlayer(), new CustomAnvilGui());
                 return;
@@ -299,8 +299,10 @@ public class OverworldHandler implements Listener {
     @EventHandler
     public void openCraftGui(PlayerInteractEvent event){
         if(event.getAction().name().contains("RIGHT") && event.getPlayer().isSneaking() && event.getHand().equals(EquipmentSlot.HAND) && !event.hasItem()){
-            if(event.getItem() != null){
-                if(Registry.getItemByItemstack(event.getItem()) != null) return;
+            if(event.getClickedBlock() != null){
+                if(event.getClickedBlock().getType().equals(Material.CHEST)){
+                    return;
+                }
             }
             try {
                 plugin.guiManager.setGui(event.getPlayer(), new WorkbenchGui(plugin, new PlayerCrafts(plugin)));

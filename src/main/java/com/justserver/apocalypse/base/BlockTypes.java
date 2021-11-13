@@ -9,6 +9,7 @@ public class BlockTypes {
     public static HashMap<Material, Double> blocks = new HashMap<>();
     public static ArrayList<Material> interactBlocks = new ArrayList<>();
     public static ArrayList<Material> canPlaceBlock = new ArrayList<>();
+    public static ArrayList<Material> canBreakBlocksOnBase = new ArrayList<>();
     static {
         // BLOCKS
         blocks.put(Material.OAK_PLANKS, 25.0);
@@ -19,7 +20,14 @@ public class BlockTypes {
         interactBlocks.add(Material.DISPENSER);
         // can place blocks
         canPlaceBlock.add(Material.TNT);
-        canPlaceBlock.add(Material.CHEST);
-        canPlaceBlock.add(Material.DISPENSER);
+        canBreakBlocksOnBase.add(Material.DISPENSER);
+        canBreakBlocksOnBase.add(Material.SMOKER);
+        canBreakBlocksOnBase.add(Material.FURNACE);
+        canBreakBlocksOnBase.add(Material.BLAST_FURNACE);
+        canBreakBlocksOnBase.add(Material.OAK_PLANKS);
+        canBreakBlocksOnBase.add(Material.OAK_DOOR);
+        canBreakBlocksOnBase.add(Material.BRICKS);
+        canBreakBlocksOnBase.add(Material.OAK_DOOR);
+        canBreakBlocksOnBase.add(Material.TNT);
     }
 }
