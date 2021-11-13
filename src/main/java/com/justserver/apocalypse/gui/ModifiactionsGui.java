@@ -49,10 +49,8 @@ public class ModifiactionsGui extends Gui {
                 if (modifications.get(slot - 10).trim().equals("")) {
                     continue;
                 }
-                inventory.setItem(slot, ((Item) Registry.class.getDeclaredField(modifications.get(slot - 10)).get(Registry.class)).createItemStack(plugin));
-            } catch (NoSuchFieldException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
+                inventory.setItem(slot, (Registry.getItemById(modifications.get(slot - 10))).createItemStack(plugin));
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }

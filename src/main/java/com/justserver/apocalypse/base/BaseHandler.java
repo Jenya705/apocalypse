@@ -138,7 +138,7 @@ public record BaseHandler(Apocalypse plugin) implements Listener {
                 PersistentDataContainer dataContainer = state.getPersistentDataContainer();
                 if (dataContainer.has(new NamespacedKey(plugin, "workbench"), PersistentDataType.INTEGER)) {
                     String id = dataContainer.get(new NamespacedKey(plugin, "id"), PersistentDataType.STRING);
-                    Workbench workbench = (Workbench) Registry.class.getDeclaredField(id).get(Registry.class);
+                    Workbench workbench = (Workbench) Registry.getItemById(id);
                     plugin.guiManager.setGui(event.getPlayer(), new WorkbenchGui(plugin, workbench));
                     event.setCancelled(true);
                 }

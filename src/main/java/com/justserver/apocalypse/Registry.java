@@ -23,6 +23,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Registry {
     private static Apocalypse plugin = null;
@@ -55,6 +57,11 @@ public class Registry {
     public static Workbench2 WORKBENCH_2;
     public static Workbench3 WORKBENCH_3;
 
+    /**
+     * Faster than just check field names
+     */
+    private static Map<String, Item> itemsMap = new HashMap<>();
+
     public static void init(Apocalypse _plugin) {
         plugin = _plugin;
         if (plugin == null) {
@@ -64,7 +71,17 @@ public class Registry {
             WORKBENCH_1 = new Workbench1(plugin);
             WORKBENCH_2 = new Workbench2(plugin);
             WORKBENCH_3 = new Workbench3(plugin);
-            Bukkit.getLogger().info("Workbenches inited successfully");
+            System.out.println("Workbenches initialized successfully");
+            try {
+                for (Field field : Registry.class.getFields()) {
+                    Item item = (Item) field.get(null);
+                    itemsMap.put(item.getId(), item);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                // failed to fill items
+                itemsMap = null;
+            }
         }, 20);
     }
 
@@ -73,17 +90,18 @@ public class Registry {
             return null;
         ItemMeta meta = itemStack.getItemMeta();
         String id = meta.getPersistentDataContainer().get(new NamespacedKey(plugin, "APO_ID"), PersistentDataType.STRING);
+        return getItemById(id);
+    }
+
+    public static Item getItemById(String id) {
+        if (itemsMap != null) { // if not failed
+            return itemsMap.get(id);
+        }
         for (Field field : Registry.class.getFields()) {
             try {
                 Item item = (Item) field.get(Registry.class);
                 if (item.getId().equalsIgnoreCase(id)) {
-                    if (item instanceof Gun) {
-                        return item;
-                    } else if (item instanceof Modify) {
-                        return item;
-                    } else {
-                        return item;
-                    }
+                    return item;
                 }
             } catch (IllegalAccessException e) {
                 e.printStackTrace();

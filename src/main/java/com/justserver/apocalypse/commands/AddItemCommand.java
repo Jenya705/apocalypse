@@ -17,10 +17,13 @@ public class AddItemCommand implements CommandExecutor {
         if (args.length != 1) return false;
         if (sender instanceof Player && sender.isOp()) {
             try {
-                ((Player) sender).getInventory().addItem(((Item) Registry.class.getDeclaredField(args[0]).get(Registry.class)).createItemStack(Apocalypse.getPlugin(Apocalypse.class)));
-            } catch (NoSuchFieldException e) {
-                sender.sendMessage(ChatColor.RED + "Предмет не найден");
-            } catch (IllegalAccessException e) {
+                Item foundItem = Registry.getItemById(args[0]);
+                if (foundItem == null) {
+                    sender.sendMessage(ChatColor.RED + "Предмет не найден");
+                    return true;
+                }
+                ((Player) sender).getInventory().addItem(foundItem.createItemStack(Apocalypse.getPlugin(Apocalypse.class)));
+            } catch (Exception e) {
                 sender.sendMessage("Произошла ошибка. Посмотрите консоль для деталей");
                 e.printStackTrace();
             }
