@@ -15,7 +15,7 @@ public class SmallGunBody extends Component {
 
     @Override
     public String customName() {
-        return "Корпус питсолета";
+        return "Корпус пистолета";
     }
 
     @Override

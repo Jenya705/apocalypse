@@ -25,12 +25,14 @@ public class GuiManager implements Listener {
 
      public void setGui(Player player, Gui gui){
           clear(player);
+
           playerToGuiMap.put(player, gui);
-          player.openInventory(gui.inventory);
           if(gui == null || gui.inventory == null){
                player.closeInventory();
                return;
           }
+          player.openInventory(gui.inventory);
+
      }
 
      public void clear(Player player){
@@ -48,23 +50,28 @@ public class GuiManager implements Listener {
           if(playerToGuiMap.get((Player)event.getWhoClicked()) != null){
                event.setCancelled(true);
           } else return;
-          //System.out.println(Objects.equals(event.getClickedInventory(),
+          //Bukkit.getLogger().info(Objects.equals(event.getClickedInventory(),
           if(!Objects.equals(event.getClickedInventory(), event.getWhoClicked().getInventory())){
+               //System.out.println("123");
                for(Map.Entry<Player, Gui> entry : playerToGuiMap.entrySet()){
                     if(entry.getValue().inventory.equals(event.getClickedInventory())){
                          try {
-                              if(entry.getValue().handleClick(event, entry.getKey(), event.getCurrentItem(), event.getWhoClicked().getOpenInventory(), event.getClick()) == null) event.getWhoClicked().closeInventory();
+                              Gui nextGui = entry.getValue().handleClick(event, entry.getKey(), event.getCurrentItem(), event.getWhoClicked().getOpenInventory(), event.getClick());
+                              if(nextGui instanceof ReturnGui) return;
+                              if(nextGui == null) event.getWhoClicked().closeInventory();
                          } catch (NoSuchFieldException e) {
                               e.printStackTrace();
                          } catch (IllegalAccessException e) {
                               e.printStackTrace();
                          }
+                         break;
                     }
                }
           } else {
                for(Map.Entry<Player, Gui> entry : playerToGuiMap.entrySet()){
                     if(entry.getKey().getInventory().equals(event.getClickedInventory())){
                          entry.getValue().handleInventoryClick(event, entry.getKey(), event.getCurrentItem(), event.getClick());
+                         break;
                     }
                }
           }
@@ -73,6 +80,13 @@ public class GuiManager implements Listener {
 
      @EventHandler
      public void onClose(InventoryCloseEvent event){
+          for(Map.Entry<Player, Gui> entry : playerToGuiMap.entrySet()){
+              // System.out.println(entry);
+               if(entry.getValue().inventory.equals(event.getInventory())){
+                    entry.getValue().onClose(event);
+                    break;
+               }
+          }
           clear((Player) event.getPlayer());
      }
 }

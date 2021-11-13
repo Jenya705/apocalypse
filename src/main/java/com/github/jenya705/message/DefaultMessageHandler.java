@@ -21,7 +21,6 @@ public class DefaultMessageHandler implements Listener {
     public void chat(AsyncChatEvent event) {
         Component message = messageBuilder.buildMessage(event.getPlayer(), event.message());
         event.renderer((player, component, component1, audience) -> message);
-
     }
 
 }

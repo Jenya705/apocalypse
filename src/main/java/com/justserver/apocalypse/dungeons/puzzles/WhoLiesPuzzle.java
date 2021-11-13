@@ -60,8 +60,7 @@ public class WhoLiesPuzzle extends Gui implements Puzzle {
     }
 
     @Override
-    public Gui handleInventoryClick(InventoryClickEvent event, Player player, ItemStack itemStack, ClickType clickType) {
-        return null;
+    public void handleInventoryClick(InventoryClickEvent event, Player player, ItemStack itemStack, ClickType clickType) {
     }
 
     @Override

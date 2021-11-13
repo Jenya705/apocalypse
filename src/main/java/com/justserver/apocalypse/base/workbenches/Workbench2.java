@@ -54,6 +54,7 @@ public class Workbench2 extends Workbench{
             new IronIngotCraft(plugin),
             new BricksFromBrickBlock(plugin),
             new ChestCraft(plugin),
+            new AnvilCraft(plugin),
             new PistolCraft(plugin),
             new BulletCraft(plugin),
             new SilencerCraft(plugin),

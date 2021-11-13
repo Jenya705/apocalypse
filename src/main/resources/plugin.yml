@@ -2,7 +2,13 @@ name: Apocalypse
 version: ${project.version}
 main: com.justserver.apocalypse.Apocalypse
 load: POSTWORLD
+author: MisterFunny01
+authors:
+  - kolen123321
+  - Jenya705
 api-version: 1.16
+depend:
+  - ProtocolLib
 commands:
   startdungeon:
     usage: /<command>

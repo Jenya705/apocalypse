@@ -32,10 +32,10 @@ public class MeceratorGui extends Gui{
     }
 
     @Override
-    public Gui handleInventoryClick(InventoryClickEvent event, Player player, ItemStack itemStack, ClickType clickType) {
+    public void handleInventoryClick(InventoryClickEvent event, Player player, ItemStack itemStack, ClickType clickType) {
         event.setCancelled(false);
         handle(player, event);
-        return new MeceratorGui();
+        new MeceratorGui();
     }
 
     public void handle(Player player, InventoryClickEvent event){
@@ -48,7 +48,7 @@ public class MeceratorGui extends Gui{
         }
 
         ItemStack recycleItem = inventory.getItem(0);
-        if(recycleItem == null) return;
+        //if(recycleItem == null) return;
         Item possibleItem = Registry.getItemByItemstack(recycleItem);
         if(possibleItem == null) {
             player.sendMessage(ChatColor.RED + "Этот предмет нельзя переработать");

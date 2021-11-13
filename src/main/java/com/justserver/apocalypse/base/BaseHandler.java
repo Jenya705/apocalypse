@@ -43,23 +43,33 @@ public record BaseHandler(Apocalypse plugin) implements Listener {
     public void baseRegionBreak(BlockBreakEvent event) throws NoSuchFieldException, IllegalAccessException {
         if(event.getPlayer().getWorld().getName().contains("dungeon")) return;
         if(BlockTypes.canPlaceBlock.contains(event.getBlock().getType())) return;
-        if(Base.getBaseByBlock(plugin, event.getBlock()) == null || !Base.getBaseByBlock(plugin, event.getBlock()).players.contains(event.getPlayer().getUniqueId())){
+        Base base = Base.getBaseByBlock(plugin, event.getBlock());
+        Material blockType = event.getBlock().getType();
+        if((blockType.name().contains("FURNACE") || blockType.equals(Material.SMOKER))) {
+
+            if (base == null) {
+                checkWorkbench(event, blockType);
+            } else if (base.players.contains(event.getPlayer().getUniqueId())) {
+                checkWorkbench(event, blockType);
+            }
+            return;
+        }
+        if(base == null || !base.players.contains(event.getPlayer().getUniqueId())){
             event.setCancelled(true);
             event.getPlayer().sendMessage(ChatColor.DARK_RED + "Вы не можете ломать блоки на чужой базе");
         }
-        Material blockType = event.getBlock().getType();
+    }
 
-        if(blockType.name().contains("FURNACE") || blockType.equals(Material.SMOKER)){
-            String id = switch (blockType){
-                case SMOKER -> "WORKBENCH_2";
-                case BLAST_FURNACE -> "WORKBENCH_3";
-                default -> "WORKBENCH_1";
-            };
-            event.setCancelled(true);
-            event.getBlock().setType(Material.AIR);
-            Item needed = (Item) Registry.class.getDeclaredField(id).get(Registry.class);
-            event.getPlayer().getInventory().addItem(needed.createItemStack(plugin));
-        }
+    private void checkWorkbench(BlockBreakEvent event, Material blockType) throws IllegalAccessException, NoSuchFieldException {
+        String id = switch (blockType){
+            case SMOKER -> "WORKBENCH_2";
+            case BLAST_FURNACE -> "WORKBENCH_3";
+            default -> "WORKBENCH_1";
+        };
+        event.setCancelled(true);
+        event.getBlock().setType(Material.AIR);
+        Item needed = (Item) Registry.class.getDeclaredField(id).get(Registry.class);
+        event.getPlayer().getInventory().addItem(needed.createItemStack(plugin));
     }
 
     @EventHandler
@@ -78,6 +88,12 @@ public record BaseHandler(Apocalypse plugin) implements Listener {
 
     @EventHandler
     public void onPlaceBlock(BlockPlaceEvent event){
+        Item possibleItem = Registry.getItemByItemstack(event.getItemInHand());
+        if(Registry.getItemByItemstack(event.getItemInHand()) != null){
+            if(possibleItem instanceof Workbench) return;
+            event.setCancelled(true);
+            return;
+        }
         if(event.getPlayer().getWorld().getName().contains("dungeon")) return;
         Block block = event.getBlock();
         Player player = event.getPlayer();
@@ -130,6 +146,10 @@ public record BaseHandler(Apocalypse plugin) implements Listener {
     @EventHandler
     public void onBreakBlock(BlockBreakEvent event){
         if(event.getPlayer().getWorld().getName().contains("dungeon")) return;
+        if(event.getBlock().getType().equals(Material.CHEST)){
+            event.setCancelled(true);
+            return;
+        }
         Block block = event.getBlock();
         Player player = event.getPlayer();
         if(Base.getBaseByBlock(plugin, block) != null){

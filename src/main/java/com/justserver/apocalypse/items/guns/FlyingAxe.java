@@ -71,10 +71,8 @@ public class FlyingAxe extends Item {
             armorStand.setInvulnerable(true);
 
             armorStand.getEquipment().setItemInMainHand(new ItemStack(Material.IRON_AXE));
-            int returnSlot = player.getInventory().getHeldItemSlot();
             final int damage = ((Damageable) player.getInventory().getItemInMainHand().getItemMeta()).getDamage() + 1;
             thrownAxes.put(player.getUniqueId(), player.getInventory().getItemInMainHand());
-            
 
             Location destination = player.getEyeLocation().clone().add(player.getEyeLocation().getDirection().multiply(20));
             Vector vector = destination.subtract(player.getEyeLocation()).toVector();
@@ -101,9 +99,8 @@ public class FlyingAxe extends Item {
                         if(!armorStand.isDead()) {
                             if(armorStand.getLocation().distanceSquared(entity.getLocation().add(0, entity.getHeight() / 2, 0)) <= entity.getHeight() / 2){
                                 if(!entity.equals(player) && !entity.equals(armorStand)){
-                                    if(entity instanceof LivingEntity){
-                                        LivingEntity livingEntity = (LivingEntity) entity;
-                                        livingEntity.damage(3.0, player);
+                                    if(entity instanceof LivingEntity livingEntity){
+                                        livingEntity.damage(3.0 * (Item.rarityUpgraded(event.getItem()) ? 1.3 : 1), player);
                                         entity.getWorld().playSound(entity.getLocation(), Sound.ITEM_FLINTANDSTEEL_USE, 1f, 0.3f);
                                         armorStand.remove();
                                         if(damage >= getMaterial().getMaxDurability()){

@@ -20,7 +20,7 @@ public class Knife extends Item {
 
     @Override
     public ItemRarity getRarity() {
-        return ItemRarity.EPIC;
+        return ItemRarity.RARE;
     }
 
     @Override

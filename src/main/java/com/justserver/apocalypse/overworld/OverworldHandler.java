@@ -5,6 +5,7 @@ import com.justserver.apocalypse.Apocalypse;
 import com.justserver.apocalypse.Registry;
 import com.justserver.apocalypse.base.Base;
 import com.justserver.apocalypse.base.workbenches.PlayerCrafts;
+import com.justserver.apocalypse.gui.CustomAnvilGui;
 import com.justserver.apocalypse.gui.MeceratorGui;
 import com.justserver.apocalypse.gui.WorkbenchGui;
 import com.justserver.apocalypse.items.Gun;
@@ -25,6 +26,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
@@ -44,6 +46,7 @@ public class OverworldHandler implements Listener {
     public final ArrayList<Location> lootedChests = new ArrayList<>();
     private final ArrayList<ItemRarity> randomTable = new ArrayList<>();
     public static final HashMap<UUID, ChestLootTask> chestLootTasks = new HashMap<>();
+    public HashMap<Location, ChestType> clickedChests = new HashMap<>();
 
     public OverworldHandler(Apocalypse apocalypse) {
         this.plugin = apocalypse;
@@ -71,7 +74,7 @@ public class OverworldHandler implements Listener {
         for (int i = 0; i < 5; i++) {
             randomTable.add(ItemRarity.EPIC);
         }
-        System.out.println(randomTable.size());
+        Bukkit.getLogger().info(randomTable.size() + "");
         Calendar due = Calendar.getInstance();
         due.set(Calendar.MILLISECOND, 0);
         due.set(Calendar.SECOND, 0);
@@ -100,6 +103,9 @@ public class OverworldHandler implements Listener {
                 chest.getBlockInventory().addItem(Registry.WORKBENCH_3.createItemStack(plugin));
             }
             try {
+                if (random.nextInt(3) == 2){
+                    chest.getBlockInventory().addItem(Registry.RECOMBOBULATOR.createItemStack(plugin));
+                }
                 chest.getBlockInventory().addItem(
                         ((Item)Registry.class.getFields()[random.nextInt(Registry.size())].get(Registry.class)
                 ).createItemStack(plugin)); // страшный код ну да ладно
@@ -148,23 +154,39 @@ public class OverworldHandler implements Listener {
     }
 
     public void randomTeleport(Player player){
+
         int x = random.nextInt(20) * (random.nextBoolean() ? -1 : 1), z = random.nextInt(20) * (random.nextBoolean() ? -1 : 1);
-        player.teleport(new Location(player.getWorld(), x, player.getWorld().getHighestBlockYAt(x, z) + 1, z));
+        Location preLocation = player.getWorld().getSpawnLocation().clone();
+        preLocation.setY(0);
+        player.teleport(preLocation.add(new Location(player.getWorld(), x, player.getWorld().getHighestBlockYAt(x, z) + 1, z)));
     }
 
     private final SecureRandom random = new SecureRandom();
-    private final ChestType[] ALLOWED_RANDOM = {ChestType.FACTORY, ChestType.HOUSE, ChestType.MILITARY, ChestType.POLICE};
+    //private final ChestType[] ALLOWED_RANDOM = {ChestType.FACTORY, ChestType.HOUSE, ChestType.MILITARY, ChestType.POLICE};
 
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
         if (event.getClickedBlock() != null) {
+            if(event.getHand().equals(EquipmentSlot.OFF_HAND)) return;
             if (event.getClickedBlock().getType().equals(Material.CHEST)) {
                 Chest chest = (Chest) event.getClickedBlock().getState();
                 ChestType chestType;
-                if (chest.getPersistentDataContainer().has(new NamespacedKey(Apocalypse.getInstance(), "chest_type"), PersistentDataType.STRING)) {
-                    chestType = ChestType.valueOf(chest.getPersistentDataContainer().get(new NamespacedKey(plugin, "chest_type"), PersistentDataType.STRING));
+                if(clickedChests.containsKey(chest.getLocation())){
+                    chestType = clickedChests.get(chest.getLocation());
                 } else {
-                    chestType = ALLOWED_RANDOM[random.nextInt(ALLOWED_RANDOM.length)];
+                    if (chest.getPersistentDataContainer().has(new NamespacedKey(Apocalypse.getInstance(), "chest_type"), PersistentDataType.STRING)) {
+                        chestType = ChestType.valueOf(chest.getPersistentDataContainer().get(new NamespacedKey(plugin, "chest_type"), PersistentDataType.STRING));
+                    } else {
+                        int chance = random.nextInt(100);
+                        switch (randomTable.get(chance)){
+                            case RARE -> chestType = ChestType.FACTORY;
+                            case EPIC -> chestType = ChestType.POLICE;
+                            case LEGENDARY -> chestType = ChestType.MILITARY;
+                            default -> chestType = ChestType.HOUSE;
+                        };
+                        clickedChests.put(chest.getLocation(), chestType);
+                        //chestType = ALLOWED_RANDOM[random.nextInt(ALLOWED_RANDOM.length)];
+                    }
                 }
                 chest.setCustomName(chestType.translate());
                 chest.update();
@@ -181,6 +203,9 @@ public class OverworldHandler implements Listener {
                 }
                 ChestLootTask lootTask = new ChestLootTask(chest, this, () -> {
                     lootedChests.add(event.getClickedBlock().getLocation());
+                    if(random.nextInt(200) == 199){
+                        chest.getBlockInventory().addItem(Registry.RECOMBOBULATOR.createItemStack(plugin));
+                    }
                     int lootCount = random.nextInt(5) + 1;
                     Item[] whatSpawnsPre = chestType.getWhatSpawns();
                     List<Item> whatSpawns = Arrays.asList(whatSpawnsPre);
@@ -212,7 +237,9 @@ public class OverworldHandler implements Listener {
                 chestLootTasks.put(event.getPlayer().getUniqueId(), lootTask);
                 return;
             } else if (event.getClickedBlock().getType().equals(Material.ANVIL)) {
+                if(event.getHand().equals(EquipmentSlot.OFF_HAND)) return;
                 event.setCancelled(true);
+                plugin.guiManager.setGui(event.getPlayer(), new CustomAnvilGui());
                 return;
             } else if(event.getClickedBlock().getType().equals(Material.OBSIDIAN)){
                 if(event.getHand().equals(EquipmentSlot.OFF_HAND)) return;
@@ -248,17 +275,17 @@ public class OverworldHandler implements Listener {
             if (possibleItem == null) return;
             if (possibleItem.getLeftDamage() != 0 && !((Player) event.getEntity()).isBlocking()) {
                 if (possibleItem.getLeftDamage() != 0) {
-                    event.setDamage(possibleItem.getLeftDamage() * ((Player) event.getDamager()).getAttackCooldown());
+                    boolean rarityUpgraded = itemStack.getItemMeta().getPersistentDataContainer().has(new NamespacedKey(plugin, "rarity_upgraded"), PersistentDataType.INTEGER);
+                    event.setDamage(possibleItem.getLeftDamage() * (rarityUpgraded ? 1.3 : 1) * ((Player) event.getDamager()).getAttackCooldown());
                 }
             }
         }
     }
 
     @EventHandler
-    public void onGuiClose (InventoryCloseEvent event){
+    public void onGuiClose(InventoryCloseEvent event) {
         if (event.getInventory().getHolder() != null) {
             if (event.getInventory().getHolder() instanceof Chest chest) {
-
                 if (chestLootTasks.containsKey(event.getPlayer().getUniqueId())) {
                     chestLootTasks.get(event.getPlayer().getUniqueId()).cancel();
                     chestLootTasks.remove(event.getPlayer().getUniqueId());
@@ -286,9 +313,9 @@ public class OverworldHandler implements Listener {
     @EventHandler
     public void onChat(AsyncPlayerChatEvent event){
         if(event.getMessage().startsWith("@")){
+            event.setCancelled(true);
             if(event.getPlayer().getInventory().getItemInMainHand().getType().equals(Material.AIR)){
                 event.getPlayer().sendMessage(ChatColor.RED + "У вас нет рации в руке");
-                event.setCancelled(true);
                 event.setMessage("");
                 return;
             }
@@ -306,7 +333,7 @@ public class OverworldHandler implements Listener {
     }
 
     @EventHandler
-    public void onChangeEquipment (PlayerItemHeldEvent event){
+    public void onChangeEquipment(PlayerItemHeldEvent event){
         Player player = event.getPlayer();
         ItemStack itemStack = player.getInventory().getItem(event.getNewSlot());
         if (itemStack == null) {
@@ -318,16 +345,17 @@ public class OverworldHandler implements Listener {
             player.setWalkSpeed(0.2f);
             return;
         }
+        boolean rarityUpgraded = itemStack.getItemMeta().getPersistentDataContainer().has(new NamespacedKey(plugin, "rarity_upgraded"), PersistentDataType.INTEGER);
         Item possibleItem = Registry.getItemByItemstack(itemStack);
         if (possibleItem == null) {
             player.setWalkSpeed(0.2f);
             return;
         }
-        player.setWalkSpeed(0.2f - (0.2f * (possibleItem.getSlowdown() / 100f)));
+        player.setWalkSpeed((float) (0.2f - (0.2f * ((possibleItem.getSlowdown() / 100f) / (rarityUpgraded ? 1.3 : 1)))));
     }
 
     @EventHandler
-    public void onCrossbowRecharge (EntityLoadCrossbowEvent event){
+    public void onCrossbowRecharge(EntityLoadCrossbowEvent event){
         if (event.getEntity() instanceof Player) {
             ItemStack itemStack = ((Player) event.getEntity()).getInventory().getItemInMainHand();
             itemStack = (itemStack.getType().equals(Material.AIR) ? null : itemStack);
@@ -349,10 +377,11 @@ public class OverworldHandler implements Listener {
     }
 
     @EventHandler
-    public void onCraft (CraftItemEvent event){
-        Material type = event.getRecipe().getResult().getType();
-        if (type.equals(Material.CRAFTING_TABLE) || type.name().contains("LEGGINGS") || type.name().contains("BOOTS") || type.equals(Material.OAK_PLANKS)) {
-            event.setCancelled(true);
-        }
+    public void onCraft(PrepareItemCraftEvent event){
+//        Material type = event.getRecipe().getResult().getType();
+//        if (type.equals(Material.CRAFTING_TABLE) || type.name().contains("LEGGINGS") || type.name().contains("BOOTS") || type.equals(Material.OAK_PLANKS)) {
+//            event.setCancelled(true);
+//        }
+        event.getInventory().setResult(null);
     }
 }

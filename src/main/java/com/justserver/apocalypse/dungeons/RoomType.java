@@ -92,7 +92,7 @@ public enum RoomType {
         Operations.complete(pasteOperation);
         BlockVector3 min = holder.getClipboard().getRegion().getMinimumPoint();
         BlockVector3 max = holder.getClipboard().getRegion().getMaximumPoint();
-        //System.out.println(new Location(location.getWorld(), min.getBlockX(), min.getBlockY(), min.getBlockZ()).getBlock().getType() + " " + new Location(location.getWorld(), max.getBlockX(), max.getBlockY(), max.getBlockZ()).getBlock().getType());
+        //Bukkit.getLogger().info(new Location(location.getWorld(), min.getBlockX(), min.getBlockY(), min.getBlockZ()).getBlock().getType() + " " + new Location(location.getWorld(), max.getBlockX(), max.getBlockY(), max.getBlockZ()).getBlock().getType());
         schematicInput.close();
         clipboardReader.close();
         session.close();

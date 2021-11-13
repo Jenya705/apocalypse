@@ -5,6 +5,7 @@ import com.justserver.apocalypse.utils.CustomConfiguration;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.Field;
 import java.time.Instant;
@@ -64,6 +65,27 @@ public class Base {
         return price;
     }
 
+    public static void delete(Base base){
+        Apocalypse plugin = Apocalypse.getInstance();
+        if(plugin.bases.config.contains("bases." + base.id)){
+            base.location.getBlock().setType(Material.AIR);
+            for(HashMap<String, Object> blockProperty : base.blocks){
+                Location blockLocation = (Location) blockProperty.get("location");
+                if(BlockTypes.blocks.containsKey(blockLocation.getBlock().getType())){
+                    blockLocation.getBlock().breakNaturally(true);
+                }
+            }
+            plugin.bases.config.set("bases." + base.id, null);
+            plugin.bases.save();
+            plugin.bases.reload();
+        }
+        plugin.unloadBase(base);
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            plugin.unloadBase(base);
+        }, 10);
+    }
+
+    @Deprecated
     public void remove(){
         for(HashMap<String, Object> hashMap : this.blocks){
             if(hashMap.containsKey("location")) continue;
@@ -88,41 +110,43 @@ public class Base {
                     for(HashMap<String, Object> blockProperty : found.blocks){
                         Location blockLocation = (Location) blockProperty.get("location");
                         if(BlockTypes.blocks.containsKey(blockLocation.getBlock().getType())){
+                            blockLocation.getWorld().dropItemNaturally(blockLocation, new ItemStack(blockLocation.getBlock().getType()));
                             blockLocation.getBlock().setType(Material.AIR);
                         }
                     }
-                    plugin.loadedBases.remove(found);
+                    plugin.unloadBase(found);
                 }
                 plugin.bases.config.set("bases." + this.id, null);
                 try {
-                    plugin.loadedBases.remove(this);
+                    plugin.unloadBase(this);
                 } catch (ConcurrentModificationException ignored){}
                 plugin.bases.save();
             }, 100);
-            return;
-        }
-        ArrayList<Base> foundBases = new ArrayList<>();
-        plugin.loadedBases.stream().filter(base1 -> id.equals(base1.id)).forEach(base1 -> {
-            if(plugin.bases.config.contains("bases." + base1.id)){
-                plugin.bases.config.set("bases." + base1.id, null);
-                plugin.bases.save();
-                plugin.bases.reload();
-                foundBases.add(base1);
-                base1.location.getBlock().setType(Material.AIR);
-            }
-        });
-        for(Base found : foundBases){
-            for(HashMap<String, Object> blockProperty : found.blocks){
-                Location blockLocation = (Location) blockProperty.get("location");
-                if(BlockTypes.blocks.containsKey(blockLocation.getBlock().getType())){
-                    blockLocation.getBlock().setType(Material.AIR);
-                }
-            }
-            plugin.loadedBases.remove(found);
-        }
-        plugin.bases.config.set("bases." + this.id, null);
-        plugin.loadedBases.remove(this);
-        plugin.bases.save();
+        } // ArrayList<Base> foundBases = new ArrayList<>();
+
+//        ArrayList<Base> foundBases = new ArrayList<>();
+//        plugin.loadedBases.stream().filter(base1 -> id.equals(base1.id)).forEach(base1 -> {
+//            if(plugin.bases.config.contains("bases." + base1.id)){
+//                plugin.bases.config.set("bases." + base1.id, null);
+//                plugin.bases.save();
+//                plugin.bases.reload();
+//                foundBases.add(base1);
+//                base1.location.getBlock().setType(Material.AIR);
+//            }
+//        });
+//        for(Base found : foundBases){
+//            for(HashMap<String, Object> blockProperty : found.blocks){
+//                Location blockLocation = (Location) blockProperty.get("location");
+//                if(BlockTypes.blocks.containsKey(blockLocation.getBlock().getType())){
+//                    blockLocation.getBlock().setType(Material.AIR);
+//                }
+//            }
+//            plugin.unloadBase(found);
+//        }
+
+//        plugin.bases.config.set("bases." + this.id, null);
+//        plugin.unloadBase(this);
+//        plugin.bases.save();
     }
 
     public Apocalypse getPlugin() {
@@ -158,7 +182,7 @@ public class Base {
             }
         }
         config.save();
-        plugin.loadedBases.remove(this);
+        plugin.unloadBase(this);
         plugin.loadedBases.add(this);
     }
 

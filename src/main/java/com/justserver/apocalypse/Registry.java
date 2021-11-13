@@ -3,11 +3,14 @@ package com.justserver.apocalypse;
 import com.justserver.apocalypse.base.workbenches.Workbench1;
 import com.justserver.apocalypse.base.workbenches.Workbench2;
 import com.justserver.apocalypse.base.workbenches.Workbench3;
+import com.justserver.apocalypse.items.Gun;
 import com.justserver.apocalypse.items.Item;
 import com.justserver.apocalypse.items.armor.*;
+import com.justserver.apocalypse.items.dungeon.Recombobulator;
 import com.justserver.apocalypse.items.guns.*;
 import com.justserver.apocalypse.items.guns.components.*;
 import com.justserver.apocalypse.items.guns.modifications.Grip;
+import com.justserver.apocalypse.items.guns.modifications.Modify;
 import com.justserver.apocalypse.items.guns.modifications.Scope;
 import com.justserver.apocalypse.items.guns.modifications.Silencer;
 import com.justserver.apocalypse.items.normal.Knife;
@@ -21,7 +24,7 @@ import org.bukkit.persistence.PersistentDataType;
 
 import java.lang.reflect.Field;
 
-public class Registry {
+public class Registry{
     private static Apocalypse plugin = null;
     public final static Medkit MEDKIT = new Medkit(plugin);
     public final static FlyingAxe FLYING_AXE = new FlyingAxe(plugin);
@@ -47,6 +50,7 @@ public class Registry {
     public final static SmallGunBody SMALL_GUN_BODY = new SmallGunBody(plugin);
     public final static Muzzle MUZZLE = new Muzzle(plugin);
     public final static Radio RADIO = new Radio(plugin);
+    public final static Recombobulator RECOMBOBULATOR = new Recombobulator(plugin);
     public static Workbench1 WORKBENCH_1;
     public static Workbench2 WORKBENCH_2;
     public static Workbench3 WORKBENCH_3;
@@ -60,7 +64,7 @@ public class Registry {
             WORKBENCH_1 = new Workbench1(plugin);
             WORKBENCH_2 = new Workbench2(plugin);
             WORKBENCH_3 = new Workbench3(plugin);
-            System.out.println("Workbenches inited successfully");
+            Bukkit.getLogger().info("Workbenches inited successfully");
         }, 20);
     }
     
@@ -72,7 +76,13 @@ public class Registry {
             try {
                 Item item = (Item) field.get(Registry.class);
                 if(item.getId().equalsIgnoreCase(id)){
-                    return item;
+                    if(item instanceof Gun){
+                        return (Gun) item;
+                    } else if(item instanceof Modify){
+                        return (Modify) item;
+                    } else {
+                        return item;
+                    }
                 }
             } catch (IllegalAccessException e) {
                 e.printStackTrace();

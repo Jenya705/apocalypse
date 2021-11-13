@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 public record BaseCommand(Apocalypse plugin) implements CommandExecutor, TabCompleter {
@@ -106,27 +107,13 @@ public record BaseCommand(Apocalypse plugin) implements CommandExecutor, TabComp
                     return true;
                 } else if(args.length == 1 && args[0].equals("delete")){
                     Base base = Base.getBaseByBlock(plugin, player.getLocation().getBlock());
+                    System.out.println(base);
                     if (base == null) {
                         player.sendMessage(ChatColor.DARK_RED + "Вы не находитесь на територии базы!");
                         return true;
                     }
                     if(base.owner.equals(player.getUniqueId())){
-                        ArrayList<Base> foundBases = new ArrayList<>();
-                        plugin.loadedBases.stream().filter(base1 -> base.id.equals(base1.id)).forEach(base1 -> {
-                            if(plugin.bases.config.contains("bases." + base1.id)){
-                                plugin.bases.config.set("bases." + base1.id, null);
-                                plugin.bases.save();
-                                plugin.bases.reload();
-                                if(!foundBases.contains(base1)) player.sendMessage(ChatColor.RED + "База удалена!");
-                                foundBases.add(base1);
-                                base1.location.getBlock().setType(Material.AIR);
-                                base1.remove();
-                            }
-                        });
-                        plugin.loadedBases.remove(base);
-                        for(Base found : foundBases){
-                            plugin.loadedBases.remove(found);
-                        }
+                        Base.delete(base);
                     } else {
                         player.sendMessage(ChatColor.DARK_RED + "Вы не владелец базы!");
                     }

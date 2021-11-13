@@ -38,13 +38,13 @@ public class WorkbenchGui extends Gui{
             ArrayList<Component> lore = new ArrayList<>();
             for(CraftItem craftItem : workbench.getCrafts().get(slot).getNeedItems()){
                 if(craftItem == null) continue;
-                if(craftItem.item == null) continue;
-                String name = craftItem.item.getMaterial().getTranslationKey();
+                if(craftItem.getItem() == null) continue;
+                String name = craftItem.getItem().getMaterial().getTranslationKey();
 
-                if(!(craftItem.item instanceof BukkitItem)){
-                    name = craftItem.item.customName();
+                if(!(craftItem.getItem() instanceof BukkitItem)){
+                    name = craftItem.getItem().customName();
                 }
-                lore.add(Component.text(ChatColor.GRAY + String.valueOf(craftItem.count) + " ").append(Component.translatable(name).color(NamedTextColor.GRAY)));
+                lore.add(Component.text(ChatColor.GRAY + String.valueOf(craftItem.getCount()) + " ").append(Component.translatable(name).color(NamedTextColor.GRAY)));
             }
             meta.lore(lore);
             item.setItemMeta(meta);
@@ -68,7 +68,7 @@ public class WorkbenchGui extends Gui{
         Craft craft = workbench.getCrafts().get(event.getSlot());
         boolean canRemove = true;
         for(CraftItem itemInCraft : craft.getNeedItems()){
-            if(!player.getInventory().contains(itemInCraft.item.getMaterial(), itemInCraft.count)){
+            if(!player.getInventory().contains(itemInCraft.getItem().getMaterial(), itemInCraft.getCount())){
                 canRemove = false;
             }
         }
@@ -78,14 +78,14 @@ public class WorkbenchGui extends Gui{
         }
         for(CraftItem itemInCraft : craft.getNeedItems()){
             if(itemInCraft == null) continue;
-            if(itemInCraft.item == null) continue;
+            if(itemInCraft.getItem() == null) continue;
             for(ItemStack item : player.getInventory()){
                 if(item == null) continue;
-                if(item.getType().equals(itemInCraft.item.getMaterial())){
-                    if(item.getAmount() < itemInCraft.count){
+                if(item.getType().equals(itemInCraft.getItem().getMaterial())){
+                    if(item.getAmount() < itemInCraft.getCount()){
                         item.setAmount(0);
                     }else{
-                        item.setAmount(item.getAmount() - itemInCraft.count);
+                        item.setAmount(item.getAmount() - itemInCraft.getCount());
                     }
                     break;
                 }
@@ -97,7 +97,6 @@ public class WorkbenchGui extends Gui{
     }
 
     @Override
-    public Gui handleInventoryClick(InventoryClickEvent event, Player player, ItemStack itemStack, ClickType clickType) {
-        return null;
+    public void handleInventoryClick(InventoryClickEvent event, Player player, ItemStack itemStack, ClickType clickType) {
     }
 }

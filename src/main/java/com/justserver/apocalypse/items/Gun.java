@@ -98,11 +98,15 @@ public abstract class Gun extends Item {
             }
             if(!cooldowns.contains(player.getUniqueId()) && getCooldown() != 0){
                 cooldowns.add(player.getUniqueId());
-                Bukkit.getScheduler().runTaskLater(plugin, () -> cooldowns.remove(player.getUniqueId()), getCooldown());
+                Bukkit.getScheduler().runTaskLater(plugin, () -> cooldowns.remove(player.getUniqueId()), (int)Math.floor(getCooldown() / 3f));
             }
 
             int knockback = 8;
+            boolean rarityUpgraded = event.getItem().getItemMeta().getPersistentDataContainer().has(new NamespacedKey(plugin, "rarity_upgraded"), PersistentDataType.INTEGER);
             if(Modify.checkModifications(plugin, event.getItem(), "GRIP")){
+                knockback /= 2;
+            }
+            if(rarityUpgraded){
                 knockback /= 2;
             }
             player.getWorld().playSound(player.getEyeLocation(), Sound.ITEM_CROSSBOW_SHOOT, 1f,0.3f);
@@ -114,10 +118,10 @@ public abstract class Gun extends Item {
             meta.getPersistentDataContainer().set(new NamespacedKey(plugin, "ammo_count"), PersistentDataType.INTEGER, currentAmmo - 1);
             event.getItem().setItemMeta(meta);
             //player.getWorld().playSound(player.getEyeLocation(), Sound.ITEM_CROSSBOW_SHOOT, 1f,0.5f);
-            shot(player, 0);
+            shot(player, 0, rarityUpgraded);
             if(isTriple){
-                shot(player, 100);
-                shot(player, -100);
+                shot(player, 100, rarityUpgraded);
+                shot(player, -100, rarityUpgraded);
             }
             Location newLoc = player.getLocation();
             newLoc.setPitch(player.getEyeLocation().getPitch() + Math.abs(random.nextFloat()));
@@ -127,7 +131,7 @@ public abstract class Gun extends Item {
         }
     }
 
-    public void shot(Player player, double angle){
+    public void shot(Player player, double angle, boolean rarityUpgraded){
         Location origin = player.getEyeLocation();
         Vector direction = origin.getDirection();
         if(angle != 0){
@@ -136,12 +140,13 @@ public abstract class Gun extends Item {
         direction.multiply(getRange());
         direction.normalize();
         Location destination = null;
+        int getRangeResult = (int)(getRange() * (rarityUpgraded ? 1.3 : 1));
         int range;
-        Block targetBlock = player.getTargetBlock((int)getRange());
+        Block targetBlock = player.getTargetBlock(getRangeResult);
         if(targetBlock != null){
-            range = (int)targetBlock.getLocation().distance(player.getEyeLocation());
+            range = (int) targetBlock.getLocation().distance(player.getEyeLocation());
         } else {
-            range = (int) getRange();
+            range = getRangeResult;
         }
         for (int i = 0; i < range; i++) {
             Location location = origin.add(direction);
@@ -158,6 +163,9 @@ public abstract class Gun extends Item {
                 if(shot instanceof Player){
                     if(shot.getUniqueId().equals(player.getUniqueId())) continue;
                     double headshotModifier = 3.0;
+                    if(rarityUpgraded){
+                        headshotModifier *= 1.1;
+                    }
                     if(shot.getEquipment() != null && shot.getEquipment().getHelmet() != null && Registry.getItemByItemstack(shot.getEquipment().getHelmet()) != null){
                         Item possibleHelmet = Registry.getItemByItemstack(shot.getEquipment().getHelmet());
                         if(possibleHelmet instanceof Helmet){
@@ -169,7 +177,7 @@ public abstract class Gun extends Item {
                         player.setCooldown(Material.SHIELD, (int) Math.floor(damage * 70));
                         return;
                     }
-                    shot.damage(isHeadShot((Player)shot, location) ? getDamage() * headshotModifier : getDamage(), player);
+                    shot.damage(isHeadShot((Player)shot, location) ? getDamage() * headshotModifier : getDamage() * (rarityUpgraded ? 1.3 : 1), player);
                 } else {
                     shot.damage(getDamage(), player);
                 }
@@ -219,8 +227,67 @@ public abstract class Gun extends Item {
 
     @Override
     public ItemStack createItemStack(Apocalypse plugin) {
-        ItemStack is = super.createItemStack(plugin);
+        return createItemStack(plugin, false);
+    }
+
+    @Override
+    public ItemStack createItemStack(Apocalypse plugin, boolean rarityUpgraded) {
+        ItemStack is = super.createItemStack(plugin, rarityUpgraded);
         ItemMeta meta = is.getItemMeta();
+        int slowdown = getSlowdown();
+        ArrayList<String> lore = new ArrayList<>();
+        int cooldown = (int) getSpeed() / 20;
+        if(rarityUpgraded){
+            lore.add(ChatColor.GRAY + "Урон: " + ChatColor.RED + "+" + getDamage() * 1.3);
+            lore.add(ChatColor.GRAY + "Дальность: " + ChatColor.RED + Math.ceil(getRange() * 1.3) + " блоков");
+            if(cooldown != 0){
+                lore.add(ChatColor.GRAY + "Задержка между выстрелами: " + ChatColor.RED + cooldown + "c");
+            }
+            lore.add(ChatColor.GRAY + "Скорость перезарядки: " + ChatColor.RED + (1.25 - (getRechargeTime() * 0.25)) + "с");
+            if(slowdown != 0){
+                if(slowdown > 0){
+                    lore.add(ChatColor.GRAY + "Скорость: " + ChatColor.RED + "-" + Math.floor(slowdown / 1.3)  + "%");
+                } else {
+                    lore.add(ChatColor.GRAY + "Скорость: " + ChatColor.GREEN + "+" + slowdown * 1.3 + "%");
+                }
+            }
+        } else {
+            lore.add(ChatColor.GRAY + "Урон: " + ChatColor.RED + "+" + getDamage());
+            lore.add(ChatColor.GRAY + "Дальность: " + ChatColor.RED + getRange() + " блоков");
+            if(cooldown != 0){
+                lore.add(ChatColor.GRAY + "Задержка между выстрелами: " + ChatColor.RED + cooldown + "c");
+            }
+            lore.add(ChatColor.GRAY + "Скорость перезарядки: " + ChatColor.RED + (1.25 - (getRechargeTime() * 0.25)) + "с");
+            if(slowdown != 0){
+                if(slowdown > 0){
+                    lore.add(ChatColor.GRAY + "Скорость: " + ChatColor.RED + "-" + slowdown  + "%");
+                } else {
+                    lore.add(ChatColor.GRAY + "Скорость: " + ChatColor.GREEN + "+" + slowdown + "%");
+                }
+            }
+        }
+
+        lore.add("");
+        ItemRarity rarity = getRarity();
+        if(rarityUpgraded){
+            ItemRarity nextRarity = switch (getRarity()){
+                case UNCOMMON -> ItemRarity.RARE;
+                case RARE -> ItemRarity.EPIC;
+                case EPIC -> ItemRarity.LEGENDARY;
+                case LEGENDARY -> ItemRarity.MYTHIC;
+                case MYTHIC, DUNGEON -> ItemRarity.SUPREME;
+                default -> ItemRarity.UNCOMMON;
+            };
+            rarity = nextRarity;
+            lore.add(nextRarity.getColor() + "" + ChatColor.MAGIC + "A " + nextRarity.translate().toUpperCase() + " " +ChatColor.MAGIC +"A ");
+            meta.getPersistentDataContainer().set(new NamespacedKey(plugin, "rarity_upgraded"), PersistentDataType.INTEGER, 1);
+        } else {
+            lore.add(getRarity().translate().toUpperCase());
+        }
+        if(rarity.equals(ItemRarity.LEGENDARY) || rarity.equals(ItemRarity.MYTHIC) || rarity.equals(ItemRarity.DUNGEON) || rarity.equals(ItemRarity.SUPREME)){
+            meta.getPersistentDataContainer().set(new NamespacedKey(plugin, "time_acquired"), PersistentDataType.LONG, System.currentTimeMillis());
+        }
+        meta.setLore(lore);
         meta.getPersistentDataContainer().set(new NamespacedKey(plugin, "ammo_count"), PersistentDataType.INTEGER, 0);
         meta.getPersistentDataContainer().set(new NamespacedKey(plugin, "modifications"), PersistentDataType.STRING, "");
         meta.addEnchant(Enchantment.QUICK_CHARGE, getRechargeTime(), true);

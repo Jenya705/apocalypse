@@ -2,20 +2,13 @@ package com.justserver.apocalypse.gui;
 
 import com.justserver.apocalypse.Apocalypse;
 import com.justserver.apocalypse.base.Base;
-import com.justserver.apocalypse.base.BaseHandler;
 import com.justserver.apocalypse.gui.sign.SignMenuFactory;
 import com.justserver.apocalypse.utils.ItemBuilder;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.TranslatableComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -23,15 +16,11 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.checkerframework.checker.units.qual.A;
 
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 public class BaseGui extends Gui {
     @Override
@@ -51,7 +40,7 @@ public class BaseGui extends Gui {
 
         ItemStack item = new ItemStack(Material.CLOCK);;
         ItemMeta itemMeta = item.getItemMeta();
-        //System.out.println(base.duration.toEpochMilli() + " "+  Instant.now().toEpochMilli());
+        //Bukkit.getLogger().info(base.duration.toEpochMilli() + " "+  Instant.now().toEpochMilli());
         int baseDuration = (int) Math.floor( (base.duration / 1000f / 60f));
         itemMeta.setDisplayName(ChatColor.GREEN + "Осталось у базы: " + baseDuration + " минут");
         ArrayList<Component> lore = new ArrayList<>();
@@ -67,6 +56,11 @@ public class BaseGui extends Gui {
         this.base = base;
     }
 
+    /* TODO:
+
+   Пофиксить топор
+Уменьшение скорости при улучшении предмета
+     */
 
     @Override
     public Gui handleClick(InventoryClickEvent event, Player player, ItemStack itemStack, InventoryView view, ClickType clickType) {
@@ -131,14 +125,13 @@ public class BaseGui extends Gui {
         }
         this.base.duration += 3 * 60 * 60 * 1000;
         this.base.saveBase();
-        Apocalypse.getInstance().loadedBases.remove(this.base);
+        Apocalypse.getInstance().unloadBase(this.base);
         Apocalypse.getInstance().loadedBases.add(this.base);
         player.sendMessage(ChatColor.GREEN + "Вы успешно продлили базу");
         return null;
     }
 
     @Override
-    public Gui handleInventoryClick(InventoryClickEvent event, Player player, ItemStack itemStack, ClickType clickType) {
-        return null;
+    public void handleInventoryClick(InventoryClickEvent event, Player player, ItemStack itemStack, ClickType clickType) {
     }
 }

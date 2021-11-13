@@ -9,7 +9,6 @@ import com.justserver.apocalypse.utils.InventoryUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -18,10 +17,7 @@ import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class ModifiactionsGui extends Gui{
@@ -93,26 +89,26 @@ public class ModifiactionsGui extends Gui{
     }
 
     @Override
-    public Gui handleInventoryClick(InventoryClickEvent event, Player player, ItemStack itemStack, ClickType clickType) {
+    public void handleInventoryClick(InventoryClickEvent event, Player player, ItemStack itemStack, ClickType clickType) {
         ItemMeta itemMeta = gun.getItemMeta();
         PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
         if(Registry.getItemByItemstack(itemStack) instanceof Modify modify){
             Gun gunClass = (Gun) Registry.getItemByItemstack(gun);
             if(!modify.getForGuns().contains(gunClass.getId())){
                 player.sendMessage(ChatColor.DARK_RED + "Данный обвес нельзя установить на данное оружие!");
-                return null;
+                return;
             }
             List<String> modifications = Modify.getModifications(plugin, gun);
             if(modifications.size() + 1 > 5){
                 player.sendMessage(ChatColor.DARK_RED + "У вас максимальное кол-во обвесов!");
-                return null;
+                return;
             }
 
             if(!modifications.contains(Registry.getItemByItemstack(itemStack).getId())){
                 modifications.add(Registry.getItemByItemstack(itemStack).getId());
             }else{
                 player.sendMessage(ChatColor.DARK_RED + "Обвес уже установлен!");
-                return null;
+                return;
             }
             InventoryUtils.removeItem(player.getInventory(), itemStack, 1);
             Modify.setModifications(plugin, gun, modifications, dataContainer);
@@ -120,8 +116,6 @@ public class ModifiactionsGui extends Gui{
             player.closeInventory();
             plugin.guiManager.clear(player);
             plugin.guiManager.setGui(player, new ModifiactionsGui(gun, plugin));
-            return this;
         }
-        return null;
     }
 }

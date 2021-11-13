@@ -23,11 +23,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
@@ -56,12 +59,9 @@ public final class Apocalypse extends JavaPlugin implements Listener {
         saveConfig();
         this.signMenuFactory = new SignMenuFactory(this);
         bases = new CustomConfiguration(this, "bases.yml");
-        Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
-            @Override
-            public void run() {
-                for(Location location : fires){
-                    location.getBlock().setType(Material.AIR);
-                }
+        Bukkit.getScheduler().runTaskTimer(this, () -> {
+            for(Location location : fires){
+                location.getBlock().setType(Material.AIR);
             }
         }, 0, 300L);
         Registry.init(this);
@@ -89,7 +89,7 @@ public final class Apocalypse extends JavaPlugin implements Listener {
             if(blocks == null) continue;
             base.blocks = (ArrayList<HashMap<String, Object>>) blocks;
             base.duration = Long.parseLong(bases.config.get("bases." + key + ".duration").toString());
-            //System.out.println(base.duration);
+            //Bukkit.getLogger().info(base.duration);
             loadedBases.add(base);
         }
         Calendar due = Calendar.getInstance();
@@ -98,7 +98,7 @@ public final class Apocalypse extends JavaPlugin implements Listener {
         due.set(Calendar.MINUTE,0);
         due.set(Calendar.HOUR_OF_DAY, 18);
         if (due.before(Calendar.getInstance())) {
-            System.out.println("ABSURD!");
+            Bukkit.getLogger().info("ABSURD!");
             due.add(Calendar.HOUR, 24);
         }
         long next = due.getTimeInMillis() - new Date().getTime();
@@ -110,9 +110,7 @@ public final class Apocalypse extends JavaPlugin implements Listener {
                     for(Base loadedBase : loadedBases) {
                         if(loadedBase.duration == -1) continue;
                         if (loadedBase.duration <= 0) {
-                            loadedBases.remove(loadedBase);
-                            loadedBase.remove();
-
+                            Base.delete(loadedBase);
                             return;
                         }
                         loadedBase.duration -= 1000L;
@@ -148,26 +146,21 @@ public final class Apocalypse extends JavaPlugin implements Listener {
         } catch (NullPointerException ignored){}
     }
 
+    public void unloadBase(Base base){
+        for(Base loadedBase : loadedBases){
+            if(loadedBase.id.equals(base.id)){
+                loadedBases.remove(loadedBase);
+                return;
+            }
+        }
+    }
 
     @Override
     public void onDisable() {
-
         for(Base base : loadedBases){
             base.saveBase();
         }
-        World lastWorld = null;
-        for(Map.Entry<UUID, ItemStack> entry : Registry.FLYING_AXE.getThrownAxes().entrySet()){
-            if(Bukkit.getPlayer(entry.getKey()) != null){
-                Bukkit.getPlayer(entry.getKey()).getInventory().addItem(entry.getValue());
-            }
-            lastWorld = Bukkit.getPlayer(entry.getKey()).getWorld();
-        }
-        if(lastWorld == null) return;
-        for(Entity entity : lastWorld.getEntities()){
-            if(entity instanceof ArmorStand){
-                entity.remove();
-            }
-        }
+        loadedBases.clear();
 
         for(Map.Entry<UUID, ChestLootTask> entry : OverworldHandler.chestLootTasks.entrySet()){
             entry.getValue().cancel();

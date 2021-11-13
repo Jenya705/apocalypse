@@ -56,6 +56,7 @@ public class Workbench3 extends Workbench {
             new ChestCraft(plugin),
             new BricksFromBrickBlock(plugin),
             new PistolCraft(plugin),
+            new AnvilCraft(plugin),
             new BulletCraft(plugin),
             new SilencerCraft(plugin),
             new KnifeCraft(plugin),
