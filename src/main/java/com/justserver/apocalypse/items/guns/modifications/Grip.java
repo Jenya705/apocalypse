@@ -12,6 +12,8 @@ import java.util.List;
 public class Grip extends Modify {
     public Grip(Apocalypse plugin) {
         super(plugin);
+        minIronNuggets = 3;
+        maxIronNuggets = 6;
     }
 
     @Override

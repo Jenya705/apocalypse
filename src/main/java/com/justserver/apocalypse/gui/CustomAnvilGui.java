@@ -4,6 +4,7 @@ import com.justserver.apocalypse.Apocalypse;
 import com.justserver.apocalypse.Registry;
 import com.justserver.apocalypse.items.Item;
 import com.justserver.apocalypse.items.dungeon.Recombobulator;
+import com.justserver.apocalypse.items.guns.Bullets;
 import com.justserver.apocalypse.items.guns.components.Component;
 import com.justserver.apocalypse.items.guns.modifications.Modify;
 import com.justserver.apocalypse.utils.ItemBuilder;
@@ -71,7 +72,7 @@ public class CustomAnvilGui extends Gui {
                         return new ReturnGui();
                     }
                     Item possibleItem = Registry.getItemByItemstack(itemToUpgrade);
-                    if (possibleItem == null || (possibleItem instanceof Component || possibleItem instanceof Modify || possibleItem instanceof Recombobulator)) {
+                    if (possibleItem == null || (possibleItem instanceof Component || possibleItem instanceof Modify || possibleItem instanceof Recombobulator || possibleItem instanceof Bullets)) {
                         player.sendMessage(ChatColor.RED + "Этот предмет нельзя улучшить");
                         return null;
                     }

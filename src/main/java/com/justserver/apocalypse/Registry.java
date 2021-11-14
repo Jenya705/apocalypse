@@ -16,6 +16,9 @@ import com.justserver.apocalypse.items.guns.modifications.Silencer;
 import com.justserver.apocalypse.items.normal.Knife;
 import com.justserver.apocalypse.items.normal.Medkit;
 import com.justserver.apocalypse.items.normal.Radio;
+import com.justserver.apocalypse.items.normal.tools.FlintAndSteel;
+import com.justserver.apocalypse.items.normal.tools.Pickaxe;
+import com.justserver.apocalypse.items.normal.tools.Shovel;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
@@ -53,10 +56,12 @@ public class Registry {
     public final static Muzzle MUZZLE = new Muzzle(plugin);
     public final static Radio RADIO = new Radio(plugin);
     public final static Recombobulator RECOMBOBULATOR = new Recombobulator(plugin);
+    public static final Pickaxe PICKAXE = new Pickaxe(plugin);
+    public static final Shovel SHOVEL = new Shovel(plugin);
+    public static final FlintAndSteel FLINT_AND_STEEL = new FlintAndSteel(plugin);
     public static Workbench1 WORKBENCH_1;
     public static Workbench2 WORKBENCH_2;
     public static Workbench3 WORKBENCH_3;
-
     /**
      * Faster than just check field names
      */

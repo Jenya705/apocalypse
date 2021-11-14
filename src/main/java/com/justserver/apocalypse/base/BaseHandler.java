@@ -74,18 +74,18 @@ public record BaseHandler(Apocalypse plugin) implements Listener {
     public void baseRegionPlace(BlockPlaceEvent event) {
         if (event.getPlayer().getWorld().getName().contains("dungeon")) return;
         if (BlockTypes.canPlaceBlock.contains(event.getBlock().getType())) return;
-        Base base = Base.getBaseByBlock(plugin, event.getBlock());
         Block block = event.getBlock();
+        Base base = Base.getBaseByBlock(plugin, block);
         if (base == null || !base.players.contains(event.getPlayer().getUniqueId())) {
             event.setCancelled(true);
             event.getPlayer().sendMessage(ChatColor.DARK_RED + "Вы не можете ставить блоки на чужой базе");
             return;
         }
-        if (base.blocks.stream().map((value) -> (Location) value.get("location")).noneMatch((it) -> it.equals(event.getBlock().getLocation())) && !BlockTypes.canBreakBlocksOnBase.contains(block.getType())) {
+        if (base.blocks.stream().map((value) -> (Location) value.get("location")).noneMatch((it) -> it.equals(block.getLocation())) && !BlockTypes.canBreakBlocksOnBase.contains(block.getType())) {
             event.setCancelled(true);
         }
         if (event.getBlock().getType().equals(Material.CHEST)) {
-            event.getBlock().setType(Material.DISPENSER);
+            block.setType(Material.DISPENSER);
         }
     }
 

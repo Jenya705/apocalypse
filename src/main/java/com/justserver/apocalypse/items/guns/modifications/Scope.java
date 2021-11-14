@@ -18,6 +18,8 @@ public class Scope extends Modify {
 
     public Scope(Apocalypse plugin) {
         super(plugin);
+        minIronNuggets = 6;
+        maxIronNuggets = 7;
     }
 
     private final ArrayList<String> guns = new ArrayList<>(Arrays.asList("PISTOL", "M4A4", "SVD"));

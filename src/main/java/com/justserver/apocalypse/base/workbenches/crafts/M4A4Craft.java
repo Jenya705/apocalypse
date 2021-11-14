@@ -16,7 +16,7 @@ import java.util.List;
 public class M4A4Craft extends Craft {
     public List<CraftItem> needItems = new ArrayList<>(Arrays.asList(
             new CraftItem(new BukkitItem(plugin, Material.IRON_INGOT, 3, ItemRarity.COMMON), 6),
-            new CraftItem(new BukkitItem(plugin, Material.FLINT_AND_STEEL, 1, ItemRarity.COMMON), 1),
+            new CraftItem(Registry.FLINT_AND_STEEL, 1),
             new CraftItem(Registry.MUZZLE, 1),
             new CraftItem(Registry.GUN_BODY, 1)
     ));

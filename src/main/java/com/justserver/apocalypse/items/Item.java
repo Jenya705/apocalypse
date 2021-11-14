@@ -15,6 +15,7 @@ import java.lang.reflect.Field;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public abstract class Item extends ItemLoader implements IItem {
     protected Apocalypse plugin;
@@ -42,6 +43,10 @@ public abstract class Item extends ItemLoader implements IItem {
 
     public String getId() {
         return id;
+    }
+    public boolean requireUuid(){
+        ItemRarity rarity = getRarity();
+        return rarity.equals(ItemRarity.LEGENDARY) || rarity.equals(ItemRarity.MYTHIC) || rarity.equals(ItemRarity.DUNGEON) || rarity.equals(ItemRarity.SUPREME);
     }
 
     public List<String> getDescription() {
@@ -130,6 +135,9 @@ public abstract class Item extends ItemLoader implements IItem {
         meta.setDisplayName(rarity.getColor() + customName());
         if (rarity.equals(ItemRarity.LEGENDARY) || rarity.equals(ItemRarity.MYTHIC) || rarity.equals(ItemRarity.DUNGEON) || rarity.equals(ItemRarity.SUPREME)) {
             meta.getPersistentDataContainer().set(new NamespacedKey(plugin, "time_acquired"), PersistentDataType.LONG, System.currentTimeMillis());
+        }
+        if(requireUuid()){
+            meta.getPersistentDataContainer().set(new NamespacedKey(plugin, "item_uuid"), PersistentDataType.STRING, UUID.randomUUID().toString());
         }
         meta.setLore(lore);
         meta.getPersistentDataContainer().set(new NamespacedKey(plugin, "APO_ID"), PersistentDataType.STRING, getId());

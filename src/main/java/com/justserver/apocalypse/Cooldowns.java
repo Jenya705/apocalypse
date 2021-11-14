@@ -1,5 +1,8 @@
 package com.justserver.apocalypse;
 
-public class Cooldowns {
+import java.util.ArrayList;
+import java.util.UUID;
 
+public class Cooldowns {
+    public static ArrayList<UUID> noFall = new ArrayList<>();
 }

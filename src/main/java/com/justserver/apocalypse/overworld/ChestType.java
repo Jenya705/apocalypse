@@ -11,9 +11,10 @@ public enum ChestType {
     HOUSE(Registry.FLYING_AXE, Registry.GRIP, Registry.KNIFE,
             new BukkitItem(Apocalypse.getInstance(), Material.BRICK, -6, ItemRarity.RARE),
             new BukkitItem(Apocalypse.getInstance(), Material.OAK_PLANKS, -4, ItemRarity.COMMON),
-            new BukkitItem(Apocalypse.getInstance(), Material.FLINT_AND_STEEL, 1, ItemRarity.UNCOMMON),
+            Registry.FLINT_AND_STEEL,
             new BukkitItem(Apocalypse.getInstance(), Material.IRON_INGOT, 1, ItemRarity.EPIC),
-            new BukkitItem(Apocalypse.getInstance(), Material.COOKED_BEEF, 1, ItemRarity.RARE)
+            new BukkitItem(Apocalypse.getInstance(), Material.COOKED_BEEF, 1, ItemRarity.RARE),
+            Registry.SHOVEL
     ),
     FACTORY(Registry.MEDIUM_GUN_BODY,
             Registry.SCOPE,
@@ -32,7 +33,7 @@ public enum ChestType {
             Registry.BUTT,
             new BukkitItem(Apocalypse.getInstance(), Material.IRON_INGOT, -4, ItemRarity.EPIC),
             new BukkitItem(Apocalypse.getInstance(), Material.GUNPOWDER, -8, ItemRarity.RARE),
-            new BukkitItem(Apocalypse.getInstance(), Material.DIAMOND_PICKAXE, 1, ItemRarity.EPIC)
+            Registry.SHOVEL
     ),
     HOSPITAL(Registry.MEDKIT, Registry.MEDKIT, Registry.MEDKIT),
     MILITARY(Registry.BUTT,
@@ -60,8 +61,8 @@ public enum ChestType {
             new BukkitItem(Apocalypse.getInstance(), Material.BRICK, -4, ItemRarity.RARE),
             new BukkitItem(Apocalypse.getInstance(), Material.OAK_PLANKS, -5, ItemRarity.COMMON),
             new BukkitItem(Apocalypse.getInstance(), Material.SHIELD, 1, ItemRarity.LEGENDARY),
-            new BukkitItem(Apocalypse.getInstance(), Material.IRON_INGOT, -3, ItemRarity.EPIC),
-            new BukkitItem(Apocalypse.getInstance(), Material.DIAMOND_PICKAXE, 1, ItemRarity.EPIC),
+            Registry.PICKAXE,
+            Registry.SHOVEL,
             Registry.RADIO
     ),
     SHOP(
@@ -70,7 +71,7 @@ public enum ChestType {
             new BukkitItem(Apocalypse.getInstance(), Material.COOKED_BEEF, -8, ItemRarity.RARE),
             new BukkitItem(Apocalypse.getInstance(), Material.COOKED_MUTTON, -2, ItemRarity.RARE),
             new BukkitItem(Apocalypse.getInstance(), Material.CAMPFIRE, -2, ItemRarity.RARE),
-            new BukkitItem(Apocalypse.getInstance(), Material.FLINT_AND_STEEL, 1, ItemRarity.UNCOMMON)
+            Registry.FLINT_AND_STEEL
     );
 
     private final Item[] whatSpawns;
@@ -85,7 +86,6 @@ public enum ChestType {
 
     public String translate() {
         switch (this) {
-
             case HOUSE -> {
                 return "Обычный";
             }

@@ -2,6 +2,7 @@ package com.justserver.apocalypse.overworld;
 
 import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent;
 import com.justserver.apocalypse.Apocalypse;
+import com.justserver.apocalypse.Cooldowns;
 import com.justserver.apocalypse.Registry;
 import com.justserver.apocalypse.base.Base;
 import com.justserver.apocalypse.base.workbenches.PlayerCrafts;
@@ -24,6 +25,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.*;
@@ -89,6 +91,7 @@ public class OverworldHandler implements Listener {
             Location chestLocation = Bukkit.getWorld("world").getHighestBlockAt(0, 0).getLocation().clone().add(0, 1, 0);
             chestLocation.getBlock().setType(Material.CHEST);
             Chest chest = (Chest) chestLocation.getBlock().getState();
+            chest.getPersistentDataContainer().set(new NamespacedKey(plugin, "chest_type"), PersistentDataType.STRING, "airdrop");
             int randomTop = random.nextInt(4);
             Item randomWeapon = Registry.AK_47;
             if (randomTop == 1) {
@@ -139,6 +142,7 @@ public class OverworldHandler implements Listener {
         } else {
             randomTeleport(event.getPlayer());
         }
+
     }
 
     @EventHandler
@@ -154,10 +158,19 @@ public class OverworldHandler implements Listener {
 
     public void randomTeleport(Player player) {
 
-        int x = random.nextInt(20) * (random.nextBoolean() ? -1 : 1), z = random.nextInt(20) * (random.nextBoolean() ? -1 : 1);
+        int x = random.nextInt(20) * (random.nextBoolean() ? -1 : 1),
+                z = random.nextInt(20) * (random.nextBoolean() ? -1 : 1);
+        x += 0.5;
+        z += 0.5;
         Location preLocation = player.getWorld().getSpawnLocation().clone();
-        preLocation.setY(0);
-        player.teleport(preLocation.add(new Location(player.getWorld(), x, player.getWorld().getHighestBlockYAt(x, z) + 1, z)));
+        preLocation.setY(player.getWorld().getHighestBlockYAt(x, z) + 1);
+        if(preLocation.getY() > 97){
+            Bukkit.getLogger().info("pepega");
+            Cooldowns.noFall.add(player.getUniqueId());
+        }
+        preLocation.setX(player.getWorld().getSpawnLocation().getX() + x);
+        preLocation.setZ(player.getWorld().getSpawnLocation().getZ() + z);
+        player.teleport(preLocation);
     }
 
     private final SecureRandom random = new SecureRandom();
@@ -170,11 +183,19 @@ public class OverworldHandler implements Listener {
             if (event.getClickedBlock().getType().equals(Material.CHEST) && !event.getPlayer().isSneaking()) {
                 Chest chest = (Chest) event.getClickedBlock().getState();
                 ChestType chestType;
+                boolean isAirdrop = false;
                 if (clickedChests.containsKey(chest.getLocation())) {
                     chestType = clickedChests.get(chest.getLocation());
                 } else {
                     if (chest.getPersistentDataContainer().has(new NamespacedKey(Apocalypse.getInstance(), "chest_type"), PersistentDataType.STRING)) {
-                        chestType = ChestType.valueOf(chest.getPersistentDataContainer().get(new NamespacedKey(plugin, "chest_type"), PersistentDataType.STRING));
+                        String chestTypeString = chest.getPersistentDataContainer().get(new NamespacedKey(Apocalypse.getInstance(), "chest_type"), PersistentDataType.STRING);
+                        if(chestTypeString.equals("airdrop")){
+                            isAirdrop = true;
+                            chestType = ChestType.MILITARY;
+                        } else {
+                            chestType = ChestType.valueOf(chest.getPersistentDataContainer().get(new NamespacedKey(plugin, "chest_type"), PersistentDataType.STRING));
+                        }
+
                     } else {
                         int chance = random.nextInt(100);
                         switch (randomTable.get(chance)) {
@@ -187,6 +208,7 @@ public class OverworldHandler implements Listener {
                         //chestType = ALLOWED_RANDOM[random.nextInt(ALLOWED_RANDOM.length)];
                     }
                 }
+                ItemStack[] contents = chest.getBlockInventory().getContents();
                 chest.setCustomName(chestType.translate());
                 chest.update();
                 if (lootedChests.contains(event.getClickedBlock().getLocation())) return;
@@ -197,39 +219,45 @@ public class OverworldHandler implements Listener {
                         return;
                     }
                 }
+
                 for (int i = 0; i < 27; i++) {
                     chest.getBlockInventory().setItem(i, new ItemBuilder(Material.RED_STAINED_GLASS_PANE).setName("&cОжидайте").toItemStack());
                 }
+                boolean finalIsAirdrop = isAirdrop;
                 ChestLootTask lootTask = new ChestLootTask(chest, this, () -> {
                     lootedChests.add(event.getClickedBlock().getLocation());
-                    if (random.nextInt(200) == 199) {
-                        chest.getBlockInventory().addItem(Registry.RECOMBOBULATOR.createItemStack(plugin));
-                    }
-                    int lootCount = random.nextInt(5) + 1;
-                    Item[] whatSpawnsPre = chestType.getWhatSpawns();
-                    List<Item> whatSpawns = Arrays.asList(whatSpawnsPre);
-                    Collections.shuffle(whatSpawns);
-                    ArrayList<Item> alreadyHas = new ArrayList<>();
-                    boolean gunSpawned = false;
-                    for (int i = 0; i < lootCount; i++) {
-                        ItemRarity selectedRarity = randomTable.get(random.nextInt(100));
-                        Item spawned = null;
-                        for (Item spawn : whatSpawns) {
-                            if (spawn.getRarity().equals(selectedRarity) && !alreadyHas.contains(spawn)) {
-                                spawned = spawn;
-                                break;
+                    if(finalIsAirdrop){
+                        chest.getBlockInventory().setContents(contents);
+                    } else {
+                        if (random.nextInt(200) == 199) {
+                            chest.getBlockInventory().addItem(Registry.RECOMBOBULATOR.createItemStack(plugin));
+                        }
+                        int lootCount = random.nextInt(5) + 1;
+                        Item[] whatSpawnsPre = chestType.getWhatSpawns();
+                        List<Item> whatSpawns = Arrays.asList(whatSpawnsPre);
+                        Collections.shuffle(whatSpawns);
+                        ArrayList<Item> alreadyHas = new ArrayList<>();
+                        boolean gunSpawned = false;
+                        for (int i = 0; i < lootCount; i++) {
+                            ItemRarity selectedRarity = randomTable.get(random.nextInt(100));
+                            Item spawned = null;
+                            for (Item spawn : whatSpawns) {
+                                if (spawn.getRarity().equals(selectedRarity) && !alreadyHas.contains(spawn)) {
+                                    spawned = spawn;
+                                    break;
+                                }
                             }
-                        }
-                        alreadyHas.add(spawned);
-                        if (spawned == null) {
-                            spawned = whatSpawns.get(random.nextInt(whatSpawns.size()));
-                        }
+                            alreadyHas.add(spawned);
+                            if (spawned == null) {
+                                spawned = whatSpawns.get(random.nextInt(whatSpawns.size()));
+                            }
 
-                        if (spawned instanceof Gun || spawned instanceof Modify || spawned instanceof FlyingAxe) {
-                            if (gunSpawned) continue;
-                            gunSpawned = true;
+                            if (spawned instanceof Gun || spawned instanceof Modify || spawned instanceof FlyingAxe) {
+                                if (gunSpawned) continue;
+                                gunSpawned = true;
+                            }
+                            chest.getBlockInventory().setItem(random.nextInt(chest.getBlockInventory().getSize()), spawned.createItemStack(plugin));
                         }
-                        chest.getBlockInventory().setItem(random.nextInt(chest.getBlockInventory().getSize()), spawned.createItemStack(plugin));
                     }
                 });
                 lootTask.runTaskTimer(plugin, 7, 7);
@@ -277,6 +305,16 @@ public class OverworldHandler implements Listener {
                     boolean rarityUpgraded = itemStack.getItemMeta().getPersistentDataContainer().has(new NamespacedKey(plugin, "rarity_upgraded"), PersistentDataType.INTEGER);
                     event.setDamage(possibleItem.getLeftDamage() * (rarityUpgraded ? 1.3 : 1) * ((Player) event.getDamager()).getAttackCooldown());
                 }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onDamageByEnv(EntityDamageEvent event){
+        if(event.getEntity() instanceof Player){
+            if(event.getCause().equals(EntityDamageEvent.DamageCause.FALL) && Cooldowns.noFall.contains(event.getEntity().getUniqueId())){
+                event.setCancelled(true);
+                Cooldowns.noFall.remove(event.getEntity().getUniqueId());
             }
         }
     }
@@ -379,10 +417,8 @@ public class OverworldHandler implements Listener {
 
     @EventHandler
     public void onCraft(PrepareItemCraftEvent event) {
-//        Material type = event.getRecipe().getResult().getType();
-//        if (type.equals(Material.CRAFTING_TABLE) || type.name().contains("LEGGINGS") || type.name().contains("BOOTS") || type.equals(Material.OAK_PLANKS)) {
-//            event.setCancelled(true);
-//        }
+        if(event.getInventory().getResult() == null) return;
+        if(event.getInventory().getResult().getType().equals(Material.SNOW_BLOCK)) return;
         event.getInventory().setResult(null);
     }
 }

@@ -40,7 +40,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.*;
 /*
 TODO LIST:
-New mecerator GUI
+NOFALL IF TOO HIGH
  */
 public final class Apocalypse extends JavaPlugin implements Listener {
 
@@ -101,7 +101,6 @@ public final class Apocalypse extends JavaPlugin implements Listener {
         due.set(Calendar.MINUTE,0);
         due.set(Calendar.HOUR_OF_DAY, 18);
         if (due.before(Calendar.getInstance())) {
-            Bukkit.getLogger().info("ABSURD!");
             due.add(Calendar.HOUR, 24);
         }
         long next = due.getTimeInMillis() - new Date().getTime();
@@ -128,7 +127,7 @@ public final class Apocalypse extends JavaPlugin implements Listener {
                 } else if(timerToAirdrop == 300){
                     Bukkit.broadcastMessage(ChatColor.RED + "Эирдроп с топовым лутом на X: 0 Z: 0 появиться через 5 минут!");
                 } else if(timerToAirdrop == 60){
-                    Bukkit.broadcastMessage(ChatColor.RED + "" + ChatColor.BOLD + "Эирдроп с топовым лутом на X: 0 Z: 0 появиться через 1 минут!");
+                    Bukkit.broadcastMessage(ChatColor.RED + "" + ChatColor.BOLD + "Эирдроп с топовым лутом на X: 0 Z: 0 появиться через 1 минуту!");
                 }
                 timerToAirdrop--;
             }
@@ -143,7 +142,6 @@ public final class Apocalypse extends JavaPlugin implements Listener {
                         .forEach(itemStack -> loadedBases.stream()
                                 .filter(base -> base.frequency.equals(itemStack.getItemMeta().getPersistentDataContainer().get(new NamespacedKey(this, "frequency"), PersistentDataType.STRING)))
                                 .forEach(base -> base.connectedPlayers.add(player)));
-
 
         }
         } catch (NullPointerException ignored){}

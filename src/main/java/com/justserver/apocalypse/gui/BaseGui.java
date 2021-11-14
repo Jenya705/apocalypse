@@ -105,6 +105,9 @@ public class BaseGui extends Gui {
                 if (removed == entry.getValue()) {
                     break;
                 }
+                if(playerStack == null){
+                    continue;
+                }
                 if (playerStack.getType().equals(entry.getKey())) {
                     if ((entry.getValue() - removed) >= playerStack.getAmount()) {
                         removed += playerStack.getAmount();

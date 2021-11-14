@@ -95,6 +95,11 @@ public class Radio extends Item {
     }
 
     @Override
+    public boolean requireUuid() {
+        return true;
+    }
+
+    @Override
     public ItemStack createItemStack(Apocalypse plugin) {
         ItemStack itemStack = super.createItemStack(plugin);
         ItemMeta meta = itemStack.getItemMeta();

@@ -19,8 +19,14 @@ public class BlockTypes {
         // Interact blocks
         interactBlocks.add(Material.OAK_DOOR);
         interactBlocks.add(Material.DISPENSER);
+        interactBlocks.add(Material.SNOW);
+        interactBlocks.add(Material.SNOW_BLOCK);
         // can place blocks
         canPlaceBlock.add(Material.TNT);
+        canPlaceBlock.add(Material.SNOW_BLOCK);
+        canPlaceBlock.add(Material.SNOW);
+        canPlaceBlock.add(Material.CAMPFIRE);
+        canPlaceBlock.add(Material.ANVIL);
         canBreakBlocksOnBase.add(Material.DISPENSER);
         canBreakBlocksOnBase.add(Material.SMOKER);
         canBreakBlocksOnBase.add(Material.FURNACE);
@@ -28,7 +34,10 @@ public class BlockTypes {
         canBreakBlocksOnBase.add(Material.OAK_PLANKS);
         canBreakBlocksOnBase.add(Material.OAK_DOOR);
         canBreakBlocksOnBase.add(Material.BRICKS);
-        canBreakBlocksOnBase.add(Material.OAK_DOOR);
+        canBreakBlocksOnBase.add(Material.ANVIL);
         canBreakBlocksOnBase.add(Material.TNT);
+        canBreakBlocksOnBase.add(Material.SNOW_BLOCK);
+        canBreakBlocksOnBase.add(Material.SNOW);
+        canBreakBlocksOnBase.add(Material.CAMPFIRE);
     }
 }
