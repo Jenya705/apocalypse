@@ -13,9 +13,11 @@ public record DungeonCommand(Apocalypse plugin) implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        sender.sendMessage(ChatColor.RED + "У вас недостаточно прав, чтобы тестировать данжи :( Подождите немного, и данжи выйдут в открытый доступ");
+
         if (sender instanceof Player && sender.isOp()) {
             new Dungeon((Player) sender);
+        } else {
+            sender.sendMessage(ChatColor.RED + "У вас недостаточно прав, чтобы тестировать данжи :( Подождите немного, и данжи выйдут в открытый доступ");
         }
         return true;
     }

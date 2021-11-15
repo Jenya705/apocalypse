@@ -9,6 +9,7 @@ import org.bukkit.*;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -18,35 +19,61 @@ import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.*;
 
+import static ru.epserv.epmodule.util.StyleUtils.red;
+import static ru.epserv.epmodule.util.StyleUtils.regular;
+
 public class Dungeon implements Listener {
     private final ArrayList<DungeonRoom> rooms = new ArrayList<>();
     private StartRoom startRoom;
-    private final World world;
+    private World world;
     private final ArrayList<Player> players = new ArrayList<>();
     private final HashMap<UUID, Location> playerToStartLocation = new HashMap<>();
-
-
+    long start = System.currentTimeMillis();
+    long totalStart;
     public Dungeon(Player... players) {
         Collections.addAll(this.players, players);
-        WorldCreator creator = new WorldCreator("dungeon_" + System.currentTimeMillis());
-        creator.type(WorldType.FLAT);
-        creator.generateStructures(false);
-        creator.hardcore(false);
-        creator.generator(new DungeonChunkGenerator());
-        this.world = creator.createWorld();
-        if (world == null) {
-            announceMessage("Cannot generate dungeon");
-            return;
-        }
-        world.setGameRule(GameRule.DO_MOB_SPAWNING, false);
-        world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
+        String name = "dungeon_" + System.currentTimeMillis();
+        totalStart = start;
+        try {
 
-        generate(new Location(world, 0, 30, 0), 15);
-        this.players.forEach(player -> {
-            playerToStartLocation.put(player.getUniqueId(), player.getLocation().clone());
-            player.teleport(startRoom.getTeleportLocation());
-        });
-        Bukkit.getPluginManager().registerEvents(this, Apocalypse.getInstance());
+            DungeonGenerator.generate(name, () -> {
+                System.out.println(name);
+                System.out.println("Took time to copy dungeon: " + (System.currentTimeMillis() - start));
+                start = System.currentTimeMillis();
+                WorldCreator creator = new WorldCreator(name);
+                creator.generator(new DungeonChunkGenerator());
+                this.world = DungeonGenerator.getDungeonServer().createWorld(creator);
+
+                System.out.println("Took time to load dungeon: " + (System.currentTimeMillis() - start));
+                if (world == null) {
+                    announceMessage("Cannot generate dungeon");
+                    return;
+                }
+                world.setKeepSpawnInMemory(false);
+                world.setGameRule(GameRule.DO_MOB_SPAWNING, false);
+                world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
+                start = System.currentTimeMillis();
+                generate(new Location(world, 0, 30, 0), 15, () -> {
+                    this.players.forEach(player -> {
+                        playerToStartLocation.put(player.getUniqueId(), player.getLocation().clone());
+                        player.teleport(startRoom.getTeleportLocation());
+                    });
+                    Bukkit.getPluginManager().registerEvents(this, Apocalypse.getInstance());
+                });
+                System.out.println("Took time to generate dungeon: " + (System.currentTimeMillis() - start));
+                System.out.println("In total: " + (System.currentTimeMillis() - totalStart));
+            }, () -> {
+                for (Player player : players) {
+                    player.sendMessage(regular(red("Произошла ошибка генерации. ID данжа: " + name)));
+                }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+            for (Player player : players) {
+                player.sendMessage(regular(red("Произошла ошибка генерации. ID данжа: " + name)));
+            }
+        }
+
     }
 
     public void announceMessage(String message) {
@@ -60,6 +87,10 @@ public class Dungeon implements Listener {
 
         }
     }
+//    @EventHandler(priority= EventPriority.HIGHEST)
+//    public void worldInit(org.bukkit.event.world.WorldInitEvent event) {
+//        event.getWorld().setKeepSpawnInMemory(false);
+//    }
 
     public void endDungeon() {
         for (Map.Entry<UUID, Location> entry : playerToStartLocation.entrySet()) {
@@ -74,12 +105,13 @@ public class Dungeon implements Listener {
 
     private final static SecureRandom random = new SecureRandom();
 
-    public void generate(Location start, int roomsCount) {
+    public void generate(Location start, int roomsCount, Runnable afterStart) {
         Location starterLocation = start.clone();
         try {
             BlockFace currentBlockFace = BlockFace.NORTH;
             RoomType currentRoom = RoomType.FIRST;
             startRoom = (StartRoom) currentRoom.paste(starterLocation, currentBlockFace);
+            afterStart.run();
             currentBlockFace = BlockFace.SOUTH;
             for (int i = 0; i < roomsCount; i++) {
                 Doorway doorway;
