@@ -9,14 +9,10 @@ import net.minecraft.nbt.NBTBase;
 import net.minecraft.resources.MinecraftKey;
 import net.minecraft.resources.RegistryReadOps;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.server.level.WorldServer;
 import net.minecraft.util.datafix.DataConverterRegistry;
 import net.minecraft.world.EnumDifficulty;
-import net.minecraft.world.entity.ai.village.VillageSiege;
-import net.minecraft.world.entity.npc.MobSpawnerCat;
-import net.minecraft.world.entity.npc.MobSpawnerTrader;
 import net.minecraft.world.level.EnumGamemode;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.MobSpawner;
@@ -27,8 +23,6 @@ import net.minecraft.world.level.dimension.DimensionManager;
 import net.minecraft.world.level.dimension.WorldDimension;
 import net.minecraft.world.level.levelgen.ChunkGeneratorAbstract;
 import net.minecraft.world.level.levelgen.GeneratorSettings;
-import net.minecraft.world.level.levelgen.MobSpawnerPatrol;
-import net.minecraft.world.level.levelgen.MobSpawnerPhantom;
 import net.minecraft.world.level.storage.Convertable;
 import net.minecraft.world.level.storage.WorldDataServer;
 import org.bukkit.Bukkit;
@@ -44,17 +38,18 @@ import org.bukkit.generator.WorldInfo;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.*;
+import java.util.function.Consumer;
 
 public class DungeonServer {
-    private DedicatedServer console = null;
+    private final DedicatedServer console;
+
     public DungeonServer() throws NoSuchFieldException {
         CraftServer server = (CraftServer) Bukkit.getServer();
         console = server.getServer();
     }
 
-    public World createWorld(WorldCreator creator) {
+    public void createWorld(WorldCreator creator, Consumer<World> returnWorld) {
         String name = creator.name();
         ChunkGenerator generator = creator.generator();
         BiomeProvider biomeProvider = creator.biomeProvider();
@@ -62,19 +57,12 @@ public class DungeonServer {
         World world = Bukkit.getWorld(name);
 
         if (world != null) {
-            return world;
+            returnWorld.accept(world);
+            return;
         }
 
         if ((folder.exists()) && (!folder.isDirectory())) {
             throw new IllegalArgumentException("File exists with the name '" + name + "' and isn't a folder");
-        }
-
-        if (generator == null) {
-            generator = creator.generator();
-        }
-
-        if (biomeProvider == null) {
-            biomeProvider = creator.biomeProvider();
         }
 
         ResourceKey<WorldDimension> actualDimension = WorldDimension.b;
@@ -85,11 +73,11 @@ public class DungeonServer {
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
-        MinecraftServer.convertWorld(worldSession); // Run conversion now
+        //MinecraftServer.convertWorld(worldSession); // Run conversion now
 
-        RegistryReadOps<NBTBase> registryreadops = RegistryReadOps.a(DynamicOpsNBT.a, this.console.aB.i(), this.console.l);
-        WorldDataServer worlddata = (WorldDataServer)worldSession.a(registryreadops, this.console.datapackconfiguration);
-        if (worlddata == null) {
+        RegistryReadOps<NBTBase> readOps = RegistryReadOps.a(DynamicOpsNBT.a, this.console.aB.i(), this.console.l);
+        WorldDataServer worldData = (WorldDataServer) worldSession.a(readOps, this.console.datapackconfiguration);
+        if (worldData == null) {
             Properties properties = new Properties();
             properties.put("generator-settings", creator.generatorSettings());
             properties.put("level-seed", Objects.toString(creator.seed()));
@@ -97,14 +85,14 @@ public class DungeonServer {
             properties.put("level-type", creator.type().getName());
             GeneratorSettings generatorsettings = GeneratorSettings.a(this.console.getCustomRegistry(), properties);
             WorldSettings worldSettings = new WorldSettings(name, EnumGamemode.a, false, EnumDifficulty.b, false, new GameRules(), this.console.datapackconfiguration);
-            worlddata = new WorldDataServer(worldSettings, generatorsettings, Lifecycle.stable());
+            worldData = new WorldDataServer(worldSettings, generatorsettings, Lifecycle.stable());
         }
 
-        worlddata.checkName(name);
-        worlddata.a(this.console.getServerModName(), this.console.getModded().isPresent());
+        worldData.checkName(name);
+        worldData.a(this.console.getServerModName(), this.console.getModded().isPresent());
         long j = BiomeManager.a(creator.seed());
-        List<MobSpawner> list = ImmutableList.of(new MobSpawnerPhantom(), new MobSpawnerPatrol(), new MobSpawnerCat(), new VillageSiege(), new MobSpawnerTrader(worlddata));
-        RegistryMaterials<WorldDimension> registryMaterials = worlddata.getGeneratorSettings().d();
+        List<MobSpawner> list = new ArrayList<>();
+        RegistryMaterials<WorldDimension> registryMaterials = worldData.getGeneratorSettings().d();
         WorldDimension worlddimension = registryMaterials.a(actualDimension);
         DimensionManager dimensionmanager;
         net.minecraft.world.level.chunk.ChunkGenerator chunkGenerator;
@@ -116,7 +104,7 @@ public class DungeonServer {
             chunkGenerator = worlddimension.c();
         }
 
-        WorldInfo worldInfo = new CraftWorldInfo(worlddata, worldSession, creator.environment(), dimensionmanager);
+        WorldInfo worldInfo = new CraftWorldInfo(worldData, worldSession, creator.environment(), dimensionmanager);
         if (biomeProvider == null && generator != null) {
             biomeProvider = generator.getDefaultBiomeProvider(worldInfo);
         }
@@ -124,7 +112,7 @@ public class DungeonServer {
         if (biomeProvider != null) {
             WorldChunkManager worldChunkManager = new CustomWorldChunkManager(worldInfo, biomeProvider, this.console.l.b(IRegistry.aO));
             if (chunkGenerator instanceof ChunkGeneratorAbstract) {
-                chunkGenerator = new ChunkGeneratorAbstract(worldChunkManager, chunkGenerator.e, ((ChunkGeneratorAbstract)chunkGenerator).g);
+                chunkGenerator = new ChunkGeneratorAbstract(worldChunkManager, chunkGenerator.e, ((ChunkGeneratorAbstract) chunkGenerator).g);
             }
         }
 
@@ -132,18 +120,18 @@ public class DungeonServer {
             net.minecraft.server.Main.convertWorldButItWorks(actualDimension, net.minecraft.world.level.World.getDimensionKey(dimensionmanager), worldSession, DataConverterRegistry.a(), this.console.options.has("eraseCache"));
         }
 
-        String levelName = console.getDedicatedServerProperties().p;
-        ResourceKey<net.minecraft.world.level.World> worldKey = ResourceKey.a(IRegistry.Q, new MinecraftKey(creator.key().getNamespace().toLowerCase(Locale.ENGLISH), creator.key().getKey().toLowerCase(Locale.ENGLISH)));;
-        if(generator == null || biomeProvider == null){
-            return null;
+        //String levelName = console.getDedicatedServerProperties().p;
+        ResourceKey<net.minecraft.world.level.World> worldKey = ResourceKey.a(IRegistry.Q, new MinecraftKey(creator.key().getNamespace().toLowerCase(Locale.ENGLISH), creator.key().getKey().toLowerCase(Locale.ENGLISH)));
+        if (generator == null || biomeProvider == null) {
+            Bukkit.getLogger().info("Using custom biome provider");
         }
-        WorldServer internal = new WorldServer(this.console, this.console.az, worldSession, worlddata, worldKey, dimensionmanager, console.L.create(11), chunkGenerator, worlddata.getGeneratorSettings().isDebugWorld(), j, creator.environment() == World.Environment.NORMAL ? list : ImmutableList.of(), true, creator.environment(), generator, biomeProvider);
-        this.console.initWorld(internal, worlddata, worlddata, worlddata.getGeneratorSettings());
-        internal.setSpawnFlags(true, true);
+        WorldServer internal = new WorldServer(this.console, this.console.az, worldSession, worldData, worldKey, dimensionmanager, console.L.create(11), chunkGenerator, worldData.getGeneratorSettings().isDebugWorld(), j, creator.environment() == World.Environment.NORMAL ? list : ImmutableList.of(), true, creator.environment(), generator, biomeProvider);
+        internal.getWorld().setKeepSpawnInMemory(false);
+        this.console.initWorld(internal, worldData, worldData, worldData.getGeneratorSettings());
+        internal.setSpawnFlags(false, false);
         this.console.R.put(internal.getDimensionKey(), internal);
-        console.loadSpawn(internal.getChunkProvider().a.z, internal);
         internal.G.tick();
         Bukkit.getPluginManager().callEvent(new WorldLoadEvent(internal.getWorld()));
-        return internal.getWorld();
+        returnWorld.accept(internal.getWorld());
     }
 }

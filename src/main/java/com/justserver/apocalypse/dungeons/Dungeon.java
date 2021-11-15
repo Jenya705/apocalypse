@@ -30,9 +30,11 @@ public class Dungeon implements Listener {
     private final HashMap<UUID, Location> playerToStartLocation = new HashMap<>();
     long start = System.currentTimeMillis();
     long totalStart;
+    private final String levelName;
     public Dungeon(Player... players) {
         Collections.addAll(this.players, players);
         String name = "dungeon_" + System.currentTimeMillis();
+        this.levelName = name;
         totalStart = start;
         try {
 
@@ -42,26 +44,28 @@ public class Dungeon implements Listener {
                 start = System.currentTimeMillis();
                 WorldCreator creator = new WorldCreator(name);
                 creator.generator(new DungeonChunkGenerator());
-                this.world = DungeonGenerator.getDungeonServer().createWorld(creator);
+                DungeonGenerator.getDungeonServer().createWorld(creator, world -> {
 
-                System.out.println("Took time to load dungeon: " + (System.currentTimeMillis() - start));
-                if (world == null) {
-                    announceMessage("Cannot generate dungeon");
-                    return;
-                }
-                world.setKeepSpawnInMemory(false);
-                world.setGameRule(GameRule.DO_MOB_SPAWNING, false);
-                world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
-                start = System.currentTimeMillis();
-                generate(new Location(world, 0, 30, 0), 15, () -> {
-                    this.players.forEach(player -> {
-                        playerToStartLocation.put(player.getUniqueId(), player.getLocation().clone());
-                        player.teleport(startRoom.getTeleportLocation());
+                    this.world = world;
+                    System.out.println("Took time to load dungeon: " + (System.currentTimeMillis() - start));
+                    if (world == null) {
+                        announceMessage("Cannot generate dungeon");
+                        return;
+                    }
+                    world.setKeepSpawnInMemory(false);
+                    world.setGameRule(GameRule.DO_MOB_SPAWNING, false);
+                    world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
+                    start = System.currentTimeMillis();
+                    generate(new Location(world, 0, 30, 0), 15, () -> {
+                        this.players.forEach(player -> {
+                            playerToStartLocation.put(player.getUniqueId(), player.getLocation().clone());
+                            player.teleport(startRoom.getTeleportLocation());
+                        });
+                        Bukkit.getPluginManager().registerEvents(this, Apocalypse.getInstance());
                     });
-                    Bukkit.getPluginManager().registerEvents(this, Apocalypse.getInstance());
+                    System.out.println("Took time to generate dungeon: " + (System.currentTimeMillis() - start));
+                    System.out.println("In total: " + (System.currentTimeMillis() - totalStart));
                 });
-                System.out.println("Took time to generate dungeon: " + (System.currentTimeMillis() - start));
-                System.out.println("In total: " + (System.currentTimeMillis() - totalStart));
             }, () -> {
                 for (Player player : players) {
                     player.sendMessage(regular(red("Произошла ошибка генерации. ID данжа: " + name)));
@@ -87,10 +91,6 @@ public class Dungeon implements Listener {
 
         }
     }
-//    @EventHandler(priority= EventPriority.HIGHEST)
-//    public void worldInit(org.bukkit.event.world.WorldInitEvent event) {
-//        event.getWorld().setKeepSpawnInMemory(false);
-//    }
 
     public void endDungeon() {
         for (Map.Entry<UUID, Location> entry : playerToStartLocation.entrySet()) {
@@ -99,8 +99,12 @@ public class Dungeon implements Listener {
             }
         }
         HandlerList.unregisterAll(this);
-        Bukkit.unloadWorld(world, false);
-        Bukkit.getScheduler().runTaskAsynchronously(Apocalypse.getInstance(), () -> FileUtils.deleteWorld(new File(Bukkit.getServer().getWorldContainer().getAbsolutePath() + File.separator + world.getName())));
+        String folderName = levelName;
+        if(world == null){
+            Bukkit.unloadWorld(levelName, false);
+        } else Bukkit.unloadWorld(world, false);
+
+        Bukkit.getScheduler().runTaskAsynchronously(Apocalypse.getInstance(), () -> FileUtils.deleteWorld(new File(Bukkit.getServer().getWorldContainer().getAbsolutePath() + File.separator + levelName)));
     }
 
     private final static SecureRandom random = new SecureRandom();

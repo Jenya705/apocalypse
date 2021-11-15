@@ -6,6 +6,7 @@ import com.justserver.apocalypse.base.BaseHandler;
 import com.justserver.apocalypse.commands.AddItemCommand;
 import com.justserver.apocalypse.commands.DungeonCommand;
 import com.justserver.apocalypse.commands.SetupCommand;
+import com.justserver.apocalypse.dungeons.Dungeon;
 import com.justserver.apocalypse.dungeons.DungeonHandler;
 import com.justserver.apocalypse.gui.GuiManager;
 import com.justserver.apocalypse.gui.sign.SignMenuFactory;
@@ -145,6 +146,8 @@ public final class Apocalypse extends JavaPlugin implements Listener {
 
         }
         } catch (NullPointerException ignored){}
+        Dungeon dummyDungeon = new Dungeon();
+        dummyDungeon.endDungeon();
     }
 
     public void unloadBase(Base base){
