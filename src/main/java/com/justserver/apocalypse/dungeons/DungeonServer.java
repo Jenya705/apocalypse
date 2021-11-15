@@ -87,15 +87,14 @@ public class DungeonServer {
         }
         MinecraftServer.convertWorld(worldSession); // Run conversion now
 
-        boolean hardcore = false;
         RegistryReadOps<NBTBase> registryreadops = RegistryReadOps.a(DynamicOpsNBT.a, this.console.aB.i(), this.console.l);
         WorldDataServer worlddata = (WorldDataServer)worldSession.a(registryreadops, this.console.datapackconfiguration);
         if (worlddata == null) {
             Properties properties = new Properties();
-            properties.put("generator-settings", Objects.toString(creator.generatorSettings()));
+            properties.put("generator-settings", creator.generatorSettings());
             properties.put("level-seed", Objects.toString(creator.seed()));
             properties.put("generate-structures", Objects.toString(creator.generateStructures()));
-            properties.put("level-type", Objects.toString(creator.type().getName()));
+            properties.put("level-type", creator.type().getName());
             GeneratorSettings generatorsettings = GeneratorSettings.a(this.console.getCustomRegistry(), properties);
             WorldSettings worldSettings = new WorldSettings(name, EnumGamemode.a, false, EnumDifficulty.b, false, new GameRules(), this.console.datapackconfiguration);
             worlddata = new WorldDataServer(worldSettings, generatorsettings, Lifecycle.stable());
@@ -105,16 +104,16 @@ public class DungeonServer {
         worlddata.a(this.console.getServerModName(), this.console.getModded().isPresent());
         long j = BiomeManager.a(creator.seed());
         List<MobSpawner> list = ImmutableList.of(new MobSpawnerPhantom(), new MobSpawnerPatrol(), new MobSpawnerCat(), new VillageSiege(), new MobSpawnerTrader(worlddata));
-        RegistryMaterials<WorldDimension> registrymaterials = worlddata.getGeneratorSettings().d();
-        WorldDimension worlddimension = (WorldDimension)registrymaterials.a(actualDimension);
+        RegistryMaterials<WorldDimension> registryMaterials = worlddata.getGeneratorSettings().d();
+        WorldDimension worlddimension = registryMaterials.a(actualDimension);
         DimensionManager dimensionmanager;
-        Object chunkgenerator;
+        net.minecraft.world.level.chunk.ChunkGenerator chunkGenerator;
         if (worlddimension == null) {
-            dimensionmanager = (DimensionManager)this.console.l.d(IRegistry.P).d(DimensionManager.k);
-            chunkgenerator = GeneratorSettings.a(this.console.l.d(IRegistry.aO), this.console.l.d(IRegistry.aH), (new Random()).nextLong());
+            dimensionmanager = this.console.l.d(IRegistry.P).d(DimensionManager.k);
+            chunkGenerator = GeneratorSettings.a(this.console.l.d(IRegistry.aO), this.console.l.d(IRegistry.aH), (new Random()).nextLong());
         } else {
             dimensionmanager = worlddimension.b();
-            chunkgenerator = worlddimension.c();
+            chunkGenerator = worlddimension.c();
         }
 
         WorldInfo worldInfo = new CraftWorldInfo(worlddata, worldSession, creator.environment(), dimensionmanager);
@@ -124,8 +123,8 @@ public class DungeonServer {
 
         if (biomeProvider != null) {
             WorldChunkManager worldChunkManager = new CustomWorldChunkManager(worldInfo, biomeProvider, this.console.l.b(IRegistry.aO));
-            if (chunkgenerator instanceof ChunkGeneratorAbstract) {
-                chunkgenerator = new ChunkGeneratorAbstract(worldChunkManager, ((net.minecraft.world.level.chunk.ChunkGenerator)chunkgenerator).e, ((ChunkGeneratorAbstract)chunkgenerator).g);
+            if (chunkGenerator instanceof ChunkGeneratorAbstract) {
+                chunkGenerator = new ChunkGeneratorAbstract(worldChunkManager, chunkGenerator.e, ((ChunkGeneratorAbstract)chunkGenerator).g);
             }
         }
 
@@ -134,16 +133,11 @@ public class DungeonServer {
         }
 
         String levelName = console.getDedicatedServerProperties().p;
-        ResourceKey<net.minecraft.world.level.World> worldKey;
-        if (name.equals(levelName + "_nether")) {
-            worldKey = net.minecraft.world.level.World.g;
-        } else if (name.equals(levelName + "_the_end")) {
-            worldKey = net.minecraft.world.level.World.h;
-        } else {
-            worldKey = ResourceKey.a(IRegistry.Q, new MinecraftKey(creator.key().getNamespace().toLowerCase(Locale.ENGLISH), creator.key().getKey().toLowerCase(Locale.ENGLISH)));
+        ResourceKey<net.minecraft.world.level.World> worldKey = ResourceKey.a(IRegistry.Q, new MinecraftKey(creator.key().getNamespace().toLowerCase(Locale.ENGLISH), creator.key().getKey().toLowerCase(Locale.ENGLISH)));;
+        if(generator == null || biomeProvider == null){
+            return null;
         }
-
-        WorldServer internal = new WorldServer(this.console, this.console.az, worldSession, worlddata, worldKey, dimensionmanager, console.L.create(11), (net.minecraft.world.level.chunk.ChunkGenerator)chunkgenerator, worlddata.getGeneratorSettings().isDebugWorld(), j, creator.environment() == World.Environment.NORMAL ? list : ImmutableList.of(), true, creator.environment(), generator, biomeProvider);
+        WorldServer internal = new WorldServer(this.console, this.console.az, worldSession, worlddata, worldKey, dimensionmanager, console.L.create(11), chunkGenerator, worlddata.getGeneratorSettings().isDebugWorld(), j, creator.environment() == World.Environment.NORMAL ? list : ImmutableList.of(), true, creator.environment(), generator, biomeProvider);
         this.console.initWorld(internal, worlddata, worlddata, worlddata.getGeneratorSettings());
         internal.setSpawnFlags(true, true);
         this.console.R.put(internal.getDimensionKey(), internal);
