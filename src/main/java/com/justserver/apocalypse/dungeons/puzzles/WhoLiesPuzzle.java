@@ -17,6 +17,10 @@ import org.bukkit.inventory.ItemStack;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 
+/**
+ Example puzzle
+ @author MisterFunny01
+ */
 public class WhoLiesPuzzle extends Gui implements Puzzle {
     private final ArrayList<ArrayList<Pair<String, Boolean>>> answers = new ArrayList<>();
     private final SecureRandom random = new SecureRandom();

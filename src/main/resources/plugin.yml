@@ -16,3 +16,4 @@ commands:
     usage: /base <args>
   additem:
   setup:
+  calcsel:

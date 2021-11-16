@@ -7,22 +7,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-public class Schematic {
-    private final byte[] data;
-    private final String name;
-    private final short[] blocks;
-    private final short width;
-    private final short height;
-    private final short length;
-
-    private Schematic(String name, short[] blocks, byte[] data, short width, short length, short height) {
-        this.name = name;
-        this.blocks = blocks;
-        this.data = data;
-        this.width = width;
-        this.length = length;
-        this.height = height;
-    }
+/**
+ Schematic processor class to extract metadata from rooms
+ @author MisterFunny01
+ */
+public record Schematic(String name, short[] blocks, byte[] data, short width, short length, short height) {
 
     public byte[] getData() {
         return data;

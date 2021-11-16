@@ -12,24 +12,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.function.Consumer;
 
+/**
+ Main dungeon loader class that responsible for loading dungeon
+ @author MisterFunny01
+ */
 public class DungeonGenerator {
 
-    private static DungeonServer dungeonServer;
-
-    static {
-        try {
-            dungeonServer = new DungeonServer();
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        }
-    }
+    private static final DungeonServer dungeonServer = new DungeonServer();
 
     public static void generate(String name, Runnable callback, Runnable error) throws IOException {
         File container = Bukkit.getWorldContainer();
         String containerPath = container.getCanonicalPath();
         Bukkit.getScheduler().runTaskAsynchronously(Apocalypse.getInstance(), () -> {
             try {
-                System.out.println(Thread.currentThread().getName());
                 File worldFile = new File(containerPath + File.separator + name);
                 FileUtils.copyDirectory(new File(containerPath + File.separator + "dungeon"), worldFile);
                 Bukkit.getScheduler().runTask(Apocalypse.getInstance(), callback);

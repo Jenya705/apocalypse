@@ -73,8 +73,9 @@ public class Base {
             base.location.getBlock().setType(Material.AIR);
             for (HashMap<String, Object> blockProperty : base.blocks) {
                 Location blockLocation = (Location) blockProperty.get("location");
-                if (BlockTypes.blocks.containsKey(blockLocation.getBlock().getType())) {
-                    blockLocation.getBlock().breakNaturally(true);
+                Material blockType = blockLocation.getBlock().getType();
+                if (BlockTypes.blocks.containsKey(blockType)) {
+                    blockLocation.getBlock().breakNaturally(new ItemStack(Material.DIAMOND_PICKAXE), true);
                 }
             }
             plugin.bases.config.set("bases." + base.id, null);

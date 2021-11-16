@@ -6,6 +6,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
 
+/**
+ Dungeon chunk generator for generating void world
+ @author MisterFunny01
+ */
 public class DungeonChunkGenerator extends ChunkGenerator {
     @Override
     public boolean shouldGenerateBedrock() {

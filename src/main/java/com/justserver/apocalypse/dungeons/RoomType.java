@@ -26,11 +26,15 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
+/**
+ Dungeon rooms registry with all coordinates and responsible room handler classes
+ @author MisterFunny01
+ */
 public enum RoomType {
-    FIRST(StartRoom.class, null, new Doorway(2, 2, 4, RelativeDirection.FORWARD)),
+    FIRST(StartRoom.class, null, new Doorway(5, 3, 16, RelativeDirection.FORWARD)),
     L(DungeonRoom.class, new Vector(4, 3, 0), new Doorway(0, 3, 4, RelativeDirection.LEFT)),
-    ZIGZAG(DungeonRoom.class, new Vector(5, 3, 0), new Doorway(2, 3, 7, RelativeDirection.FORWARD)),
-    //DOORWAY3X2(new Vector(2, 2, 0), new Doorway(7, 2, 8, RelativeDirection.FORWARD), new Doorway(11, 2, 4, RelativeDirection.RIGHT)),
+    //DOORWAY3X2(DungeonRoom.class, new Vector(2, 2, 0), new Doorway(7, 2, 8, RelativeDirection.FORWARD), new Doorway(11, 2, 4, RelativeDirection.RIGHT)),
+    ZIGZAG(DungeonRoom.class, new Vector(5, 2, 0), new Doorway(9, 2, 10, RelativeDirection.FORWARD))
     ;
     private final File roomFile;
     private final Schematic schematic;
@@ -68,21 +72,12 @@ public enum RoomType {
         Clipboard clipboard = clipboardReader.read();
         EditSession session = WorldEdit.getInstance().newEditSession(new BukkitWorld(location.getWorld()));
 
-        double rotationValue;
-        switch (rotation) {
-            case EAST:
-                rotationValue = 270;
-                break;
-            case SOUTH:
-                rotationValue = 180;
-                break;
-            case WEST:
-                rotationValue = 90.0;
-                break;
-            default:
-                rotationValue = 0.0;
-                break;
-        }
+        double rotationValue = switch (rotation) {
+            case EAST -> 270;
+            case SOUTH -> 180;
+            case WEST -> 90.0;
+            default -> 0.0;
+        };
         ClipboardHolder holder = new ClipboardHolder(clipboard);
         holder.setTransform(new AffineTransform().rotateY(rotationValue));
         Operation pasteOperation = holder.createPaste(session).to(BlockVector3.at(location.getBlockX(), location.getBlockY(), location.getBlockZ())).ignoreAirBlocks(false).build();
