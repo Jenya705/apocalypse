@@ -65,8 +65,6 @@ public class DungeonServer {
             throw new IllegalArgumentException("File exists with the name '" + name + "' and isn't a folder");
         }
 
-        Bukkit.getScheduler().runTaskAsynchronously(Apocalypse.getInstance(), () -> {});
-
         ResourceKey<WorldDimension> actualDimension = WorldDimension.b;
 
         Convertable.ConversionSession worldSession;
