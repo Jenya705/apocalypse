@@ -43,7 +43,6 @@ public class Dungeon implements Listener {
         this.levelName = name;
         totalStart = start;
         try {
-
             DungeonGenerator.generate(name, () -> {
                 System.out.println(name);
                 System.out.println("Took time to copy dungeon: " + (System.currentTimeMillis() - start));
@@ -55,7 +54,6 @@ public class Dungeon implements Listener {
                     announceMessage("Cannot generate dungeon");
                     return;
                 }
-                world.setKeepSpawnInMemory(false);
                 world.setGameRule(GameRule.DO_MOB_SPAWNING, false);
                 world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
                 start = System.currentTimeMillis();

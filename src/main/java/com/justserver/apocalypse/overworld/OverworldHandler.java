@@ -59,6 +59,7 @@ public class OverworldHandler implements Listener {
                 chest.update();
             }
             lootedChests.clear();
+            clickedChests.clear();
         }, 0, 20 * 60 * 5);
         for (int i = 0; i < 1; i++) {
             randomTable.add(ItemRarity.LEGENDARY);
