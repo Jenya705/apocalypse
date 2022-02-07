@@ -4,6 +4,10 @@ import com.justserver.apocalypse.dungeons.DungeonRoom;
 import com.justserver.apocalypse.dungeons.RoomType;
 import org.bukkit.Location;
 
+/**
+ Start room meta info class
+ @author MisterFunny01
+ */
 public class StartRoom extends DungeonRoom {
     private final Location teleportLocation;
 
@@ -12,7 +16,7 @@ public class StartRoom extends DungeonRoom {
         if (roomType != RoomType.FIRST) {
             throw new IllegalArgumentException("Room type for start room must be FIRST! Not " + roomType.name());
         }
-        this.teleportLocation = location.clone().add(roomType.getOutDoorways()[0]).add(-3.5, 0, -2);
+        this.teleportLocation = location.clone().add(-4.5, 5, 4.5);
 
     }
 

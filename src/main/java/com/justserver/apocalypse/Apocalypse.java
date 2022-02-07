@@ -4,9 +4,10 @@ import com.justserver.apocalypse.base.Base;
 import com.justserver.apocalypse.base.BaseCommand;
 import com.justserver.apocalypse.base.BaseHandler;
 import com.justserver.apocalypse.commands.AddItemCommand;
+import com.justserver.apocalypse.commands.CalculateDoorCommand;
 import com.justserver.apocalypse.commands.DungeonCommand;
 import com.justserver.apocalypse.commands.SetupCommand;
-import com.justserver.apocalypse.dungeons.DungeonHandler;
+import com.justserver.apocalypse.dungeons.Dungeon;
 import com.justserver.apocalypse.gui.GuiManager;
 import com.justserver.apocalypse.gui.sign.SignMenuFactory;
 import com.justserver.apocalypse.items.GunHandler;
@@ -22,16 +23,9 @@ import org.bukkit.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
-import org.bukkit.block.Block;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.event.world.ChunkLoadEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -72,6 +66,7 @@ public final class Apocalypse extends JavaPlugin implements Listener {
         getCommand("base").setExecutor(new BaseCommand(this));
         getCommand("additem").setExecutor(new AddItemCommand());
         getCommand("setup").setExecutor(new SetupCommand());
+        getCommand("calcsel").setExecutor(new CalculateDoorCommand());
         initEvents(true);
         for(String key : bases.config.getConfigurationSection("bases").getKeys(false)){
             Base base = new Base(this);
@@ -145,6 +140,8 @@ public final class Apocalypse extends JavaPlugin implements Listener {
 
         }
         } catch (NullPointerException ignored){}
+        Dungeon dummyDungeon = new Dungeon();
+        dummyDungeon.endDungeon();
     }
 
     public void unloadBase(Base base){
@@ -181,7 +178,6 @@ public final class Apocalypse extends JavaPlugin implements Listener {
         uninit();
         getServer().getPluginManager().registerEvents(
                 new DefaultMessageHandler(new CubicMessageBuilder(this)), this);
-        Bukkit.getPluginManager().registerEvents(new DungeonHandler(this), this);
         Bukkit.getPluginManager().registerEvents(new GunHandler(this), this);
         Bukkit.getPluginManager().registerEvents(new BaseHandler(this), this);
         Bukkit.getPluginManager().registerEvents(guiManager, this);
