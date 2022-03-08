@@ -19,7 +19,7 @@ public class Workbench3Craft extends Craft {
     }
 
     public List<CraftItem> needItems = new ArrayList<>(Arrays.asList(
-            new CraftItem(new BukkitItem(plugin, Material.IRON_INGOT, 3, ItemRarity.COMMON), 40),
+            new CraftItem(new BukkitItem(plugin, Material.IRON_INGOT, 3, ItemRarity.COMMON), 35),
             new CraftItem(new BukkitItem(plugin, Material.OAK_PLANKS, 3, ItemRarity.COMMON), 64),
             new CraftItem(new BukkitItem(plugin, Material.BRICK, 1, ItemRarity.LEGENDARY), 30)
     ));

@@ -14,6 +14,7 @@ import com.justserver.apocalypse.items.guns.modifications.Modify;
 import com.justserver.apocalypse.items.guns.modifications.Scope;
 import com.justserver.apocalypse.items.guns.modifications.Silencer;
 import com.justserver.apocalypse.items.normal.Knife;
+import com.justserver.apocalypse.items.normal.Macerator;
 import com.justserver.apocalypse.items.normal.Medkit;
 import com.justserver.apocalypse.items.normal.Radio;
 import com.justserver.apocalypse.items.normal.tools.FlintAndSteel;
@@ -54,11 +55,13 @@ public class Registry {
     public final static MediumGunBody MEDIUM_GUN_BODY = new MediumGunBody(plugin);
     public final static SmallGunBody SMALL_GUN_BODY = new SmallGunBody(plugin);
     public final static Muzzle MUZZLE = new Muzzle(plugin);
+    public final static Parachute PARACHUTE = new Parachute(plugin);
     public final static Radio RADIO = new Radio(plugin);
     public final static Recombobulator RECOMBOBULATOR = new Recombobulator(plugin);
     public static final Pickaxe PICKAXE = new Pickaxe(plugin);
     public static final Shovel SHOVEL = new Shovel(plugin);
     public static final FlintAndSteel FLINT_AND_STEEL = new FlintAndSteel(plugin);
+    public static final Macerator MACERATOR = new Macerator(plugin);
     public static Workbench1 WORKBENCH_1;
     public static Workbench2 WORKBENCH_2;
     public static Workbench3 WORKBENCH_3;
@@ -81,6 +84,7 @@ public class Registry {
                 for (Field field : Registry.class.getFields()) {
                     Item item = (Item) field.get(null);
                     itemsMap.put(item.getId(), item);
+                    System.out.println("Custom model data " + item.customName() + ": " + item.getId().hashCode());
                 }
             } catch (Exception e) {
                 e.printStackTrace();

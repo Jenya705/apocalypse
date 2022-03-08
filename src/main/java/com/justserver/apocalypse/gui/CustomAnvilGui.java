@@ -7,6 +7,8 @@ import com.justserver.apocalypse.items.dungeon.Recombobulator;
 import com.justserver.apocalypse.items.guns.Bullets;
 import com.justserver.apocalypse.items.guns.components.Component;
 import com.justserver.apocalypse.items.guns.modifications.Modify;
+import com.justserver.apocalypse.items.normal.Medkit;
+import com.justserver.apocalypse.items.normal.Radio;
 import com.justserver.apocalypse.utils.ItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -72,7 +74,7 @@ public class CustomAnvilGui extends Gui {
                         return new ReturnGui();
                     }
                     Item possibleItem = Registry.getItemByItemstack(itemToUpgrade);
-                    if (possibleItem == null || (possibleItem instanceof Component || possibleItem instanceof Modify || possibleItem instanceof Recombobulator || possibleItem instanceof Bullets)) {
+                    if (possibleItem == null || (possibleItem instanceof Component || possibleItem instanceof Modify || possibleItem instanceof Recombobulator || possibleItem instanceof Bullets || possibleItem instanceof Radio || possibleItem instanceof Medkit)) {
                         player.sendMessage(ChatColor.RED + "Этот предмет нельзя улучшить");
                         return null;
                     }

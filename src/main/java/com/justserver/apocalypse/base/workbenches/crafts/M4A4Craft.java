@@ -32,6 +32,6 @@ public class M4A4Craft extends Craft {
 
     @Override
     public Item getCraftResult() {
-        return Registry.AK_47;
+        return Registry.M4A4;
     }
 }

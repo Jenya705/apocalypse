@@ -7,7 +7,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 public class ThockHelmet extends Armor implements Helmet {
     public ThockHelmet(Apocalypse plugin) {
-        super(plugin, 2, 1);
+        super(plugin, 3, 1);
         minIronNuggets = 4;
         maxIronNuggets = 4;
     }

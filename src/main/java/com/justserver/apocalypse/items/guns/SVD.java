@@ -6,7 +6,7 @@ import com.justserver.apocalypse.items.ItemRarity;
 
 public class SVD extends Gun {
     public SVD(Apocalypse plugin) {
-        super(plugin, false, 10, 100, 30, 4);
+        super(plugin, false, 16, 100, 80, 4);
     }
 
     @Override
@@ -31,7 +31,7 @@ public class SVD extends Gun {
 
     @Override
     public int getSlowdown() {
-        return 30;
+        return 50;
     }
 
 

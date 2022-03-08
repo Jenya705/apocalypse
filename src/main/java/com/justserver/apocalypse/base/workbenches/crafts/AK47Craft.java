@@ -14,13 +14,13 @@ import java.util.Arrays;
 import java.util.List;
 
 public class AK47Craft extends Craft {
-    public List<CraftItem> needItems = new ArrayList<>(Arrays.asList(
+    public List<CraftItem> needItems = Arrays.asList(
             new CraftItem(new BukkitItem(plugin, Material.IRON_INGOT, 3, ItemRarity.COMMON), 10),
             new CraftItem(Registry.FLINT_AND_STEEL, 1),
             new CraftItem(Registry.MUZZLE, 1),
             new CraftItem(Registry.GUN_BODY, 1),
             new CraftItem(Registry.BUTT, 1)
-    ));
+    );
 
     @Override
     public List<CraftItem> getNeedItems() {

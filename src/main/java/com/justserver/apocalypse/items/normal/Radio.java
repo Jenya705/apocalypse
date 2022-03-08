@@ -1,6 +1,7 @@
 package com.justserver.apocalypse.items.normal;
 
 import com.justserver.apocalypse.Apocalypse;
+import com.justserver.apocalypse.base.Base;
 import com.justserver.apocalypse.gui.sign.SignMenuFactory;
 import com.justserver.apocalypse.items.Item;
 import com.justserver.apocalypse.items.ItemRarity;
@@ -11,6 +12,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
+import su.plo.voice.line.Line;
+import su.plo.voice.socket.SocketServerUDP;
 
 import java.util.Arrays;
 import java.util.List;
@@ -63,6 +66,18 @@ public class Radio extends Item {
                                 base.connectedPlayers.remove(playerResponse);
                                 base.connectedPlayers.add(playerResponse);
                             });
+
+                            if(Base.frequencyToLineMap.containsKey(frequency)) {
+                                Line line = Base.frequencyToLineMap.get(frequency);
+                                line.subscribedPlayers.add(playerResponse);
+                                SocketServerUDP.clients.get(playerResponse).mainLine = line;
+                                Base.frequencyToLineMap.replace(frequency, line);
+                            } else {
+                                Line line = new Line();
+                                line.subscribedPlayers.add(playerResponse);
+                                Base.frequencyToLineMap.put(frequency, line);
+                                SocketServerUDP.clients.get(playerResponse).mainLine = line;
+                            }
                         } catch (Exception ex) {
                             playerResponse.sendMessage(ChatColor.RED + "Введенные данные не число");
                             return false;

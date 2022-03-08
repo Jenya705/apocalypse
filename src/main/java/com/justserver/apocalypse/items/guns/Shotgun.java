@@ -6,7 +6,7 @@ import com.justserver.apocalypse.items.ItemRarity;
 
 public class Shotgun extends Gun {
     public Shotgun(Apocalypse plugin) {
-        super(plugin, true, 3, 10, 5, 5);
+        super(plugin, true, 4, 10, 5, 5);
     }
 
     @Override

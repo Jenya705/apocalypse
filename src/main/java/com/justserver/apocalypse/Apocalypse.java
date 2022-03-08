@@ -3,10 +3,7 @@ package com.justserver.apocalypse;
 import com.justserver.apocalypse.base.Base;
 import com.justserver.apocalypse.base.BaseCommand;
 import com.justserver.apocalypse.base.BaseHandler;
-import com.justserver.apocalypse.commands.AddItemCommand;
-import com.justserver.apocalypse.commands.CalculateDoorCommand;
-import com.justserver.apocalypse.commands.DungeonCommand;
-import com.justserver.apocalypse.commands.SetupCommand;
+import com.justserver.apocalypse.commands.*;
 import com.justserver.apocalypse.dungeons.Dungeon;
 import com.justserver.apocalypse.gui.GuiManager;
 import com.justserver.apocalypse.gui.sign.SignMenuFactory;
@@ -30,12 +27,10 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import su.plo.voice.line.Line;
 
 import java.util.*;
-/*
-TODO LIST:
-NOFALL IF TOO HIGH
- */
+
 public final class Apocalypse extends JavaPlugin implements Listener {
 
     public CustomConfiguration bases;
@@ -47,13 +42,14 @@ public final class Apocalypse extends JavaPlugin implements Listener {
     public SignMenuFactory signMenuFactory;
 
     public List<Location> fires = new ArrayList<>();
-
+//    private Dungeon dummyDungeon = null;
     @Override
     public void onEnable() {
         instance = this;
         getServer().getPluginManager().registerEvents(this, this);
         getConfig().options().copyDefaults(true);
         saveConfig();
+
         this.signMenuFactory = new SignMenuFactory(this);
         bases = new CustomConfiguration(this, "bases.yml");
         Bukkit.getScheduler().runTaskTimer(this, () -> {
@@ -67,6 +63,7 @@ public final class Apocalypse extends JavaPlugin implements Listener {
         getCommand("additem").setExecutor(new AddItemCommand());
         getCommand("setup").setExecutor(new SetupCommand());
         getCommand("calcsel").setExecutor(new CalculateDoorCommand());
+        getCommand("indexes").setExecutor(new GetIndexesCommand());
         initEvents(true);
         for(String key : bases.config.getConfigurationSection("bases").getKeys(false)){
             Base base = new Base(this);
@@ -79,6 +76,7 @@ public final class Apocalypse extends JavaPlugin implements Listener {
             base.owner = UUID.fromString(owner);
 
             base.frequency = bases.config.getString("bases." + key + ".frequency");
+            Base.frequencyToLineMap.put(base.frequency, new Line());
             List<String> stringUUIDs = bases.config.getStringList("bases." + key + ".players");
             for(String stringUUID : stringUUIDs){
                 base.players.add(UUID.fromString(stringUUID));
@@ -90,17 +88,17 @@ public final class Apocalypse extends JavaPlugin implements Listener {
             //Bukkit.getLogger().info(base.duration);
             loadedBases.add(base);
         }
-        Calendar due = Calendar.getInstance();
-        due.set(Calendar.MILLISECOND, 0);
-        due.set(Calendar.SECOND, 0);
-        due.set(Calendar.MINUTE,0);
-        due.set(Calendar.HOUR_OF_DAY, 18);
-        if (due.before(Calendar.getInstance())) {
-            due.add(Calendar.HOUR, 24);
-        }
-        long next = due.getTimeInMillis() - new Date().getTime();
+//        Calendar due = Calendar.getInstance();
+//        due.set(Calendar.MILLISECOND, 0);
+//        due.set(Calendar.SECOND, 0);
+//        due.set(Calendar.MINUTE,0);
+//        due.set(Calendar.HOUR_OF_DAY, 18);
+//        if (due.before(Calendar.getInstance())) {
+//            due.add(Calendar.HOUR, 24);
+//        }
+//        long next = due.getTimeInMillis() - new Date().getTime();
         new BukkitRunnable(){
-            long timerToAirdrop = next / 1000;
+//            long timerToAirdrop = next / 1000;
             @Override
             public void run() {
                 try {
@@ -114,34 +112,38 @@ public final class Apocalypse extends JavaPlugin implements Listener {
 
                     }
                 } catch (ConcurrentModificationException ignored){}
-                if(timerToAirdrop <= 0){
-                    timerToAirdrop = 24 * 60 * 60;
-                    return;
-                } else if(timerToAirdrop == 600){
-                    Bukkit.broadcastMessage(ChatColor.RED + "Эирдроп с топовым лутом на X: 0 Z: 0 появиться через 10 минут!");
-                } else if(timerToAirdrop == 300){
-                    Bukkit.broadcastMessage(ChatColor.RED + "Эирдроп с топовым лутом на X: 0 Z: 0 появиться через 5 минут!");
-                } else if(timerToAirdrop == 60){
-                    Bukkit.broadcastMessage(ChatColor.RED + "" + ChatColor.BOLD + "Эирдроп с топовым лутом на X: 0 Z: 0 появиться через 1 минуту!");
-                }
-                timerToAirdrop--;
+//                if(timerToAirdrop <= 0){
+//                    timerToAirdrop = 24 * 60 * 60;
+//                    return;
+//                } else if(timerToAirdrop == 600){
+//                    Bukkit.broadcastMessage(ChatColor.RED + "Эирдроп с топовым лутом на X: 0 Z: 0 появиться через 10 минут!");
+//                } else if(timerToAirdrop == 300){
+//                    Bukkit.broadcastMessage(ChatColor.RED + "Эирдроп с топовым лутом на X: 0 Z: 0 появиться через 5 минут!");
+//                } else if(timerToAirdrop == 60){
+//                    Bukkit.broadcastMessage(ChatColor.RED + "" + ChatColor.BOLD + "Эирдроп с топовым лутом на X: 0 Z: 0 появиться через 1 минуту!");
+//                }
+//                timerToAirdrop--;
             }
         }.runTaskTimer(this, 0, 20);
 
         try {
-        for (Player player : Bukkit.getOnlinePlayers()){
+            for (Player player : Bukkit.getOnlinePlayers()){
 
-                Arrays.stream(player.getInventory().getContents())
-                        .filter(Objects::nonNull)
-                        .filter(itemStack -> Registry.getItemByItemstack(itemStack) instanceof Radio)
-                        .forEach(itemStack -> loadedBases.stream()
-                                .filter(base -> base.frequency.equals(itemStack.getItemMeta().getPersistentDataContainer().get(new NamespacedKey(this, "frequency"), PersistentDataType.STRING)))
-                                .forEach(base -> base.connectedPlayers.add(player)));
+                    Arrays.stream(player.getInventory().getContents())
+                            .filter(Objects::nonNull)
+                            .filter(itemStack -> Registry.getItemByItemstack(itemStack) instanceof Radio)
+                            .forEach(itemStack -> Base.frequencyToLineMap.entrySet().stream()
+                                    .filter(base -> base.getKey().equals(itemStack.getItemMeta().getPersistentDataContainer().get(new NamespacedKey(this, "frequency"), PersistentDataType.STRING)))
+                                    .forEach(base -> base.getValue().subscribedPlayers.add(player)));
 
-        }
+            }
         } catch (NullPointerException ignored){}
-        Dungeon dummyDungeon = new Dungeon();
-        dummyDungeon.endDungeon();
+//        dummyDungeon = new Dungeon();
+//        Bukkit.getScheduler().runTaskLater(this, () -> {
+//            dummyDungeon.endDungeon();
+//            System.out.println(Base.frequencyToLineMap.toString());
+//            Bukkit.getLogger().info(ChatColor.GREEN + "Apocalypse loaded");
+//        }, 40);
     }
 
     public void unloadBase(Base base){

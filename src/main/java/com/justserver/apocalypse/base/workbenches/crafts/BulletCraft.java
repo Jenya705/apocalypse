@@ -16,7 +16,7 @@ import java.util.List;
 public class BulletCraft extends Craft {
     public List<CraftItem> needItems = new ArrayList<>(Arrays.asList(
             new CraftItem(new BukkitItem(plugin, Material.GUNPOWDER, 3, ItemRarity.COMMON), 3),
-            new CraftItem(new BukkitItem(plugin, Material.IRON_INGOT, 3, ItemRarity.COMMON), 1)
+            new CraftItem(new BukkitItem(plugin, Material.IRON_NUGGET, 3, ItemRarity.COMMON), 3)
     ));
 
     public BulletCraft(Apocalypse plugin) {

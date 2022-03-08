@@ -17,7 +17,7 @@ public class IronIngotCraft extends Craft {
 
     @Override
     public List<CraftItem> getNeedItems() {
-        return List.of(new CraftItem(new BukkitItem(plugin, Material.IRON_NUGGET, 1, ItemRarity.COMMON), 9));
+        return List.of(new CraftItem(new BukkitItem(plugin, Material.IRON_NUGGET, 1, ItemRarity.COMMON), 12));
     }
 
     @Override
