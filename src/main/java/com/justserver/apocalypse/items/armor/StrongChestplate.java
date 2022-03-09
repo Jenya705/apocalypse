@@ -7,7 +7,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 public class StrongChestplate extends Armor {
     public StrongChestplate(Apocalypse plugin) {
-        super(plugin, 3, 3);
+        super(plugin, 2, 3);
         minIronNuggets = 9;
         maxIronNuggets = 12;
     }

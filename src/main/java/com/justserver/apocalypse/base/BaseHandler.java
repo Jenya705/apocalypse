@@ -6,6 +6,7 @@ import com.justserver.apocalypse.base.workbenches.Workbench;
 import com.justserver.apocalypse.gui.BaseGui;
 import com.justserver.apocalypse.gui.WorkbenchGui;
 import com.justserver.apocalypse.items.Item;
+import com.justserver.apocalypse.items.normal.Macerator;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
@@ -77,6 +78,10 @@ public record BaseHandler(Apocalypse plugin) implements Listener {
         Block block = event.getBlock();
         Base base = Base.getBaseByBlock(plugin, block);
         if (base == null || !base.players.contains(event.getPlayer().getUniqueId())) {
+            if(base == null && event.getBlock().getType().equals(Material.CHEST)){
+                block.setType(Material.DISPENSER);
+                return;
+            }
             event.setCancelled(true);
             event.getPlayer().sendMessage(ChatColor.DARK_RED + "Вы не можете ставить блоки на чужой базе");
             return;
@@ -93,7 +98,7 @@ public record BaseHandler(Apocalypse plugin) implements Listener {
     public void onPlaceBlock(BlockPlaceEvent event) {
         Item possibleItem = Registry.getItemByItemstack(event.getItemInHand());
         if (Registry.getItemByItemstack(event.getItemInHand()) != null) {
-            if (possibleItem instanceof Workbench) return;
+            if (possibleItem instanceof Workbench || possibleItem instanceof Macerator) return;
             event.setCancelled(true);
             return;
         }
@@ -139,6 +144,7 @@ public record BaseHandler(Apocalypse plugin) implements Listener {
                 if (dataContainer.has(new NamespacedKey(plugin, "workbench"), PersistentDataType.INTEGER)) {
                     String id = dataContainer.get(new NamespacedKey(plugin, "id"), PersistentDataType.STRING);
                     Workbench workbench = (Workbench) Registry.getItemById(id);
+                    if(workbench == null) return;
                     plugin.guiManager.setGui(event.getPlayer(), new WorkbenchGui(plugin, workbench));
                     event.setCancelled(true);
                 }
@@ -148,7 +154,8 @@ public record BaseHandler(Apocalypse plugin) implements Listener {
 
     @EventHandler
     public void onBreakBlock(BlockBreakEvent event) {
-        if (event.getPlayer().getWorld().getName().contains("dungeon")) return;
+        Player player = event.getPlayer();
+        if (player.getWorld().getName().contains("dungeon")) return;
         if (!BlockTypes.canBreakBlocksOnBase.contains(event.getBlock().getType())) {
             event.setCancelled(true);
             return;
@@ -158,11 +165,10 @@ public record BaseHandler(Apocalypse plugin) implements Listener {
             return;
         }
         Block block = event.getBlock();
-        Player player = event.getPlayer();
         Base base = Base.getBaseByBlock(plugin, block);
         if (base != null) {
             if (base.getBlockByLocation(block.getLocation()) != null) {
-                if (base.players.contains(event.getPlayer().getUniqueId())) {
+                if (base.players.contains(player.getUniqueId())) {
                     base.blocks.remove(base.getBlockByLocation(block.getLocation()));
                     base.saveBase();
                 }
@@ -212,7 +218,9 @@ public record BaseHandler(Apocalypse plugin) implements Listener {
     public void baseInteract(PlayerInteractEvent event) {
         if (event.getPlayer().getWorld().getName().contains("dungeon")) return;
         if (event.getPlayer().isSneaking()) {
-            event.setCancelled(true);
+            if(!event.getPlayer().getInventory().getItemInMainHand().getType().isBlock() && !event.getPlayer().getInventory().getItemInOffHand().getType().isBlock()){
+                event.setCancelled(true);
+            }
         }
         if (event.getHand() != null && event.getHand().equals(EquipmentSlot.HAND) && event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
             Base base = Base.getBaseByBlock(plugin, event.getClickedBlock());
@@ -228,13 +236,13 @@ public record BaseHandler(Apocalypse plugin) implements Listener {
 
     @EventHandler
     public void onTntExplosive(ExplosionPrimeEvent event) {
-        event.setRadius(1.5f);
+        event.setRadius(3f);
         Base base = Base.getBaseByBlock(plugin, event.getEntity().getLocation().getBlock());
         event.setCancelled(true);
         if (base == null) return;
         Location location = event.getEntity().getLocation();
         location.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, location, 5, 0, 0, 0);
-        location.getWorld().playSound(location, Sound.ENTITY_GENERIC_EXPLODE, 1f, 0.1f);
+        location.getWorld().playSound(location, Sound.ENTITY_GENERIC_EXPLODE, 1f, 0.5f);
         int minX = (int) (location.getBlockX() - event.getRadius());
         int minY = (int) (location.getBlockY() - event.getRadius());
         int minZ = (int) (location.getBlockZ() - event.getRadius());
@@ -242,6 +250,9 @@ public record BaseHandler(Apocalypse plugin) implements Listener {
         int maxY = (int) (location.getBlockY() + event.getRadius());
         int maxZ = (int) (location.getBlockZ() + event.getRadius());
         float damage = 15f;
+        for(Player player : event.getEntity().getLocation().getNearbyPlayers(event.getRadius())){
+            player.damage(20 / (1.0 + (player.getLocation().distanceSquared(event.getEntity().getLocation())) / 10));
+        }
         for (int x = minX; x <= maxX; x++) {
             for (int y = minY; y <= maxY; y++) {
                 for (int z = minZ; z <= maxZ; z++) {
@@ -255,16 +266,18 @@ public record BaseHandler(Apocalypse plugin) implements Listener {
                         hashMap.replace("health", (double) hashMap.get("health") - damage);
                         for (int i = 0; i < base.blocks.size(); i++) {
                             HashMap<String, Object> block = base.blocks.get(i);
+                            Block blockLocation = ((Location) block.get("location")).getBlock();
                             if ((double) block.get("health") <= 0.0) {
                                 base.blocks.remove(block);
-                                if (((Location) block.get("location")).getBlock().getState() instanceof InventoryHolder) {
-                                    for (ItemStack item : ((InventoryHolder) ((Location) block.get("location")).getBlock().getState()).getInventory()) {
+                                if (blockLocation.getState() instanceof InventoryHolder) {
+                                    for (ItemStack item : ((InventoryHolder) blockLocation.getState()).getInventory()) {
                                         if (item != null)
-                                            ((Location) block.get("location")).getWorld().dropItemNaturally(((Location) block.get("location")), item);
+                                            blockLocation.getWorld().dropItemNaturally(((Location) block.get("location")), item);
                                     }
 
                                 }
-                                ((Location) block.get("location")).getBlock().setType(Material.AIR);
+                                blockLocation.setType(Material.AIR);
+                                location.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, location, 5, 1, 1, 1);
                                 i--;
                             }
                         }

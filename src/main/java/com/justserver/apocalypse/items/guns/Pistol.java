@@ -6,7 +6,7 @@ import com.justserver.apocalypse.items.ItemRarity;
 
 public class Pistol extends Gun {
     public Pistol(Apocalypse plugin) {
-        super(plugin, false, 2.3, 30, 7, 7);
+        super(plugin, false, 3, 30, 7, 7);
         minIronNuggets = 4;
         maxIronNuggets = 6;
     }

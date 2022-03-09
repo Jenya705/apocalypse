@@ -8,7 +8,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 public class ThockChestplate extends Armor {
 
     public ThockChestplate(Apocalypse plugin) {
-        super(plugin, 4, 2);
+        super(plugin, 3, 2);
         minIronNuggets = 5;
         maxIronNuggets = 6;
     }

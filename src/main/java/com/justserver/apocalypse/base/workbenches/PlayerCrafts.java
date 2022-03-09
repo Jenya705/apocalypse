@@ -51,10 +51,10 @@ public class PlayerCrafts extends Workbench {
         return 0;
     }
 
-    public List<Craft> crafts = new ArrayList<>(Arrays.asList(
+    public List<Craft> crafts = Arrays.asList(
             new Workbench1Craft(plugin),
             new IronIngotCraft(plugin)
-    ));
+    );
 
     @Override
     public List<Craft> getCrafts() {

@@ -8,6 +8,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import su.plo.voice.line.Line;
 
 import java.lang.reflect.Field;
 import java.time.Instant;
@@ -23,6 +24,10 @@ public class Base {
     public ArrayList<HashMap<String, Object>> blocks = new ArrayList<>();
     public long duration;
     public String frequency = "0000";
+    public static volatile HashMap<String, Line> frequencyToLineMap = new HashMap<>();
+    static {
+        frequencyToLineMap.put("0000", new Line());
+    }
     public ArrayList<Player> connectedPlayers = new ArrayList<>();
 
     public Base(Apocalypse plugin) {
@@ -257,7 +262,23 @@ public class Base {
         plugin.bases.reload();
     }
 
-    public static List<Base> getBasesByPlayer(Apocalypse plugin, Player player) {
-        return plugin.loadedBases.stream().filter(base -> base.owner.equals(player.getUniqueId())).collect(Collectors.toList());
+    public static ArrayList<Base> getBasesByPlayer(Apocalypse plugin, Player player) {
+        ArrayList<Base> bases = new ArrayList<>();
+        for(Base base : plugin.loadedBases){
+            if(base.owner.equals(player.getUniqueId())) {
+                bases.add(base);
+            }
+        }
+        return bases;
+    }
+
+    public static ArrayList<Base> getPlayersBase(Player player){
+        ArrayList<Base> bases = new ArrayList<>();
+        for(Base base : Apocalypse.getInstance().loadedBases){
+            if(base.players.contains(player.getUniqueId())) {
+                bases.add(base);
+            }
+        }
+        return bases;
     }
 }

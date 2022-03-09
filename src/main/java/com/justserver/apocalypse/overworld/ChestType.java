@@ -13,8 +13,9 @@ public enum ChestType {
             new BukkitItem(Apocalypse.getInstance(), Material.OAK_PLANKS, -4, ItemRarity.COMMON),
             Registry.FLINT_AND_STEEL,
             new BukkitItem(Apocalypse.getInstance(), Material.IRON_INGOT, 1, ItemRarity.EPIC),
-            new BukkitItem(Apocalypse.getInstance(), Material.COOKED_BEEF, 1, ItemRarity.RARE),
-            Registry.SHOVEL
+            new BukkitItem(Apocalypse.getInstance(), Material.COOKED_BEEF, -3, ItemRarity.RARE),
+            new BukkitItem(Apocalypse.getInstance(), Material.STRING, -2, ItemRarity.COMMON)
+            //Registry.SHOVEL
     ),
     FACTORY(Registry.MEDIUM_GUN_BODY,
             Registry.SCOPE,
@@ -28,14 +29,16 @@ public enum ChestType {
             new BukkitItem(Apocalypse.getInstance(), Material.OAK_DOOR, 1, ItemRarity.RARE),
             new BukkitItem(Apocalypse.getInstance(), Material.BRICK, -12, ItemRarity.RARE),
             new BukkitItem(Apocalypse.getInstance(), Material.OAK_PLANKS, -7, ItemRarity.UNCOMMON),
+            new BukkitItem(Apocalypse.getInstance(), Material.STRING, -5, ItemRarity.RARE),
             Registry.SMALL_GUN_BODY,
             Registry.MUZZLE,
             Registry.BUTT,
             new BukkitItem(Apocalypse.getInstance(), Material.IRON_INGOT, -4, ItemRarity.EPIC),
-            new BukkitItem(Apocalypse.getInstance(), Material.GUNPOWDER, -8, ItemRarity.RARE),
-            Registry.SHOVEL
+            new BukkitItem(Apocalypse.getInstance(), Material.IRON_NUGGET, -10, ItemRarity.RARE),
+            new BukkitItem(Apocalypse.getInstance(), Material.GUNPOWDER, -10, ItemRarity.RARE)
+            //Registry.SHOVEL
     ),
-    HOSPITAL(Registry.MEDKIT, Registry.MEDKIT, Registry.MEDKIT),
+    HOSPITAL(Registry.MEDKIT, Registry.MEDKIT, Registry.MEDKIT, new BukkitItem(Apocalypse.getInstance(), Material.STRING, -10, ItemRarity.UNCOMMON)),
     MILITARY(Registry.BUTT,
             Registry.GUN_BODY,
             Registry.MUZZLE,
@@ -48,7 +51,7 @@ public enum ChestType {
             Registry.STRONG_HELMET,
             Registry.STRONG_CHESTPLATE,
             Registry.RADIO,
-            new BukkitItem(Apocalypse.getInstance(), Material.IRON_INGOT, -3, ItemRarity.EPIC)
+            new BukkitItem(Apocalypse.getInstance(), Material.IRON_NUGGET, -10, ItemRarity.EPIC)
     ),
 
     POLICE(Registry.MEDIUM_GUN_BODY,
@@ -62,14 +65,14 @@ public enum ChestType {
             new BukkitItem(Apocalypse.getInstance(), Material.OAK_PLANKS, -5, ItemRarity.COMMON),
             new BukkitItem(Apocalypse.getInstance(), Material.SHIELD, 1, ItemRarity.LEGENDARY),
             Registry.PICKAXE,
-            Registry.SHOVEL,
+            //Registry.SHOVEL,
             Registry.RADIO
     ),
     SHOP(
             new BukkitItem(Apocalypse.getInstance(), Material.CARROT, -3, ItemRarity.COMMON),
             new BukkitItem(Apocalypse.getInstance(), Material.BREAD, -2, ItemRarity.UNCOMMON),
-            new BukkitItem(Apocalypse.getInstance(), Material.COOKED_BEEF, -8, ItemRarity.RARE),
-            new BukkitItem(Apocalypse.getInstance(), Material.COOKED_MUTTON, -2, ItemRarity.RARE),
+            new BukkitItem(Apocalypse.getInstance(), Material.BEEF, -8, ItemRarity.RARE),
+            new BukkitItem(Apocalypse.getInstance(), Material.MUTTON, -2, ItemRarity.RARE),
             new BukkitItem(Apocalypse.getInstance(), Material.CAMPFIRE, -2, ItemRarity.RARE),
             Registry.FLINT_AND_STEEL
     );

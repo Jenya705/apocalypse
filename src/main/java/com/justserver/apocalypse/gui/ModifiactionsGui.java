@@ -6,6 +6,7 @@ import com.justserver.apocalypse.items.Gun;
 import com.justserver.apocalypse.items.Item;
 import com.justserver.apocalypse.items.guns.modifications.Modify;
 import com.justserver.apocalypse.utils.InventoryUtils;
+import com.justserver.apocalypse.utils.ItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -41,7 +42,7 @@ public class ModifiactionsGui extends Gui {
         for (int slot = 10; slot < 15; slot++) {
             inventory.setItem(slot, new ItemStack(Material.GRAY_DYE));
         }
-        inventory.setItem(16, new ItemStack(Material.BARRIER));
+        inventory.setItem(16, new ItemBuilder(Material.BARRIER).setName(ChatColor.RED + "Закрыть").toItemStack());
 
         List<String> modifications = Modify.getModifications(plugin, gun);
         for (int slot = 10; slot < 10 + modifications.size(); slot++) {

@@ -2,10 +2,13 @@ package com.justserver.apocalypse.items;
 
 import com.justserver.apocalypse.Apocalypse;
 import com.justserver.apocalypse.Registry;
+import com.justserver.apocalypse.base.Base;
 import com.justserver.apocalypse.items.armor.Helmet;
 import com.justserver.apocalypse.items.guns.modifications.Modify;
+import com.justserver.apocalypse.tasks.CombatCooldownTask;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.type.Door;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -139,28 +142,35 @@ public abstract class Gun extends Item {
         }
         direction.multiply(getRange());
         direction.normalize();
-        Location destination = null;
-        int getRangeResult = (int) (getRange() * (rarityUpgraded ? 1.3 : 1));
-        int range;
-        Block targetBlock = player.getTargetBlock(getRangeResult);
-        if (targetBlock != null) {
-            range = (int) targetBlock.getLocation().distance(player.getEyeLocation());
-        } else {
-            range = getRangeResult;
-        }
+        int range = (int) (getRange() * (rarityUpgraded ? 1.3 : 1));;
+//        Block targetBlock = player.getTargetBlock(getRangeResult);
+//        if (targetBlock != null) {
+//            range = (int) targetBlock.getLocation().distance(player.getEyeLocation());
+//        } else {
+//            range = getRangeResult;
+//        }
         for (int i = 0; i < range; i++) {
             Location location = origin.add(direction);
-            if (location.getBlock().getType().equals(Material.TNT)) {
-                location.getBlock().setType(Material.AIR);
-                location.getWorld().spawn(location.clone().add(0.5, 0, 0.5), TNTPrimed.class);
+            Block block = location.getBlock();
+            if (block.getType().equals(Material.TNT)) {
+                block.setType(Material.AIR);
+                location.getWorld().spawn(location, TNTPrimed.class);
+                break;
+            }  else if(block instanceof Door door){
+                if (!door.isOpen()){
+                    spawnParticles(location);
+                    break;
+                }
+            } else if(!block.isPassable()){
+                spawnParticles(location);
                 break;
             }
 
-            //location.getWorld().spawnParticle(Particle.VILLAGER_ANGRY, location, 3);
             Collection<LivingEntity> nearby = location.getNearbyEntitiesByType(LivingEntity.class, 0.4);
             for (LivingEntity shot : nearby) {
 
-                if (shot instanceof Player) {
+                if (shot instanceof Player victim) {
+
                     if (shot.getUniqueId().equals(player.getUniqueId())) continue;
                     double headshotModifier = 3.0;
                     if (rarityUpgraded) {
@@ -172,12 +182,33 @@ public abstract class Gun extends Item {
                             headshotModifier = ((Helmet) possibleHelmet).getHeadshotModifier();
                         }
                     }
-                    if (player.isBlocking()) {
-                        player.clearActiveItem();
-                        player.setCooldown(Material.SHIELD, (int) Math.floor(damage * 70));
+                    if (victim.isBlocking()) {
+                        victim.clearActiveItem();
+                        victim.setCooldown(Material.SHIELD, (int) Math.floor(damage * 70));
                         return;
                     }
-                    shot.damage(isHeadShot((Player) shot, location) ? getDamage() * headshotModifier : getDamage() * (rarityUpgraded ? 1.3 : 1), player);
+                    CombatCooldownTask playerTask = CombatCooldownTask.tasks.get(victim);
+                    if(playerTask == null){
+                        CombatCooldownTask.tasks.put(victim, new CombatCooldownTask(victim, player));
+                    } else {
+                        playerTask.revoke(victim);
+                    }
+
+                    CombatCooldownTask attackerTask = CombatCooldownTask.tasks.get(player);
+                    if(attackerTask == null){
+                        CombatCooldownTask.tasks.put(player, new CombatCooldownTask(player, victim));
+                    } else {
+                        attackerTask.revoke(player);
+                    }
+                    double finalModifier = 1.0;
+                    for(Base playerBase : Base.getPlayersBase(player)){
+                        if(playerBase.players.contains(victim.getUniqueId())){
+                            System.out.println("Decreasing damage");
+                            finalModifier = 0.3;
+                            break;
+                        }
+                    }
+                    shot.damage((isHeadShot(victim, location) ? getDamage() * headshotModifier : getDamage() * (rarityUpgraded ? 1.3 : 1)) * finalModifier, player);
                 } else {
                     shot.damage(getDamage(), player);
                 }
@@ -189,10 +220,6 @@ public abstract class Gun extends Item {
             } else {
                 player.getWorld().playSound(player.getEyeLocation(), Sound.ENTITY_IRON_GOLEM_DAMAGE, 0.1f, 0.1f);
             }
-            destination = location;
-        }
-        if (destination != null) {
-            spawnParticles(destination);
         }
     }
 

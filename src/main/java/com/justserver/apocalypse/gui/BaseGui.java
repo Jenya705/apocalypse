@@ -6,9 +6,7 @@ import com.justserver.apocalypse.gui.sign.SignMenuFactory;
 import com.justserver.apocalypse.utils.ItemBuilder;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -16,6 +14,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import su.plo.voice.line.Line;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -76,8 +75,22 @@ public class BaseGui extends Gui {
                                 }
                                 playerResponse.sendMessage(ChatColor.GREEN + "Частота приемника базы установлена: " + frequency);
                                 Integer.parseInt(frequency);
+                                if(frequency.equals(base.frequency)) {
+                                    playerResponse.sendMessage(ChatColor.RED + "Отмена");
+                                    return true;
+                                }
+                                Line line = Base.frequencyToLineMap.get(base.frequency);
+                                for(Player player1 : line.subscribedPlayers){
+                                    player1.playNote(player.getLocation(), Instrument.BIT, Note.flat(1, Note.Tone.C));
+                                    Bukkit.getScheduler().runTaskLater(Apocalypse.getInstance(), () -> {
+                                        player1.playNote(player.getLocation(), Instrument.BIT, Note.flat(1, Note.Tone.G));
+                                    }, 10);
+                                }
+                                line.subscribedPlayers.clear();
+                                Base.frequencyToLineMap.remove(base.frequency);
                                 base.frequency = frequency;
                                 base.saveBase();
+                                Base.frequencyToLineMap.put(frequency, new Line());
                             } catch (Exception ex) {
                                 playerResponse.sendMessage(ChatColor.RED + "Введенные данные не число");
                                 return false;
@@ -126,7 +139,7 @@ public class BaseGui extends Gui {
         Apocalypse.getInstance().unloadBase(this.base);
         Apocalypse.getInstance().loadedBases.add(this.base);
         player.sendMessage(ChatColor.GREEN + "Вы успешно продлили базу");
-        return null;
+        return new BaseGui(base);
     }
 
     @Override

@@ -32,7 +32,7 @@ public abstract class Armor extends Item {
         }
 
         if (durability != 0) {
-            meta.addEnchant(Enchantment.DURABILITY, protectionLevel, true);
+            meta.addEnchant(Enchantment.DURABILITY, durability, true);
         }
         meta.removeItemFlags(ItemFlag.HIDE_ENCHANTS);
         itemStack.setItemMeta(meta);

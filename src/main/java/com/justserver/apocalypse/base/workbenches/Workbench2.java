@@ -50,7 +50,8 @@ public class Workbench2 extends Workbench {
         return 2;
     }
 
-    public List<Craft> crafts = new ArrayList<>(Arrays.asList(
+    public List<Craft> crafts = Arrays.asList(
+            new TNTCraft(plugin),
             new IronIngotCraft(plugin),
             new BricksFromBrickBlock(plugin),
             new ChestCraft(plugin),
@@ -59,10 +60,12 @@ public class Workbench2 extends Workbench {
             new BulletCraft(plugin),
             new SilencerCraft(plugin),
             new KnifeCraft(plugin),
+            new MaceratorCraft(plugin),
+            new ParachuteCraft(plugin),
             new ShotgunCraft(plugin),
             new FlyingAxeCraft(plugin),
             new Workbench3Craft(plugin)
-    ));
+    );
 
     @Override
     public List<Craft> getCrafts() {

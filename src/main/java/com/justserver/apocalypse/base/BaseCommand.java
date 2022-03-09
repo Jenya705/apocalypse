@@ -1,8 +1,10 @@
 package com.justserver.apocalypse.base;
 
 import com.justserver.apocalypse.Apocalypse;
+import com.justserver.apocalypse.tasks.CombatCooldownTask;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -24,6 +26,10 @@ public record BaseCommand(Apocalypse plugin) implements CommandExecutor, TabComp
         if (sender instanceof Player player) {
 
             if (player.getWorld().getName().contains("dungeon")) return true;
+            if(CombatCooldownTask.tasks.containsKey(player)){
+                player.sendMessage(ChatColor.RED + "Вы не можете использовать эту команду в PvP");
+                return true;
+            }
             if (label.equals("base") && args.length > 0) {
                 if (args[0].equals("create")) {
                     List<Base> playersBases = Base.getBasesByPlayer(plugin, player);
@@ -48,6 +54,17 @@ public record BaseCommand(Apocalypse plugin) implements CommandExecutor, TabComp
                             return true;
                         }
                     }
+                    int sides = 2;
+                    for(int x = -1; x < sides; x++){
+                        for(int y = -1; y < sides; y++) {
+                            for (int z = -1; z < sides; z++) {
+                                if(player.getLocation().clone().add(x, y, z).getBlock().getType().equals(Material.CHEST)){
+                                    player.sendMessage(ChatColor.RED + "Вы слишком близко к сундуку");
+                                    return true;
+                                }
+                            }
+                        }
+                    }
                     Base.createBase(plugin, player);
                     return true;
                 } else if (args.length == 2 && args[0].equals("add")) {
@@ -69,10 +86,7 @@ public record BaseCommand(Apocalypse plugin) implements CommandExecutor, TabComp
                         player.sendMessage(ChatColor.DARK_RED + "Игрок оффлайн");
                         return true;
                     }
-                    if (Base.getBasesByPlayer(plugin, playerToAdd).size() + 1 > 1) {
-                        player.sendMessage(ChatColor.DARK_RED + "У игрока уже есть база");
-                        return true;
-                    }
+
                     if (base.players.contains(playerToAdd.getUniqueId())) {
                         player.sendMessage(ChatColor.DARK_RED + "Игрок уже находится на вашей базе!");
                         return true;
