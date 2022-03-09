@@ -14,9 +14,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public record BaseCommand(Apocalypse plugin) implements CommandExecutor, TabCompleter {
 
@@ -155,14 +153,11 @@ public record BaseCommand(Apocalypse plugin) implements CommandExecutor, TabComp
     @Override
     public @Nullable
     List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
-        List<String> tabs = new ArrayList<>();
         if (args.length == 1) {
-            tabs.add("create");
-            tabs.add("add");
-            tabs.add("remove");
+            return Arrays.asList("create", "add", "remove", "delete");
         } else if (args.length == 2 && (args[0].equals("add") || args[0].equals("remove"))) {
-            tabs = null;
+            return null;
         }
-        return tabs;
+        return Collections.emptyList();
     }
 }
